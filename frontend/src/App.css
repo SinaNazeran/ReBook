@@ -1,0 +1,353 @@
+/* ==========================================================================
+   App.css — استایل‌های سطح Layout اپلیکیشن «ری‌بوک»
+   نکته: رنگ، فونت و متغیرهای برند در src/styles/theme.css تعریف شده‌اند.
+   این فایل فقط شامل چیدمان و رفتار بصری کامپوننت‌های خاص است،
+   نه تعریف رنگ خام یا فونت.
+   ========================================================================== */
+
+/* ==========================================================================
+   ۱. نوار ناوبری
+   ========================================================================== */
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+/* ==========================================================================
+   ۲. کارت کتاب (BookCard)
+   ========================================================================== */
+.book-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  overflow: hidden;
+  background-color: var(--rb-white);
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(31, 75, 63, 0.15);
+  /* سایه با تینت سبز برند */
+}
+
+.book-card .card-img-top {
+  aspect-ratio: 3 / 4;
+  /* نسبت استاندارد جلد کتاب — در همه سایزها ریسپانسیو می‌ماند */
+  object-fit: cover;
+  background-color: var(--rb-cream-dark);
+  /* رنگ placeholder قبل از لود تصویر */
+}
+
+/* دکمه‌ی افزودن به علاقه‌مندی روی کارت کتاب */
+.wishlist-toggle-btn {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease;
+}
+
+.wishlist-toggle-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   ۳. Badge وضعیت ظاهری کتاب (نو / در حد نو / خوب / قابل‌قبول / فرسوده)
+   مقیاس رنگی مستقل از --bs-primary تا با رنگ CTA و قیمت تداخل نداشته باشد
+   ========================================================================== */
+.badge-condition-new {
+  background-color: var(--rb-success);
+  color: var(--rb-white);
+}
+
+.badge-condition-like-new {
+  background-color: #4c8c7a;
+  /* سبز روشن‌تر، بین success و navy */
+  color: var(--rb-white);
+}
+
+.badge-condition-good {
+  background-color: var(--rb-navy);
+  color: var(--rb-white);
+}
+
+.badge-condition-fair {
+  background-color: var(--rb-warning);
+  color: var(--rb-white);
+}
+
+.badge-condition-poor {
+  background-color: var(--rb-text-muted);
+  color: var(--rb-white);
+}
+
+/* ==========================================================================
+   ۴. Badge وضعیت آگهی کتاب (در انتظار تأیید / تأیید‌شده / رد‌شده / فروخته‌شده)
+   ========================================================================== */
+.status-pending {
+  background-color: var(--rb-warning);
+  color: #2b2a28;
+  /* متن تیره روی زرد گرم، کنتراست کافی */
+}
+
+.status-approved {
+  background-color: var(--rb-success);
+  color: var(--rb-white);
+}
+
+.status-rejected {
+  background-color: var(--rb-danger);
+  color: var(--rb-white);
+}
+
+.status-sold {
+  background-color: var(--rb-text-muted);
+  color: var(--rb-white);
+}
+
+/* ==========================================================================
+   ۵. Badge وضعیت سفارش/معامله (MyOrders)
+   ========================================================================== */
+.order-status-pending {
+  background-color: var(--rb-warning);
+  color: var(--rb-text-dark);
+}
+
+.order-status-paid {
+  background-color: var(--rb-success);
+  color: var(--rb-white);
+}
+
+.order-status-shipped {
+  background-color: var(--rb-navy);
+  color: var(--rb-white);
+}
+
+.order-status-delivered {
+  background-color: var(--rb-secondary);
+  color: var(--rb-white);
+}
+
+.order-status-cancelled {
+  background-color: var(--rb-danger);
+  color: var(--rb-white);
+}
+
+/* ==========================================================================
+   ۶. Badge وضعیت تیکت پشتیبانی (Support)
+   ========================================================================== */
+.ticket-status-open {
+  background-color: var(--rb-warning);
+  color: var(--rb-text-dark);
+}
+
+.ticket-status-in_progress {
+  background-color: var(--rb-navy);
+  color: var(--rb-white);
+}
+
+.ticket-status-closed {
+  background-color: var(--rb-success);
+  color: var(--rb-white);
+}
+
+/* ==========================================================================
+   ۷. صفحه اصلی — بخش Hero
+   ========================================================================== */
+.hero-section {
+  background: linear-gradient(135deg, var(--rb-primary) 0%, var(--rb-primary-dark) 100%);
+  color: var(--rb-white);
+  padding: 80px 0;
+  border-radius: 0 0 2rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* بافت ظریف دایره‌ای با رنگ کرم/قهوه‌ای برای حس گرم‌تر، بدون نیاز به تصویر خارجی */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  left: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background-color: rgba(245, 239, 230, 0.08);
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  bottom: -80px;
+  right: -40px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background-color: rgba(139, 94, 52, 0.12);
+}
+
+.hero-section .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* پس‌زمینه‌ی جایگزین برای بخش‌هایی که نیاز به تمایز ملایم از body دارند
+   (مثلاً بخش «جدیدترین کتاب‌ها» در Home.jsx) — جایگزین bg-light عمومی بوت‌استرپ */
+.bg-section-alt {
+  background-color: var(--rb-cream-dark);
+}
+
+/* ==========================================================================
+   ۸. فرم‌ها
+   ========================================================================== */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--rb-primary);
+  box-shadow: 0 0 0 0.2rem rgba(31, 75, 63, 0.2);
+}
+
+/* ناحیه‌ی آپلود تصویر با drag & drop ظاهری (استفاده در CreateBook.jsx) */
+.image-upload-dropzone {
+  cursor: pointer;
+  border: 2px dashed var(--rb-border);
+  border-radius: var(--bs-border-radius);
+  padding: 20px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.image-upload-dropzone:hover {
+  border-color: var(--rb-primary);
+  background-color: var(--rb-cream);
+}
+
+/* ==========================================================================
+   ۹. صفحه لودینگ
+   ========================================================================== */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+/* حالت تمام‌صفحه — برای استفاده به‌عنوان Suspense fallback در سطح Route */
+.loading-container.loading-fullpage {
+  min-height: 60vh;
+}
+
+/* ==========================================================================
+   ۱۰. اعلان‌ها (Notifications)
+   ========================================================================== */
+.notification-item.unread {
+  background-color: var(--rb-cream-dark);
+}
+
+.notification-item:focus-visible {
+  outline: 2px solid var(--rb-primary);
+  outline-offset: -2px;
+}
+
+.notification-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   ۱۱. آواتار پروفایل (Profile)
+   ========================================================================== */
+.avatar-upload-wrapper {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--rb-cream-dark);
+  margin: 0 auto;
+  cursor: pointer;
+  position: relative;
+  background-color: var(--rb-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-upload-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-upload-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: var(--rb-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.avatar-upload-wrapper:hover .avatar-upload-overlay {
+  opacity: 1;
+}
+
+/* جعبه‌ی اطلاعات ثابت پروفایل (نام کاربری، تاریخ عضویت) */
+.profile-meta-box {
+  background-color: var(--rb-cream);
+  border: 1px solid var(--rb-border);
+  border-radius: var(--bs-border-radius);
+  padding: 1rem 1.25rem;
+}
+
+/* ==========================================================================
+   ۱۲. فوتر
+   ========================================================================== */
+.site-footer {
+  background-color: var(--rb-navy);
+  color: var(--rb-cream);
+}
+
+.site-footer a {
+  color: var(--rb-cream);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.site-footer a:hover {
+  color: var(--rb-white);
+  text-decoration: underline;
+}
+
+.site-footer .text-muted-footer {
+  color: rgba(245, 239, 230, 0.65);
+  /* کرم با شفافیت کمتر برای متن‌های ثانویه */
+}
+
+.footer-social-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+}
+
+.footer-social-icon:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}

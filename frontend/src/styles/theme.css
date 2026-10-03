@@ -1,0 +1,102 @@
+/* ==========================================================================
+   ری‌بوک (ReBook) — Design Tokens
+   این فایل رنگ، فونت و شعاع گوشه‌های پیش‌فرض بوت‌استرپ را با هویت برند
+   جایگزین می‌کند. تمام کامپوننت‌های react-bootstrap به‌صورت خودکار
+   از این متغیرها استفاده می‌کنند — نیازی به override دستی هر کلاس نیست.
+   ========================================================================== */
+
+:root {
+    /* --- رنگ‌های خام برند (برای استفاده مستقیم در CSS سفارشی) --- */
+    --rb-primary: #1F4B3F;
+    --rb-primary-dark: #163A30;
+    --rb-primary-light: #2E6B57;
+
+    --rb-secondary: #8B5E34;
+    --rb-cream: #F5EFE6;
+    --rb-cream-dark: #E8DCC8;
+
+    --rb-navy: #1B2A41;
+    --rb-navy-light: #2C4160;
+
+    --rb-text-dark: #2B2A28;
+    --rb-text-muted: #6B6560;
+    --rb-bg: #FAF7F2;
+    --rb-white: #FFFFFF;
+    --rb-border: #E0D8CC;
+
+    --rb-success: #2E6B57;
+    --rb-danger: #A3372F;
+    --rb-warning: #C79A3F;
+    --rb-info: #2C4160;
+
+    /* --- بازتعریف متغیرهای رسمی بوت‌استرپ 5.3 ---
+     با این کار، تمام کامپوننت‌های آماده Bootstrap/React-Bootstrap
+     (btn-primary, alert-success, badge, spinner و...) خودکار
+     رنگ برند را می‌گیرند بدون نوشتن حتی یک کلاس CSS اضافه. */
+
+    --bs-primary: var(--rb-primary);
+    --bs-primary-rgb: 31, 75, 63;
+    --bs-primary-text-emphasis: var(--rb-primary-dark);
+    --bs-primary-bg-subtle: #E3ECE8;
+    --bs-primary-border-subtle: #C3D6CD;
+
+    --bs-secondary: var(--rb-secondary);
+    --bs-secondary-rgb: 139, 94, 52;
+
+    --bs-success: var(--rb-success);
+    --bs-success-rgb: 46, 107, 87;
+
+    --bs-danger: var(--rb-danger);
+    --bs-danger-rgb: 163, 55, 47;
+
+    --bs-warning: var(--rb-warning);
+    --bs-warning-rgb: 199, 154, 63;
+
+    --bs-info: var(--rb-info);
+    --bs-info-rgb: 44, 65, 96;
+
+    --bs-body-bg: var(--rb-bg);
+    --bs-body-color: var(--rb-text-dark);
+    --bs-secondary-color: var(--rb-text-muted);
+    --bs-border-color: var(--rb-border);
+
+    --bs-link-color: var(--rb-primary);
+    --bs-link-hover-color: var(--rb-primary-dark);
+    --bs-link-color-rgb: 31, 75, 63;
+    --bs-link-hover-color-rgb: 22, 58, 48;
+
+    /* فونت برند در سراسر بوت‌استرپ */
+    --bs-body-font-family: "Vazirmatn", sans-serif;
+    --bs-btn-font-family: "Vazirmatn", sans-serif;
+
+    /* گوشه‌های کمی نرم‌تر برای حس مدرن‌تر (به‌جای گوشه‌های خیلی گرد پیش‌فرض) */
+    --bs-border-radius: 0.5rem;
+    --bs-border-radius-sm: 0.35rem;
+    --bs-border-radius-lg: 0.75rem;
+}
+
+body {
+    font-family: "Vazirmatn", sans-serif;
+    background-color: var(--rb-bg);
+    color: var(--rb-text-dark);
+}
+
+/* دکمه‌های اصلی: متن سفید روی سبز تیره، بدون افکت آبی پیش‌فرض بوت‌استرپ روی focus */
+.btn-primary {
+    --bs-btn-color: var(--rb-white);
+    --bs-btn-hover-color: var(--rb-white);
+    --bs-btn-active-color: var(--rb-white);
+    --bs-btn-hover-bg: var(--rb-primary-dark);
+    --bs-btn-hover-border-color: var(--rb-primary-dark);
+    --bs-btn-active-bg: var(--rb-primary-dark);
+    --bs-btn-focus-shadow-rgb: 31, 75, 63;
+}
+
+/* دکمه‌ی خطی (outline) با رنگ برند */
+.btn-outline-primary {
+    --bs-btn-color: var(--rb-primary);
+    --bs-btn-border-color: var(--rb-primary);
+    --bs-btn-hover-bg: var(--rb-primary);
+    --bs-btn-hover-border-color: var(--rb-primary);
+    --bs-btn-focus-shadow-rgb: 31, 75, 63;
+}
