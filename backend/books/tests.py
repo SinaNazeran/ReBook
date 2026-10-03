@@ -68,6 +68,19 @@ class BookDetailVisibilityTests(APITestCase):
                 self.client.force_authenticate(self.seller)
                 self.assertEqual(self.client.get(url).status_code, 200)
 
+    def test_unapproved_book_cannot_be_wishlisted_by_others(self):
+        reader = User.objects.create_user(username="reader", password="pass")
+        self.client.force_authenticate(reader)
+        pending = self.book("pending")
+        response = self.client.post(f"/api/books/{pending.pk}/wishlist-toggle/")
+        self.assertEqual(response.status_code, 404)
+
+        # کتابی که پس از افزودن به علاقه‌مندی‌ها رد شده، دیگر نمایش داده نمی‌شود
+        approved = self.book("approved")
+        self.client.post(f"/api/books/{approved.pk}/wishlist-toggle/")
+        Book.objects.filter(pk=approved.pk).update(status="rejected")
+        self.assertEqual(self.client.get("/api/books/wishlist/").data["count"], 0)
+
 
 class BookUpdateDeleteTests(APITestCase):
     def setUp(self):

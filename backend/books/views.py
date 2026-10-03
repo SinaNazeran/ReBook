@@ -16,6 +16,14 @@ from .serializers import (
 ALLOWED_ORDERINGS = {"-created_at", "created_at", "price", "-price"}
 
 
+def visible_books(user):
+    """کتاب‌هایی که این کاربر اجازهٔ دیدنشان را دارد؛ کتاب تأییدنشده فقط برای فروشنده‌اش"""
+    visible = models.Q(status__in=["approved", "sold"])
+    if user.is_authenticated:
+        visible |= models.Q(seller=user)
+    return Book.objects.filter(visible)
+
+
 class CategoryListView(generics.ListAPIView):
     """لیست دسته‌بندی‌ها"""
 
@@ -70,11 +78,7 @@ class BookDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        # کتاب تأییدنشده فقط برای فروشنده‌اش قابل مشاهده است
-        visible = models.Q(status__in=["approved", "sold"])
-        if self.request.user.is_authenticated:
-            visible |= models.Q(seller=self.request.user)
-        return Book.objects.filter(visible)
+        return visible_books(self.request.user)
 
 
 class BookCreateView(generics.CreateAPIView):
@@ -129,7 +133,9 @@ class WishlistView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Wishlist.objects.filter(user=self.request.user)
+        return Wishlist.objects.filter(
+            user=self.request.user, book__in=visible_books(self.request.user)
+        )
 
 
 class WishlistToggleView(APIView):
@@ -139,7 +145,7 @@ class WishlistToggleView(APIView):
 
     def post(self, request, book_id):
         try:
-            book = Book.objects.get(pk=book_id)
+            book = visible_books(request.user).get(pk=book_id)
         except Book.DoesNotExist:
             return Response(
                 {"detail": "کتاب یافت نشد."}, status=status.HTTP_404_NOT_FOUND
