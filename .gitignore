@@ -22,6 +22,8 @@ Thumbs.db
 # Claude Code (local only, not published)
 .claude/
 /CLAUDE.md
+.agents/
+skills-lock.json
 
 # Playwright MCP snapshots (from /smoke)
 .playwright-mcp/
