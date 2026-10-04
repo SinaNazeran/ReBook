@@ -30,6 +30,9 @@ class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.AllowAny]
+    # فهرست کوتاه و ثابتی است که فیلتر و فرم ثبت کتاب کاملش را لازم دارند؛
+    # با صفحه‌بندی پیش‌فرض (۱۲ مورد) دسته‌بندی‌های آخر هرگز در فهرست کشویی نمی‌آمدند
+    pagination_class = None
 
 
 class BookListView(generics.ListAPIView):

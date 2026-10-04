@@ -58,6 +58,15 @@ class BookListCategoryFilterTests(APITestCase):
         self.assertEqual(self.titles("roman-irani"), ["child"])
 
 
+class CategoryListTests(APITestCase):
+    def test_all_categories_are_returned_without_pagination(self):
+        # فهرست کشویی دسته‌بندی‌ها باید کامل باشد، نه فقط ۱۲ مورد اول
+        Category.objects.bulk_create(Category(name=f"c{i}", slug=f"c{i}") for i in range(15))
+        response = self.client.get("/api/books/categories/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 15)
+
+
 class BookListPaginationTests(APITestCase):
     def setUp(self):
         seller = User.objects.create_user(username="seller", password="pass")
