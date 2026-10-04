@@ -37,6 +37,18 @@
   /* رنگ placeholder قبل از لود تصویر */
 }
 
+/* جلد کتاب در صفحه‌ی جزئیات؛ بدون این قاعده جای خالیِ کتاب بی‌جلد به نواری ۸۲ پیکسلی جمع می‌شد */
+.book-detail-img,
+.book-detail-placeholder {
+  background-color: var(--rb-cream-dark);
+}
+
+.book-detail-placeholder {
+  aspect-ratio: 3 / 4;
+  /* هم‌شکل جلد در کارت کتاب */
+  border-radius: var(--bs-card-inner-border-radius);
+}
+
 /* دکمه‌ی افزودن به علاقه‌مندی روی کارت کتاب */
 .wishlist-toggle-btn {
   position: absolute;

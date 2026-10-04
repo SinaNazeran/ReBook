@@ -84,7 +84,7 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist, showStatus = f
             decoding="async"
           />
         ) : (
-          <div className="card-img-top d-flex align-items-center justify-content-center bg-light">
+          <div className="card-img-top d-flex align-items-center justify-content-center">
             <FiBookOpen size={56} className="text-muted" />
           </div>
         )}
