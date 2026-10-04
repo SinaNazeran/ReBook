@@ -103,6 +103,7 @@ class MyBooksView(generics.ListAPIView):
 
     serializer_class = BookListSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None  # فهرست شخصی و کوچک؛ صفحه‌ی MyBooks همه را یکجا نشان می‌دهد
 
     def get_queryset(self):
         return Book.objects.filter(seller=self.request.user)
@@ -138,6 +139,8 @@ class WishlistView(generics.ListAPIView):
 
     serializer_class = WishlistSerializer
     permission_classes = [permissions.IsAuthenticated]
+    # فهرست شخصی؛ صفحه‌ی Wishlist و قلب‌های BookList هر دو به فهرست کامل نیاز دارند
+    pagination_class = None
 
     def get_queryset(self):
         return Wishlist.objects.filter(

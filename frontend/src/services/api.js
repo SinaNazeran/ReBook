@@ -165,6 +165,7 @@ export const orderAPI = {
 
 export const notificationAPI = {
   getNotifications: () => api.get("/notifications/"),
+  getUnreadCount: () => api.get("/notifications/unread-count/"), // { count } برای نشان نوار بالا
   markAsRead: (id) => api.post(`/notifications/${id}/read/`),
   markAllAsRead: () => api.post("/notifications/read-all/"),
   createTicket: (data) => api.post("/notifications/support/create/", data),

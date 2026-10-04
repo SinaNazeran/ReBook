@@ -150,3 +150,18 @@ class OrderCancelTests(APITestCase):
         self.assertEqual(response.status_code, 400)
         self.order.book.refresh_from_db()
         self.assertEqual(self.order.book.status, "approved")
+
+
+class PersonalOrderListsTests(APITestCase):
+    def test_my_orders_and_my_sales_are_not_cut_at_one_page(self):
+        seller = User.objects.create_user(username="seller", password="pass")
+        buyer = User.objects.create_user(username="buyer", password="pass")
+        book = Book.objects.create(title="b", author="a", price=100, seller=seller, status="sold")
+        Order.objects.bulk_create(
+            Order(buyer=buyer, book=book, total_price=100, shipping_address="x", status="paid")
+            for _ in range(15)
+        )
+        self.client.force_authenticate(buyer)
+        self.assertEqual(len(self.client.get("/api/orders/my-orders/").data), 15)
+        self.client.force_authenticate(seller)
+        self.assertEqual(len(self.client.get("/api/orders/my-sales/").data), 15)

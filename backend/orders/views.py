@@ -51,6 +51,7 @@ class MyOrdersView(generics.ListAPIView):
 
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None  # فهرست شخصی و کوچک؛ جدول MyOrders همه را یکجا نشان می‌دهد
 
     def get_queryset(self):
         return Order.objects.filter(buyer=self.request.user)
@@ -61,6 +62,7 @@ class MySalesView(generics.ListAPIView):
 
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None  # فهرست شخصی و کوچک؛ جدول MyOrders همه را یکجا نشان می‌دهد
 
     def get_queryset(self):
         return Order.objects.filter(book__seller=self.request.user)

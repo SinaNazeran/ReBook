@@ -33,11 +33,10 @@ function Navbar() {
 
     const fetchCount = () => {
       notificationAPI
-        .getNotifications()
+        .getUnreadCount()
         .then((response) => {
-          const list = response.data.results ?? response.data;
           if (!ignore) {
-            setUnreadCount(list.filter((n) => !n.is_read).length);
+            setUnreadCount(response.data.count);
           }
         })
         .catch((error) => {

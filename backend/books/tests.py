@@ -4,7 +4,7 @@ from accounts.models import User
 from accounts.tests import png_of_size
 from orders.models import Order
 
-from .models import Book, Category
+from .models import Book, Category, Wishlist
 
 
 class BookListOrderingTests(APITestCase):
@@ -65,6 +65,22 @@ class CategoryListTests(APITestCase):
         response = self.client.get("/api/books/categories/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 15)
+
+
+class PersonalBookListsTests(APITestCase):
+    def test_my_books_and_wishlist_are_not_cut_at_one_page(self):
+        seller = User.objects.create_user(username="seller", password="pass")
+        buyer = User.objects.create_user(username="buyer", password="pass")
+        books = Book.objects.bulk_create(
+            Book(title=f"b{i}", author="a", price=1000, seller=seller, status="approved")
+            for i in range(15)
+        )
+        Wishlist.objects.bulk_create(Wishlist(user=buyer, book=book) for book in books)
+
+        self.client.force_authenticate(seller)
+        self.assertEqual(len(self.client.get("/api/books/my-books/").data), 15)
+        self.client.force_authenticate(buyer)
+        self.assertEqual(len(self.client.get("/api/books/wishlist/").data), 15)
 
 
 class BookListPaginationTests(APITestCase):
@@ -148,7 +164,7 @@ class BookDetailVisibilityTests(APITestCase):
         approved = self.book("approved")
         self.client.post(f"/api/books/{approved.pk}/wishlist-toggle/")
         Book.objects.filter(pk=approved.pk).update(status="rejected")
-        self.assertEqual(self.client.get("/api/books/wishlist/").data["count"], 0)
+        self.assertEqual(self.client.get("/api/books/wishlist/").data, [])
 
 
 class BookUpdateDeleteTests(APITestCase):
