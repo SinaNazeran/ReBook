@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from books.models import Book
-from books.serializers import BookListSerializer
+from books.serializers import BookListSerializer, SellerSerializer
 
 from .models import Order, Transaction
 
@@ -14,6 +14,8 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     book_detail = BookListSerializer(source="book", read_only=True)
+    # برای ستون «خریدار» در «فروش‌های من»؛ مثل فروشنده فقط {id, username}، بدون ایمیل و تلفن
+    buyer_detail = SellerSerializer(source="buyer", read_only=True)
     transaction = TransactionSerializer(read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
 
@@ -23,6 +25,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "id",
             "book",
             "book_detail",
+            "buyer_detail",
             "total_price",
             "status",
             "status_display",

@@ -48,11 +48,7 @@ function OrdersTable({ orders, type, onPay, onCancel, busyId, emptyMessage }) {
               <tr key={order.id}>
                 <td>#{order.id}</td>
                 <td>{order.book_detail?.title}</td>
-                {type === 'sale' && (
-                  // ⚠️ فرض: فیلد buyer_detail در پاسخ orders/my-sales/ وجود دارد.
-                  // در صورت متفاوت‌بودن نام فیلد در بک‌اند، این خط نیاز به اصلاح دارد.
-                  <td>{order.buyer_detail?.username || '—'}</td>
-                )}
+                {type === 'sale' && <td dir="auto">{order.buyer_detail?.username || '—'}</td>}
                 <td>{Number(order.total_price).toLocaleString('fa-IR')} تومان</td>
                 <td>
                   <Badge bg="" className={status.className}>{status.text}</Badge>
