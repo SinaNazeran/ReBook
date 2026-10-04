@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar as BSNavbar, Nav, Container, Badge, NavDropdown, Form } from 'react-bootstrap';
 import { useAuth } from '../context/useAuth.js';
 import { notificationAPI, ADMIN_URL } from '../services/api';
@@ -20,6 +20,7 @@ const UNREAD_POLL_INTERVAL = 60000;
 function Navbar() {
   const { user, isAuthenticated, isAdmin, logoutUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -68,7 +69,16 @@ function Navbar() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     const trimmed = searchQuery.trim();
-    navigate(trimmed ? `/books?search=${encodeURIComponent(trimmed)}` : '/books');
+    // در صفحهٔ کتاب‌ها بقیهٔ فیلترها (دسته‌بندی، قیمت، ...) حفظ می‌شوند و فقط جستجو عوض می‌شود
+    const params = new URLSearchParams(location.pathname === '/books' ? location.search : '');
+    params.delete('page');
+    if (trimmed) {
+      params.set('search', trimmed);
+    } else {
+      params.delete('search');
+    }
+    const query = params.toString();
+    navigate(query ? `/books?${query}` : '/books');
   };
 
   const renderUserAvatar = (size = 28) => {
