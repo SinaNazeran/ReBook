@@ -66,6 +66,7 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist, showStatus = f
       {/* نشان وضعیت آگهی — فقط وقتی صراحتاً درخواست شده باشد (مثلاً در MyBooks) */}
       {showStatus && book.status && (
         <Badge
+          bg=""
           className={`position-absolute top-0 end-0 m-2 ${STATUS_CLASS_MAP[book.status] || 'status-sold'}`}
           style={{ zIndex: 2 }}
         >
@@ -108,7 +109,7 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist, showStatus = f
           <span className="fw-bold text-primary fs-6">{formatPrice(book.price)}</span>
 
           {book.condition_display && (
-            <Badge className={getConditionClass(book.condition)}>{book.condition_display}</Badge>
+            <Badge bg="" className={getConditionClass(book.condition)}>{book.condition_display}</Badge>
           )}
         </div>
       </Card.Body>

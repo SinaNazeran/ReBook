@@ -93,7 +93,7 @@ function MyBooks() {
                     <td>{book.author}</td>
                     <td>{Number(book.price).toLocaleString('fa-IR')} تومان</td>
                     <td>
-                      <Badge className={status.className}>{status.text}</Badge>
+                      <Badge bg="" className={status.className}>{status.text}</Badge>
                     </td>
                     <td>{new Date(book.created_at).toLocaleDateString('fa-IR')}</td>
                     <td>

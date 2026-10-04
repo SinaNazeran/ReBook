@@ -136,7 +136,7 @@ function Support() {
                         <Accordion.Header>
                           <div className="d-flex justify-content-between align-items-center w-100 me-3">
                             <span>{ticket.subject}</span>
-                            <Badge className={status.className}>{status.text}</Badge>
+                            <Badge bg="" className={status.className}>{status.text}</Badge>
                           </div>
                         </Accordion.Header>
                         <Accordion.Body>

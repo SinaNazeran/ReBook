@@ -55,7 +55,7 @@ function OrdersTable({ orders, type, onPay, onCancel, busyId, emptyMessage }) {
                 )}
                 <td>{Number(order.total_price).toLocaleString('fa-IR')} تومان</td>
                 <td>
-                  <Badge className={status.className}>{status.text}</Badge>
+                  <Badge bg="" className={status.className}>{status.text}</Badge>
                 </td>
                 <td>{order.transaction?.reference_code || '-'}</td>
                 <td>{new Date(order.created_at).toLocaleDateString('fa-IR')}</td>

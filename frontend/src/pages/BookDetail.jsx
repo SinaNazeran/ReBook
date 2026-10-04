@@ -163,14 +163,14 @@ function BookDetail() {
 
               <p className="mb-2">
                 <strong>وضعیت ظاهری: </strong>
-                <Badge className={CONDITION_CLASS_MAP[book.condition] || 'badge-condition-poor'}>
+                <Badge bg="" className={CONDITION_CLASS_MAP[book.condition] || 'badge-condition-poor'}>
                   {book.condition_display}
                 </Badge>
               </p>
 
               <p className="mb-2">
                 <strong>وضعیت آگهی: </strong>
-                <Badge className={book.status === 'approved' ? 'status-approved' : 'status-pending'}>
+                <Badge bg="" className={`status-${book.status}`}>
                   {book.status_display}
                 </Badge>
               </p>

@@ -69,8 +69,8 @@
 }
 
 .badge-condition-like-new {
-  background-color: #4c8c7a;
-  /* سبز روشن‌تر، بین success و navy */
+  background-color: #3f7a69;
+  /* سبز روشن‌تر از success؛ کنتراست ۵:۱ با متن سفید (AA) */
   color: var(--rb-white);
 }
 
@@ -81,7 +81,8 @@
 
 .badge-condition-fair {
   background-color: var(--rb-warning);
-  color: var(--rb-white);
+  /* متن تیره روی زرد گرم (۵٫۵:۱)؛ متن سفید فقط ۲٫۶:۱ بود */
+  color: var(--rb-text-dark);
 }
 
 .badge-condition-poor {
