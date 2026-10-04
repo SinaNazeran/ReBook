@@ -4,7 +4,7 @@ from accounts.models import User
 from accounts.tests import png_of_size
 from orders.models import Order
 
-from .models import Book
+from .models import Book, Category
 
 
 class BookListOrderingTests(APITestCase):
@@ -33,6 +33,29 @@ class BookListOrderingTests(APITestCase):
         response = self.client.get("/api/books/", {"min_price": "abc", "max_price": "-5"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["results"]), 3)
+
+
+class BookListCategoryFilterTests(APITestCase):
+    def setUp(self):
+        seller = User.objects.create_user(username="seller", password="pass")
+        novel = Category.objects.create(name="رمان", slug="roman")
+        iranian = Category.objects.create(name="رمان ایرانی", slug="roman-irani", parent=novel)
+        poetry = Category.objects.create(name="شعر", slug="poetry")
+        for title, category in (("parent", novel), ("child", iranian), ("other", poetry)):
+            Book.objects.create(
+                title=title, author="a", price=1000, seller=seller,
+                category=category, status="approved",
+            )
+
+    def titles(self, slug):
+        response = self.client.get("/api/books/", {"category": slug})
+        return sorted(b["title"] for b in response.data["results"])
+
+    def test_parent_category_includes_its_children(self):
+        self.assertEqual(self.titles("roman"), ["child", "parent"])
+
+    def test_child_category_is_not_widened(self):
+        self.assertEqual(self.titles("roman-irani"), ["child"])
 
 
 class BookListPaginationTests(APITestCase):
