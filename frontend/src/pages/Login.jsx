@@ -28,9 +28,10 @@ function Login() {
       await loginUser(formData);
       toast.success('خوش آمدید!');
 
-      // اگر کاربر از یک صفحه‌ی محافظت‌شده (ProtectedRoute) به اینجا هدایت شده،
-      // او را به همان مقصد اصلی برمی‌گردانیم؛ در غیر این صورت به صفحه‌ی اصلی.
-      const redirectTo = location.state?.from?.pathname || '/';
+      // اگر کاربر از صفحه‌ی دیگری (ProtectedRoute، صفحه‌ی کتاب، دکمه‌ی ورود نوار بالا) به اینجا آمده،
+      // او را به همان صفحه (همراه با پارامترهای آدرس) برمی‌گردانیم؛ در غیر این صورت به صفحه‌ی اصلی.
+      const from = location.state?.from;
+      const redirectTo = from ? `${from.pathname}${from.search ?? ''}` : '/';
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(getErrorMessage(err));

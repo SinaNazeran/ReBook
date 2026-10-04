@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Card, Badge, Alert, Modal, Form, Button } from 'react-bootstrap';
 import { bookAPI, orderAPI, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/useAuth.js';
@@ -18,6 +18,7 @@ const CONDITION_CLASS_MAP = {
 function BookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated } = useAuth();
 
   const [book, setBook] = useState(null);
@@ -60,7 +61,7 @@ function BookDetail() {
   const handleWishlistToggle = async () => {
     if (!isAuthenticated) {
       toast.warning('لطفاً ابتدا وارد شوید.');
-      navigate('/login');
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -80,7 +81,7 @@ function BookDetail() {
   const handleOpenModal = () => {
     if (!isAuthenticated) {
       toast.warning('لطفاً ابتدا وارد شوید.');
-      navigate('/login');
+      navigate('/login', { state: { from: location } });
       return;
     }
     setShippingAddress(user?.address || '');

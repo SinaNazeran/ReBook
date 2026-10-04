@@ -275,7 +275,12 @@ function Navbar() {
               </>
             ) : (
               <div className="d-flex gap-2 w-100 w-lg-auto mt-2 mt-lg-0">
-                <Link to="/login" className="btn btn-outline-primary btn-sm w-100 w-lg-auto">
+                <Link
+                  to="/login"
+                  // پس از ورود به همین صفحه برمی‌گردد (مگر از خود صفحه‌ی ورود/ثبت‌نام)
+                  state={['/login', '/register'].includes(location.pathname) ? undefined : { from: location }}
+                  className="btn btn-outline-primary btn-sm w-100 w-lg-auto"
+                >
                   ورود
                 </Link>
                 <Link to="/register" className="btn btn-primary btn-sm w-100 w-lg-auto">
