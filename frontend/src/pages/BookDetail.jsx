@@ -4,6 +4,7 @@ import { Container, Row, Col, Card, Badge, Alert, Modal, Form, Button } from 're
 import { bookAPI, orderAPI, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/useAuth.js';
 import Loading from '../components/Loading';
+import NotFound from './NotFound';
 import { toast } from 'react-toastify';
 import { FiHeart, FiShoppingCart, FiUser, FiBookOpen } from 'react-icons/fi';
 
@@ -23,6 +24,9 @@ function BookDetail() {
 
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
+  // 'not_found' برای 404، متن خطا برای بقیه (شبکه، خطای سرور)؛ آدرس صفحه عوض نمی‌شود
+  const [loadError, setLoadError] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [wishlisted, setWishlisted] = useState(false);
 
   // مودال خرید
@@ -43,8 +47,7 @@ function BookDetail() {
       })
       .catch((error) => {
         if (!ignore) {
-          toast.error(getErrorMessage(error));
-          navigate('/books');
+          setLoadError(error.response?.status === 404 ? 'not_found' : getErrorMessage(error));
         }
       })
       .finally(() => {
@@ -56,7 +59,13 @@ function BookDetail() {
     return () => {
       ignore = true;
     };
-  }, [id, navigate]);
+  }, [id, reloadKey]);
+
+  const handleRetry = () => {
+    setLoadError(null);
+    setLoading(true);
+    setReloadKey((key) => key + 1);
+  };
 
   const handleWishlistToggle = async () => {
     if (!isAuthenticated) {
@@ -113,6 +122,21 @@ function BookDetail() {
   };
 
   if (loading) return <Loading fullPage />;
+  if (loadError === 'not_found') return <NotFound />;
+  if (loadError) {
+    return (
+      <Container className="py-5 text-center">
+        <Alert variant="danger" className="d-inline-block">
+          {loadError}
+        </Alert>
+        <div>
+          <Button variant="primary" onClick={handleRetry}>
+            تلاش دوباره
+          </Button>
+        </div>
+      </Container>
+    );
+  }
   if (!book) return null;
 
   const isOwner = isAuthenticated && user?.id === book.seller?.id;

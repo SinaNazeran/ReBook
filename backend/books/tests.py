@@ -97,6 +97,13 @@ class BookDetailVisibilityTests(APITestCase):
     def book(self, status):
         return Book.objects.create(title="b", author="a", price=100, seller=self.seller, status=status)
 
+    def test_missing_book_404_message_is_persian(self):
+        # پیام پیش‌فرض get_object_or_404 جنگو انگلیسی است ("No Book matches the given query.")
+        response = self.client.get("/api/books/999999/")
+        self.assertEqual(response.status_code, 404)
+        self.assertNotIn("matches", response.data["detail"])
+        self.assertRegex(response.data["detail"], "[؀-ۿ]")
+
     def test_seller_contact_details_are_not_public(self):
         response = self.client.get(f"/api/books/{self.book('approved').pk}/")
         self.assertEqual(response.status_code, 200)
