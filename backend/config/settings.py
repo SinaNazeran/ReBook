@@ -152,7 +152,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "config.pagination.StandardPagination",
     "PAGE_SIZE": 12,
     # محدودیت ورود/ثبت‌نام برای هر IP (ScopedRateThrottle در accounts/views.py)
     "DEFAULT_THROTTLE_RATES": {"auth": "10/min"},

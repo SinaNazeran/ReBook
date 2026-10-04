@@ -35,6 +35,36 @@ class BookListOrderingTests(APITestCase):
         self.assertEqual(len(response.data["results"]), 3)
 
 
+class BookListPaginationTests(APITestCase):
+    def setUp(self):
+        seller = User.objects.create_user(username="seller", password="pass")
+        Book.objects.bulk_create(
+            Book(title=f"b{i}", author="a", price=1000, seller=seller, status="approved")
+            for i in range(30)
+        )
+
+    def test_default_page_size_is_12(self):
+        response = self.client.get("/api/books/")
+        self.assertEqual(response.data["count"], 30)
+        self.assertEqual(len(response.data["results"]), 12)
+        self.assertIsNotNone(response.data["next"])
+
+    def test_page_size_loads_several_pages_at_once(self):
+        response = self.client.get("/api/books/", {"page_size": 24})
+        self.assertEqual(len(response.data["results"]), 24)
+        self.assertIsNotNone(response.data["next"])
+
+    def test_page_size_is_capped_at_120(self):
+        seller = User.objects.get(username="seller")
+        Book.objects.bulk_create(
+            Book(title=f"x{i}", author="a", price=1000, seller=seller, status="approved")
+            for i in range(100)
+        )
+        response = self.client.get("/api/books/", {"page_size": 100000})
+        self.assertEqual(len(response.data["results"]), 120)
+        self.assertIsNotNone(response.data["next"])
+
+
 class BookDetailVisibilityTests(APITestCase):
     def setUp(self):
         self.seller = User.objects.create_user(

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Container, Row, Col, Form, Card } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -25,11 +25,17 @@ const ORDERING_OPTIONS = [
 
 const EMPTY_SET = new Set();
 
+// باید با PAGE_SIZE و max_page_size بک‌اند (config/pagination.py) یکی باشد
+const PAGE_SIZE = 12;
+const MAX_PAGES_AT_ONCE = 10;
+
 function BookList() {
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [books, setBooks] = useState([]);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [wishlistIds, setWishlistIds] = useState(new Set());
@@ -41,7 +47,11 @@ function BookList() {
   const [maxPrice, setMaxPrice] = useState('');
   const [ordering, setOrdering] = useState('-created_at');
 
-  const paramsKey = searchParams.toString();
+  // page جدا از فیلترهاست: «نمایش بیشتر» فقط page را عوض می‌کند و نباید فهرست را از نو بارگذاری کند
+  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const filterParams = new URLSearchParams(searchParams);
+  filterParams.delete('page');
+  const paramsKey = filterParams.toString();
   const [prevParamsKey, setPrevParamsKey] = useState(paramsKey);
   if (paramsKey !== prevParamsKey) {
     setPrevParamsKey(paramsKey);
@@ -76,34 +86,71 @@ function BookList() {
     };
   }, []);
 
+  // چند صفحه برای همین فیلترها بارگذاری شده؛ برای تشخیص «نمایش بیشتر» از بارگذاری تازه
+  const loadedRef = useRef({ key: null, pages: 0 });
+
   useEffect(() => {
     let ignore = false;
 
-    const params = Object.fromEntries(searchParams);
+    const filters = Object.fromEntries(new URLSearchParams(paramsKey));
+    const loaded = loadedRef.current;
+    const appending = loaded.key === paramsKey && page === loaded.pages + 1;
+    // بارگذاری تازه (مثلاً لینک مستقیم به ?page=3): همهٔ صفحه‌ها تا page در یک درخواست
+    const pages = appending ? page : Math.min(page, MAX_PAGES_AT_ONCE);
+    const params = appending
+      ? { ...filters, page }
+      : pages > 1
+        ? { ...filters, page_size: pages * PAGE_SIZE }
+        : filters;
 
     bookAPI
       .getBooks(params)
       .then((response) => {
-        if (!ignore) {
-          setBooks(response.data.results ?? response.data);
+        if (ignore) return;
+        const fetched = response.data.results ?? response.data;
+        if (appending) {
+          // اگر در این فاصله کتاب تازه‌ای ثبت شده باشد، مرز صفحه جابه‌جا می‌شود و تکرار پیش می‌آید
+          setBooks((prev) => {
+            const ids = new Set(prev.map((book) => book.id));
+            return [...prev, ...fetched.filter((book) => !ids.has(book.id))];
+          });
+        } else {
+          setBooks(fetched);
         }
+        setHasMore(Boolean(response.data.next));
+        loadedRef.current = { key: paramsKey, pages };
       })
       .catch((error) => {
-        if (!ignore) {
-          toast.error(getErrorMessage(error));
+        if (ignore) return;
+        toast.error(getErrorMessage(error));
+        if (!appending) {
           setBooks([]);
+          setHasMore(false);
         }
       })
       .finally(() => {
         if (!ignore) {
           setLoading(false);
+          setLoadingMore(false);
         }
       });
 
     return () => {
       ignore = true;
     };
-  }, [searchParams]);
+  }, [paramsKey, page]);
+
+  const handleLoadMore = () => {
+    setLoadingMore(true);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('page', loadedRef.current.pages + 1);
+        return next;
+      },
+      { replace: true },
+    );
+  };
 
   // واکشی علاقه‌مندی‌ها
   useEffect(() => {
@@ -312,17 +359,31 @@ function BookList() {
       {loading ? (
         <Loading />
       ) : books.length > 0 ? (
-        <Row className="g-4">
-          {books.map((book) => (
-            <Col key={book.id} xs={12} sm={6} md={4} lg={3}>
-              <BookCard
-                book={book}
-                isWishlisted={displayedWishlistIds.has(book.id)}
-                onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined}
-              />
-            </Col>
-          ))}
-        </Row>
+        <>
+          <Row className="g-4">
+            {books.map((book) => (
+              <Col key={book.id} xs={12} sm={6} md={4} lg={3}>
+                <BookCard
+                  book={book}
+                  isWishlisted={displayedWishlistIds.has(book.id)}
+                  onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined}
+                />
+              </Col>
+            ))}
+          </Row>
+          {hasMore && (
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                className="btn btn-outline-primary"
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+              >
+                {loadingMore ? 'در حال بارگذاری...' : 'نمایش بیشتر'}
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <div className="text-center py-5">
           <FiInbox size={64} className="text-muted" aria-hidden="true" />
