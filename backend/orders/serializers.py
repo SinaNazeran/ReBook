@@ -35,8 +35,17 @@ class OrderSerializer(serializers.ModelSerializer):
     def validate_book(self, book):
         if book.status != Book.StatusChoices.APPROVED:
             raise serializers.ValidationError("این کتاب قابل خرید نیست.")
-        if book.seller == self.context["request"].user:
+        user = self.context["request"].user
+        if book.seller == user:
             raise serializers.ValidationError("نمی‌توانید کتاب خودتان را بخرید.")
+        # یک سفارش باز برای هر نسخه (قید one_pending_order_per_book در مدل)
+        pending = book.orders.filter(status=Order.StatusChoices.PENDING)
+        if pending.filter(buyer=user).exists():
+            raise serializers.ValidationError(
+                "این کتاب را قبلاً سفارش داده‌اید؛ از «معاملات من» پرداخت یا لغوش کنید."
+            )
+        if pending.exists():
+            raise serializers.ValidationError("این کتاب در انتظار پرداخت خریدار دیگری است.")
         return book
 
     def create(self, validated_data):

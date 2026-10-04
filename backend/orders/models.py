@@ -50,6 +50,15 @@ class Order(models.Model):
         verbose_name = "سفارش"
         verbose_name_plural = "سفارش‌ها"
         ordering = ["-created_at"]
+        constraints = [
+            # هر نسخه از کتاب در هر لحظه فقط یک سفارش باز (در انتظار پرداخت) دارد؛
+            # با لغو یا پرداخت آن سفارش، کتاب دوباره آزاد می‌شود
+            models.UniqueConstraint(
+                fields=["book"],
+                condition=models.Q(status="pending"),
+                name="one_pending_order_per_book",
+            ),
+        ]
 
     def __str__(self):
         return f"سفارش #{self.pk} - {self.buyer.username}"

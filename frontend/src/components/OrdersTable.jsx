@@ -10,9 +10,11 @@ const STATUS_MAP = {
 };
 
 /**
- * @param {'purchase'|'sale'} type - نوع نمایش؛ فقط در حالت purchase دکمه‌ی پرداخت نشان داده می‌شود
+ * @param {'purchase'|'sale'} type - نوع نمایش؛ دکمه‌ی پرداخت فقط در حالت purchase،
+ *   دکمه‌ی لغو در هر دو حالت (خریدار یا فروشنده) برای سفارش در انتظار پرداخت
+ * @param {number|null} busyId - شناسه‌ی سفارشی که پرداخت یا لغوش در جریان است
  */
-function OrdersTable({ orders, type, onPay, payingId, emptyMessage }) {
+function OrdersTable({ orders, type, onPay, onCancel, busyId, emptyMessage }) {
   if (orders.length === 0) {
     return (
       <Card className="text-center py-5 border-0 shadow-sm">
@@ -36,7 +38,7 @@ function OrdersTable({ orders, type, onPay, payingId, emptyMessage }) {
             <th>وضعیت</th>
             <th>کد پیگیری</th>
             <th>تاریخ</th>
-            {type === 'purchase' && <th>عملیات</th>}
+            <th>عملیات</th>
           </tr>
         </thead>
         <tbody>
@@ -57,20 +59,30 @@ function OrdersTable({ orders, type, onPay, payingId, emptyMessage }) {
                 </td>
                 <td>{order.transaction?.reference_code || '-'}</td>
                 <td>{new Date(order.created_at).toLocaleDateString('fa-IR')}</td>
-                {type === 'purchase' && (
-                  <td>
-                    {order.status === 'pending' && (
+                <td>
+                  {order.status === 'pending' && (
+                    <div className="d-flex gap-2">
+                      {type === 'purchase' && (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => onPay(order.id)}
+                          disabled={busyId !== null}
+                        >
+                          {busyId === order.id ? 'در حال پردازش...' : 'پرداخت'}
+                        </Button>
+                      )}
                       <Button
-                        variant="primary"
+                        variant="outline-secondary"
                         size="sm"
-                        onClick={() => onPay(order.id)}
-                        disabled={payingId === order.id}
+                        onClick={() => onCancel(order.id)}
+                        disabled={busyId !== null}
                       >
-                        {payingId === order.id ? 'در حال پردازش...' : 'پرداخت'}
+                        لغو سفارش
                       </Button>
-                    )}
-                  </td>
-                )}
+                    </div>
+                  )}
+                </td>
               </tr>
             );
           })}

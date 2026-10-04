@@ -1,10 +1,10 @@
 import random
 import string
 
-from django.db import models
+from django.db import IntegrityError, models
 from django.db import transaction as db_transaction
 from django.utils import timezone
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -22,7 +22,15 @@ class OrderCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        order = serializer.save()
+        # اگر دو خریدار هم‌زمان سفارش دهند، هر دو از validate_book رد می‌شوند
+        # و قید پایگاه داده فقط اولی را می‌پذیرد
+        try:
+            with db_transaction.atomic():
+                order = serializer.save()
+        except IntegrityError:
+            raise serializers.ValidationError(
+                {"book": ["این کتاب در انتظار پرداخت خریدار دیگری است."]}
+            ) from None
 
         # ساخت تراکنش مرتبط
         Transaction.objects.create(
@@ -96,7 +104,7 @@ class FakePaymentView(APIView):
                 status="paid", updated_at=now
             ):
                 return Response(
-                    {"detail": "این سفارش قبلاً پرداخت شده."},
+                    {"detail": "این سفارش در انتظار پرداخت نیست (پرداخت یا لغو شده)."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -131,3 +139,47 @@ class FakePaymentView(APIView):
         )
 
         return Response({"message": "پرداخت موفق", "reference_code": reference_code})
+
+
+class OrderCancelView(APIView):
+    """لغو سفارش در انتظار پرداخت؛ توسط خریدار یا فروشندهٔ کتاب
+
+    فروشنده هم می‌تواند لغو کند تا خریداری که پرداخت نمی‌کند کتاب را برای همیشه قفل نکند.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, order_id):
+        user = request.user
+        try:
+            order = Order.objects.select_related("book", "buyer").get(
+                models.Q(buyer=user) | models.Q(book__seller=user), pk=order_id
+            )
+        except Order.DoesNotExist:
+            return Response(
+                {"detail": "سفارش یافت نشد."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        # به‌روزرسانی شرطی، مثل پرداخت: اگر هم‌زمان پرداخت شود، فقط یکی موفق می‌شود
+        with db_transaction.atomic():
+            if not Order.objects.filter(pk=order.pk, status="pending").update(
+                status="cancelled", updated_at=timezone.now()
+            ):
+                return Response(
+                    {"detail": "فقط سفارش در انتظار پرداخت را می‌توان لغو کرد."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            Transaction.objects.filter(order=order).update(status="failed")
+
+        # اعلان به طرف دیگر معامله
+        if order.buyer_id == user.id:
+            recipient = order.book.seller
+            message = f'خریدار سفارش کتاب "{order.book.title}" را لغو کرد؛ کتاب دوباره قابل خرید است.'
+        else:
+            recipient = order.buyer
+            message = f'فروشنده سفارش شما برای کتاب "{order.book.title}" را لغو کرد.'
+        Notification.objects.create(
+            user=recipient, title="لغو سفارش", message=message, notification_type="order"
+        )
+
+        return Response({"message": "سفارش لغو شد."})

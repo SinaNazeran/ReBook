@@ -156,6 +156,7 @@ export const orderAPI = {
   getMySales: () => api.get("/orders/my-sales/"), // تب «فروش‌های من»
   getOrder: (id) => api.get(`/orders/${id}/`),
   payOrder: (orderId) => api.post(`/orders/${orderId}/pay/`),
+  cancelOrder: (orderId) => api.post(`/orders/${orderId}/cancel/`), // خریدار یا فروشنده، فقط سفارش در انتظار پرداخت
 };
 
 // ============================================
