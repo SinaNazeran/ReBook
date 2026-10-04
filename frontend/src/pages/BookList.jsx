@@ -52,7 +52,8 @@ function BookList() {
   const filterParams = new URLSearchParams(searchParams);
   filterParams.delete('page');
   const paramsKey = filterParams.toString();
-  const [prevParamsKey, setPrevParamsKey] = useState(paramsKey);
+  // null تا در اولین رندر هم فرم از URL پر شود (لینک مستقیم یا رفرش با فیلتر)
+  const [prevParamsKey, setPrevParamsKey] = useState(null);
   if (paramsKey !== prevParamsKey) {
     setPrevParamsKey(paramsKey);
     setLoading(true); // ✅ به‌جای افکت، در حین رندر تنظیم می‌شود
