@@ -206,6 +206,14 @@
   .book-card-band {
     transition: transform var(--rb-duration) var(--rb-ease-out);
   }
+
+  .wishlist-toggle-btn {
+    transition: transform 160ms var(--rb-ease-out);
+  }
+
+  .wishlist-toggle-btn:active {
+    transform: scale(0.92);
+  }
 }
 
 /* دکمه‌ی علاقه‌مندی روی جلد: ۳۶px دیداری، ناحیه‌ی لمس ۴۴px با ::before */
@@ -914,8 +922,10 @@
 }
 
 /* زیر lg برگه‌ی پایین صفحه؛ از lg به بعد Offcanvas در همان ردیف ابزار باز می‌ماند */
+/* منحنی کشو (iOS): برگه سریع راه می‌افتد و نرم می‌نشیند؛ ease-in-out پیش‌فرض اولش کُند است */
 .list-filters {
   --bs-offcanvas-height: auto;
+  --bs-offcanvas-transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .list-filters.offcanvas-lg.offcanvas-bottom {

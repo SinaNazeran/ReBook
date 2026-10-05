@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, Slide } from "react-toastify";
 import { AuthProvider } from "./context/AuthContext.jsx";
 
 // کامپوننت‌های ثابت (همیشه لازم‌اند، lazy نمی‌شوند)
@@ -117,6 +117,7 @@ function App() {
           hideProgressBar={false}
           rtl={true}
           newestOnTop
+          transition={Slide}
         />
       </div>
     </AuthProvider>

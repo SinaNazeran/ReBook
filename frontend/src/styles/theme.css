@@ -188,7 +188,18 @@ input[autocomplete="username"] {
 .btn {
     --bs-btn-font-weight: var(--rb-font-weight-ui);
     --bs-btn-focus-box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
-    transition-timing-function: var(--rb-ease-out);
+}
+
+/* فشردن دکمه کمی کوچکش می‌کند تا کاربر حس کند صدایش شنیده شد؛ بیرون از این شرط بوت‌استرپ خودش transition را برمی‌دارد */
+@media (prefers-reduced-motion: no-preference) {
+    .btn {
+        transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease,
+            box-shadow 150ms ease, transform 160ms var(--rb-ease-out);
+    }
+
+    .btn:active {
+        transform: scale(0.97);
+    }
 }
 
 /* اندازه‌ی پیش‌فرض به ۴۴px می‌رسد؛ btn-sm و btn-lg اندازه‌ی خودشان را نگه می‌دارند */
@@ -362,9 +373,39 @@ textarea.form-control {
     box-shadow: var(--bs-dropdown-box-shadow);
 }
 
+/* منو بی‌انیمیشن ظاهر می‌شد؛ حالا کوتاه محو می‌آید و ۴px از زیر لبه‌ی دکمه پایین می‌نشیند. بستن آنی می‌ماند.
+   translate جدا از transform است تا با جای‌گذاری Popper تداخل نکند. */
+.dropdown-menu.show {
+    transition: opacity 150ms var(--rb-ease-out), translate 150ms var(--rb-ease-out);
+}
+
+@starting-style {
+    .dropdown-menu.show {
+        opacity: 0;
+    }
+}
+
 .modal {
     --bs-modal-border-color: transparent;
     --bs-modal-box-shadow: var(--rb-shadow-overlay);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    @starting-style {
+        .dropdown-menu.show {
+            translate: 0 -4px;
+        }
+    }
+
+    /* مودال پیش‌فرض ۵۰px از بالا سر می‌خورد؛ مودال به دکمه‌ای وصل نیست، پس از وسط و کمی کوچک‌تر باز می‌شود */
+    .modal.fade .modal-dialog {
+        transform: scale(0.96);
+        transition: transform 220ms var(--rb-ease-out);
+    }
+
+    .modal.show .modal-dialog {
+        transform: none;
+    }
 }
 
 .modal-backdrop,
@@ -383,7 +424,32 @@ textarea.form-control {
     --bs-nav-tabs-border-color: var(--rb-rule);
 }
 
-.Toastify__toast {
+.Toastify .Toastify__toast {
     border-radius: var(--bs-border-radius-lg);
     box-shadow: var(--rb-shadow-overlay);
+}
+
+/* Slide (در App.jsx) از همان لبه‌ای که toast رویش می‌نشیند وارد و خارج می‌شود؛ ۵۰۰ms پیش‌فرض برای پیام وضعیت کُند است */
+.Toastify .Toastify--animate {
+    animation-duration: 300ms;
+    animation-timing-function: var(--rb-ease-out);
+}
+
+/* حرکت کم: فقط محو شدن، بی‌جابه‌جایی */
+@media (prefers-reduced-motion: reduce) {
+    .Toastify--animate[class*="Toastify__slide-enter"] {
+        animation-name: rb-fade-in;
+    }
+
+    .Toastify--animate[class*="Toastify__slide-exit"] {
+        animation-name: rb-fade-out;
+    }
+}
+
+@keyframes rb-fade-in {
+    from { opacity: 0; }
+}
+
+@keyframes rb-fade-out {
+    to { opacity: 0; }
 }
