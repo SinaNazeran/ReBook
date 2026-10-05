@@ -1,64 +1,60 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { bookAPI, getErrorMessage } from '../services/api';
-import { useAuth } from '../context/useAuth.js';
+import { bookAPI } from '../services/api';
 import BookCard from '../components/BookCard';
-import Loading from '../components/Loading';
-import { FiSearch, FiTag, FiShield, FiBookOpen, FiPlusCircle } from 'react-icons/fi';
+import { seriesInk } from '../utils/series';
+import { FiArrowLeft, FiPlusCircle } from 'react-icons/fi';
 
 const LATEST_BOOKS_COUNT = 8;
 
-const FEATURES = [
-  {
-    icon: FiSearch,
-    title: 'جستجوی آسان',
-    text: 'کتاب مورد نظرتان را بر اساس نام، نویسنده یا موضوع جستجو کنید.',
-  },
-  {
-    icon: FiTag,
-    title: 'قیمت مناسب',
-    text: 'کتاب‌های دست دوم با کیفیت خوب و قیمت‌های بسیار مناسب.',
-  },
-  {
-    icon: FiShield,
-    title: 'خرید امن',
-    text: 'تمامی کتاب‌ها قبل از نمایش توسط تیم ما بررسی می‌شوند.',
-  },
+// مسیر فروشنده، همان‌طور که در محصول رخ می‌دهد؛ بررسی تیم فقط همین‌جا و بی‌سروصدا گفته می‌شود
+const SELL_STEPS = [
+  { title: 'ثبت آگهی', text: 'عنوان، عکس جلد، وضعیت و قیمت کتاب را وارد کن.' },
+  { title: 'بررسی', text: 'تیم ری‌بوک آگهی را پیش از انتشار بررسی می‌کند.' },
+  { title: 'فروش', text: 'وقتی کسی کتاب را سفارش داد، اعلان می‌گیری.' },
 ];
 
 function Home() {
-  const { isAuthenticated } = useAuth();
   const [latestBooks, setLatestBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('loading'); // loading | ready | error
+  const [reloadKey, setReloadKey] = useState(0);
+  const [shelves, setShelves] = useState([]);
+
+  const retry = () => {
+    setStatus('loading');
+    setReloadKey((k) => k + 1);
+  };
 
   useEffect(() => {
     let ignore = false;
 
     bookAPI
-      .getBooks({
-        ordering: '-created_at',
-        page_size: LATEST_BOOKS_COUNT,
-      })
+      .getBooks({ ordering: '-created_at', page_size: LATEST_BOOKS_COUNT })
       .then((response) => {
-        if (!ignore) {
-          const books = response.data.results ?? response.data;
-          setLatestBooks(books.slice(0, LATEST_BOOKS_COUNT));
-        }
+        if (ignore) return;
+        const books = response.data.results ?? response.data;
+        setLatestBooks(books.slice(0, LATEST_BOOKS_COUNT));
+        setStatus('ready');
       })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(getErrorMessage(error));
-          setLatestBooks([]);
-        }
-      })
-      .finally(() => {
-        if (!ignore) {
-          setLoading(false);
-        }
+      .catch(() => {
+        if (!ignore) setStatus('error');
       });
 
+    return () => {
+      ignore = true;
+    };
+  }, [reloadKey]);
+
+  // فهرست دسته‌ها فقط راه میان‌بر است؛ اگر نیامد، هیرو بدون آن کامل است
+  useEffect(() => {
+    let ignore = false;
+    bookAPI
+      .getCategories()
+      .then((response) => {
+        if (!ignore) setShelves(response.data.filter((cat) => cat.parent === null));
+      })
+      .catch(() => {});
     return () => {
       ignore = true;
     };
@@ -66,81 +62,115 @@ function Home() {
 
   return (
     <>
-      {/* بخش هیرو */}
-      <section className="hero-section text-center">
+      <section className="home-hero">
         <Container>
-          <div className="d-flex align-items-center justify-content-center gap-2 mb-3">
-            <FiBookOpen size={40} aria-hidden="true" />
-            <h1 className="display-4 fw-bold mb-0">ری‌بوک</h1>
-          </div>
-          <p className="lead mb-4">بزرگ‌ترین پلتفرم خرید و فروش کتاب‌های دست دوم</p>
-          <p className="mb-4">
-            کتاب‌هایت را بفروش، کتاب‌های مورد نیازت را با قیمت مناسب پیدا کن!
-          </p>
+          <Row className="gy-4 align-items-end">
+            <Col lg={7}>
+              <h1 className="home-hero-title">کتاب بعدی‌ات را پیدا کن، کتاب‌هایی را که خواندی بفروش.</h1>
+              <p className="home-hero-lead">
+                نسخه‌های دست دوم را با عکس جلد، وضعیت ظاهری و قیمت کنار هم ببین.
+              </p>
+              <div className="home-hero-actions d-flex flex-wrap gap-2">
+                <Link to="/books" className="btn btn-primary btn-lg">
+                  مرور کتاب‌ها
+                </Link>
+                <Link
+                  to="/create-book"
+                  className="btn btn-outline-primary btn-lg d-inline-flex align-items-center gap-2"
+                >
+                  <FiPlusCircle aria-hidden="true" />
+                  فروش کتاب
+                </Link>
+              </div>
+            </Col>
 
-          <div className="d-flex flex-wrap justify-content-center gap-3">
-            <Link to="/books" className="btn btn-light btn-lg">
-              مشاهده کتاب‌ها
-            </Link>
-
-            {isAuthenticated ? (
-              <Link
-                to="/create-book"
-                className="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-              >
-                <FiPlusCircle />
-                ثبت کتاب جدید
-              </Link>
-            ) : (
-              <Link to="/register" className="btn btn-outline-light btn-lg">
-                شروع کنید
-              </Link>
-            )}
-          </div>
-        </Container>
-      </section>
-
-      {/* ویژگی‌ها */}
-      <section className="py-5">
-        <Container>
-          <h2 className="text-center mb-5">چرا ری‌بوک؟</h2>
-          <Row className="text-center g-4">
-            {FEATURES.map(({ icon: Icon, title, text }) => (
-              <Col md={4} key={title}>
-                <div className="p-4">
-                  <Icon size={48} className="text-primary" aria-hidden="true" />
-                  <h3 className="h4 mt-3">{title}</h3>
-                  <p className="text-muted">{text}</p>
-                </div>
-              </Col>
-            ))}
+            <Col lg={5}>
+              <nav className="series-index" aria-labelledby="series-index-title">
+                <h2 id="series-index-title" className="series-index-title">
+                  دسته‌ها
+                </h2>
+                <ul className="series-index-list">
+                  {shelves.map((cat) => (
+                    <li key={cat.id}>
+                      <Link
+                        to={`/books?category=${cat.slug}`}
+                        className="series-index-link"
+                        style={{ '--series-ink': seriesInk(cat.id) }}
+                      >
+                        <span className="series-index-mark" aria-hidden="true" />
+                        {cat.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </Col>
           </Row>
         </Container>
       </section>
 
-      {/* جدیدترین کتاب‌ها */}
-      <section className="py-5 bg-section-alt">
+      <section className="home-latest" aria-labelledby="latest-title">
         <Container>
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="mb-0">جدیدترین کتاب‌ها</h2>
-            <Link to="/books" className="btn btn-outline-primary">
-              مشاهده همه
+          <div className="d-flex justify-content-between align-items-baseline gap-3 mb-3">
+            <h2 id="latest-title" className="home-section-title">جدیدترین کتاب‌ها</h2>
+            <Link to="/books" className="home-more-link">
+              همه‌ی کتاب‌ها
+              <FiArrowLeft aria-hidden="true" />
             </Link>
           </div>
 
-          {loading ? (
-            <Loading />
-          ) : latestBooks.length > 0 ? (
-            <Row className="g-4">
-              {latestBooks.map((book) => (
-                <Col key={book.id} xs={12} sm={6} md={4} lg={3}>
-                  <BookCard book={book} />
-                </Col>
-              ))}
-            </Row>
+          {status === 'error' ? (
+            <div className="home-state" role="alert">
+              <p>کتاب‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+              <Button variant="outline-secondary" onClick={retry}>
+                تلاش دوباره
+              </Button>
+            </div>
+          ) : status === 'ready' && latestBooks.length === 0 ? (
+            <div className="home-state">
+              <p>هنوز کتابی در قفسه نیست. اولین کتاب را تو ثبت کن.</p>
+              <Link to="/create-book" className="btn btn-primary">
+                فروش کتاب
+              </Link>
+            </div>
           ) : (
-            <p className="text-center text-muted">هنوز کتابی ثبت نشده است.</p>
+            <Row className="g-3 g-md-4" aria-busy={status === 'loading'}>
+              {status === 'loading'
+                ? Array.from({ length: LATEST_BOOKS_COUNT }, (_, i) => (
+                    <Col key={i} xs={6} md={4} lg={3}>
+                      <div className="book-card-skeleton" aria-hidden="true">
+                        <span className="book-card-skeleton-cover" />
+                        <span className="book-card-skeleton-line" />
+                        <span className="book-card-skeleton-line is-short" />
+                      </div>
+                    </Col>
+                  ))
+                : latestBooks.map((book) => (
+                    <Col key={book.id} xs={6} md={4} lg={3}>
+                      <BookCard book={book} />
+                    </Col>
+                  ))}
+            </Row>
           )}
+          {status === 'loading' && <span className="visually-hidden" role="status">در حال بارگذاری کتاب‌ها</span>}
+        </Container>
+      </section>
+
+      <section className="home-sell" aria-labelledby="sell-title">
+        <Container>
+          <h2 id="sell-title" className="home-section-title">کتابی داری که دیگر سراغش نمی‌روی؟</h2>
+          <ol className="sell-steps">
+            {SELL_STEPS.map(({ title, text }) => (
+              <li key={title} className="sell-step">
+                <h3 className="sell-step-title">{title}</h3>
+                <p className="sell-step-text">{text}</p>
+              </li>
+            ))}
+          </ol>
+          <Link to="/create-book" className="btn btn-primary btn-lg d-inline-flex align-items-center gap-2">
+            <FiPlusCircle aria-hidden="true" />
+            فروش کتاب
+          </Link>
         </Container>
       </section>
     </>

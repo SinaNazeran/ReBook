@@ -342,47 +342,267 @@
 }
 
 /* ==========================================================================
-   ۷. صفحه اصلی — بخش Hero
+   ۷. صفحه اصلی
+   روی همان کاغذ زمینه، بدون پنل رنگی: جلدها تنها سطح‌های تمام‌رنگ‌اند.
    ========================================================================== */
-.hero-section {
-  background: var(--rb-ink);
-  color: var(--rb-on-ink);
-  padding: 80px 0;
-  border-radius: 0 0 2rem 2rem;
-  position: relative;
+.home-hero {
+  padding-block: 3.5rem 2.5rem;
+}
+
+.home-hero-title {
+  margin-bottom: 1rem;
+  font-size: clamp(1.625rem, 1.1rem + 2.2vw, 2.75rem);
+  text-wrap: balance;
+}
+
+.home-hero-lead {
+  max-width: 36rem;
+  margin-bottom: 1.75rem;
+  font-size: 1.125rem;
+  color: var(--rb-ink-muted);
+}
+
+/* فهرست مجموعه‌ها، مثل فهرست پشت جلد کتاب جیبی: هر دسته با مرکب خودش */
+.series-index-title {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: var(--rb-font-weight-ui);
+  color: var(--rb-ink-muted);
+}
+
+.series-index-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rb-rule);
+}
+
+.series-index-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--rb-touch-target);
+  color: var(--rb-ink);
+  text-decoration: none;
+}
+
+.series-index-mark {
+  flex: none;
+  width: 4px;
+  height: 1.25rem;
+  background-color: var(--series-ink);
+}
+
+.series-index-link:hover {
+  color: var(--rb-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.4em;
+}
+
+@media (hover: hover) {
+  .series-index-link:hover .series-index-mark {
+    transform: scaleX(2);
+  }
+}
+
+/* زیر lg فهرست یک ردیف افقی می‌شود تا جلدها زودتر به چشم بیایند */
+@media (max-width: 991.98px) {
+  .series-index-list {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    border-top: 0;
+  }
+
+  .series-index-list > li {
+    flex: none;
+    scroll-snap-align: start;
+  }
+
+  .series-index-link {
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+}
+
+.home-latest {
+  padding-block: 1rem 3.5rem;
+}
+
+.home-section-title {
+  margin: 0;
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.625rem);
+}
+
+.home-more-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: var(--rb-touch-target);
+  font-weight: var(--rb-font-weight-ui);
+  color: var(--rb-ink);
+  white-space: nowrap;
+}
+
+/* اسکلت کارت: همان قد و قواره‌ی BookCard تا با آمدن داده چیزی جابه‌جا نشود */
+.book-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 0.875rem;
+  border-radius: var(--bs-border-radius);
   overflow: hidden;
+  background-color: var(--rb-surface);
 }
 
-/* بافت ظریف دایره‌ای با رنگ کرم/قهوه‌ای برای حس گرم‌تر، بدون نیاز به تصویر خارجی */
-.hero-section::before {
-  content: "";
-  position: absolute;
-  top: -60px;
-  left: -60px;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background-color: rgba(245, 239, 230, 0.08);
+.book-card-skeleton > span {
+  display: block;
+  background-color: var(--rb-surface-sunken);
 }
 
-.hero-section::after {
-  content: "";
-  position: absolute;
-  bottom: -80px;
-  right: -40px;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  background-color: rgba(139, 94, 52, 0.12);
+.book-card-skeleton-cover {
+  aspect-ratio: 3 / 4;
+  border-bottom: 4px solid var(--rb-rule);
 }
 
-.hero-section .container {
+.book-card-skeleton-line {
+  height: 0.75rem;
+  margin-inline: 0.875rem;
+  border-radius: 2px;
+}
+
+.book-card-skeleton-line.is-short {
+  width: 45%;
+}
+
+.home-state {
+  padding: 2.5rem 1.5rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+  text-align: center;
+}
+
+.home-state p {
+  margin-bottom: 1rem;
+  color: var(--rb-ink-muted);
+}
+
+/* مسیر فروشنده: سه گام پشت‌سرهم روی یک خط مویی، نه سه کارت */
+.home-sell {
+  padding-block: 3.5rem;
+  border-top: 1px solid var(--rb-rule);
+}
+
+.sell-steps {
+  display: grid;
+  gap: 1.5rem;
+  margin: 1.75rem 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.sell-step {
   position: relative;
-  z-index: 1;
+  padding-inline-start: 1.5rem;
+}
+
+.sell-step::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0.55rem;
+  inset-inline-start: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 1px;
+  background-color: var(--rb-ink);
+}
+
+.sell-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  inset-block: 1.6rem -1.1rem;
+  inset-inline-start: calc(0.3125rem - 0.5px);
+  width: 1px;
+  background-color: var(--rb-rule);
+}
+
+.sell-step-title {
+  margin-bottom: 0.25rem;
+  font-size: 1.0625rem;
+}
+
+.sell-step-text {
+  max-width: 34ch;
+  margin: 0;
+  color: var(--rb-ink-muted);
+}
+
+@media (min-width: 768px) {
+  .sell-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  .sell-step {
+    padding-inline-start: 0;
+    padding-top: 1.75rem;
+  }
+
+  .sell-step::before {
+    inset-block-start: 0;
+  }
+
+  .sell-step:not(:last-child)::after {
+    inset-block: calc(0.3125rem - 0.5px) auto;
+    inset-inline: 1.25rem -1.5rem;
+    width: auto;
+    height: 1px;
+  }
+}
+
+/* ورود هیرو: متن و فهرست با فاصله‌ی کوتاه پشت هم می‌آیند تا ترتیب خواندن دیده شود */
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero-title,
+  .home-hero-lead,
+  .home-hero-actions,
+  .series-index {
+    animation: home-rise 420ms var(--rb-ease-out) both;
+  }
+
+  .home-hero-lead { animation-delay: 60ms; }
+  .home-hero-actions { animation-delay: 120ms; }
+  .series-index { animation-delay: 180ms; }
+
+  .series-index-mark {
+    transition: transform var(--rb-duration) var(--rb-ease-out);
+  }
+
+  .book-card-skeleton > span {
+    animation: skeleton-pulse 1.4s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes home-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes skeleton-pulse {
+  to {
+    opacity: 0.55;
+  }
 }
 
 /* پس‌زمینه‌ی جایگزین برای بخش‌هایی که نیاز به تمایز ملایم از body دارند
-   (مثلاً بخش «جدیدترین کتاب‌ها» در Home.jsx) — جایگزین bg-light عمومی بوت‌استرپ */
+   (مثلاً کارت خلاصه در BookDetail.jsx) — جایگزین bg-light عمومی بوت‌استرپ */
 .bg-section-alt {
   background-color: var(--rb-surface-sunken);
 }
