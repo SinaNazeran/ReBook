@@ -127,7 +127,14 @@ function BookDetail() {
   };
 
   if (loading) return <Loading fullPage />;
-  if (loadError === 'not_found') return <NotFound />;
+  if (loadError === 'not_found') {
+    return (
+      <NotFound
+        title="این کتاب پیدا نشد"
+        message="شاید آگهی‌اش حذف شده یا هنوز منتشر نشده است. نسخه‌های دیگر را در فهرست ببین."
+      />
+    );
+  }
   if (loadError) {
     return (
       <Container className="py-5">

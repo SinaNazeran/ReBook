@@ -1751,6 +1751,100 @@
 }
 
 /* ==========================================================================
+   ۱۲ب. ورود، ثبت‌نام و صفحه‌ی ۴۰۴
+   ========================================================================== */
+.auth-page {
+  padding-block: 2.5rem 3.5rem;
+}
+
+.auth-panel {
+  max-width: 26rem;
+  margin-inline: auto;
+  padding: 1.75rem 1.5rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+.auth-panel.is-wide {
+  max-width: 38rem;
+}
+
+.auth-title {
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+}
+
+/* جمله‌ی دلیل ورود (اگر باشد) زیر عنوان می‌چسبد */
+.auth-reason {
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+  color: var(--rb-ink-muted);
+}
+
+.auth-optional {
+  margin-top: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rb-rule);
+}
+
+.auth-optional > legend {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.auth-switch {
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rb-rule);
+  text-align: center;
+}
+
+.not-found {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem 3rem;
+  padding-block: 4rem;
+}
+
+.not-found-cover {
+  flex: none;
+  width: 9rem;
+}
+
+.not-found-cover .plain-cover {
+  aspect-ratio: 3 / 4;
+  border-radius: var(--bs-border-radius);
+}
+
+.not-found-body {
+  flex: 0 1 28rem;
+}
+
+.not-found-title {
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+}
+
+.not-found-text {
+  margin-bottom: 1.5rem;
+  color: var(--rb-ink-muted);
+}
+
+@media (max-width: 575.98px) {
+  .not-found {
+    text-align: center;
+  }
+
+  .not-found-body .d-flex {
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
    ۱۳. فوتر
    ========================================================================== */
 .site-footer {
