@@ -138,4 +138,15 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist, showStatus = f
   );
 }
 
+// جای کارت در حال بارگذاری: همان قاب جلد ۳:۴ و نوار، تا با رسیدن داده چیزی جابه‌جا نشود
+export function BookCardSkeleton() {
+  return (
+    <div className="book-card-skeleton" aria-hidden="true">
+      <span className="book-card-skeleton-cover" />
+      <span className="book-card-skeleton-line" />
+      <span className="book-card-skeleton-line is-short" />
+    </div>
+  );
+}
+
 export default React.memo(BookCard);

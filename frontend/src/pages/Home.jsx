@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { bookAPI } from '../services/api';
-import BookCard from '../components/BookCard';
+import BookCard, { BookCardSkeleton } from '../components/BookCard';
 import { seriesInk } from '../utils/series';
 import { FiArrowLeft, FiPlusCircle } from 'react-icons/fi';
 
@@ -120,14 +120,14 @@ function Home() {
           </div>
 
           {status === 'error' ? (
-            <div className="home-state" role="alert">
+            <div className="list-state" role="alert">
               <p>کتاب‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
               <Button variant="outline-secondary" onClick={retry}>
                 تلاش دوباره
               </Button>
             </div>
           ) : status === 'ready' && latestBooks.length === 0 ? (
-            <div className="home-state">
+            <div className="list-state">
               <p>هنوز کتابی در قفسه نیست. اولین کتاب را تو ثبت کن.</p>
               <Link to="/create-book" className="btn btn-primary">
                 فروش کتاب
@@ -138,11 +138,7 @@ function Home() {
               {status === 'loading'
                 ? Array.from({ length: LATEST_BOOKS_COUNT }, (_, i) => (
                     <Col key={i} xs={6} md={4} lg={3}>
-                      <div className="book-card-skeleton" aria-hidden="true">
-                        <span className="book-card-skeleton-cover" />
-                        <span className="book-card-skeleton-line" />
-                        <span className="book-card-skeleton-line is-short" />
-                      </div>
+                      <BookCardSkeleton />
                     </Col>
                   ))
                 : latestBooks.map((book) => (

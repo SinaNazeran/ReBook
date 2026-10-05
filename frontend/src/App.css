@@ -480,7 +480,7 @@
   width: 45%;
 }
 
-.home-state {
+.list-state {
   padding: 2.5rem 1.5rem;
   border: 1px solid var(--rb-rule);
   border-radius: var(--bs-border-radius);
@@ -488,7 +488,7 @@
   text-align: center;
 }
 
-.home-state p {
+.list-state p {
   margin-bottom: 1rem;
   color: var(--rb-ink-muted);
 }
@@ -628,6 +628,289 @@
    (مثلاً کارت خلاصه در BookDetail.jsx) — جایگزین bg-light عمومی بوت‌استرپ */
 .bg-section-alt {
   background-color: var(--rb-surface-sunken);
+}
+
+/* ==========================================================================
+   ۷ب. فهرست کتاب‌ها (BookList)
+   زبانه‌ی هر مجموعه با مرکب خودش؛ مرکب دسته‌ی فعال به سرصفحه هم می‌رسد.
+   ========================================================================== */
+.book-list-page {
+  padding-block: 1rem 3.5rem;
+}
+
+.series-tabs {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  border-bottom: 1px solid var(--rb-rule);
+}
+
+.series-tabs-list {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.series-tabs-list > li {
+  flex: none;
+}
+
+.series-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--rb-touch-target);
+  color: var(--rb-ink-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.series-tab:hover {
+  color: var(--rb-ink);
+}
+
+.series-tab[aria-current="page"] {
+  color: var(--rb-ink);
+  font-weight: var(--rb-font-weight-ui);
+}
+
+/* زبانه‌ی فعال: نوار ۳px در مرکب مجموعه روی خط مویی پایین */
+.series-tab[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -1px;
+  height: 3px;
+  background-color: var(--series-ink);
+}
+
+.sub-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* زیرشاخه‌ها و نشان فیلترها: ۳۶px دیده می‌شوند، ناحیه‌ی لمس با شبه‌عنصر به ۴۴px می‌رسد */
+.sub-tab,
+.list-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.25rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+  color: var(--rb-ink-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.sub-tab::after,
+.list-chip::after {
+  content: "";
+  position: absolute;
+  inset: -4px 0;
+}
+
+.sub-tab:hover,
+.list-chip:hover {
+  border-color: var(--rb-ink);
+  color: var(--rb-ink);
+}
+
+.sub-tab[aria-current="page"] {
+  border-color: var(--rb-ink);
+  color: var(--rb-ink);
+  font-weight: var(--rb-font-weight-ui);
+}
+
+.list-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-block: 1.75rem 1.25rem;
+}
+
+.list-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+}
+
+.list-title-mark {
+  align-self: center;
+  width: 4px;
+  height: 0.9em;
+  background-color: var(--series-ink);
+}
+
+.list-count {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+.list-note {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--rb-ink-muted);
+}
+
+.list-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.list-sort .form-label {
+  margin: 0;
+  white-space: nowrap;
+  color: var(--rb-ink-muted);
+}
+
+.list-sort .form-select {
+  width: auto;
+  min-width: 9.5rem;
+}
+
+.list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1.25rem;
+  padding-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-top: 1px solid var(--rb-rule);
+}
+
+.list-search {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.list-filters-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 2px;
+  background-color: var(--rb-ink);
+  color: var(--rb-on-ink);
+  font-size: 0.75rem;
+}
+
+/* زیر lg برگه‌ی پایین صفحه؛ از lg به بعد Offcanvas در همان ردیف ابزار باز می‌ماند */
+.list-filters {
+  --bs-offcanvas-height: auto;
+}
+
+.list-filters.offcanvas-lg.offcanvas-bottom {
+  max-height: 85vh;
+  border-start-start-radius: var(--bs-border-radius-lg);
+  border-start-end-radius: var(--bs-border-radius-lg);
+}
+
+.list-filters-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.list-field-price {
+  margin: 0;
+}
+
+/* legend بوت‌استرپ درشت و شناور است؛ هم‌اندازه‌ی برچسب‌های دیگر می‌شود */
+.list-field-price > legend {
+  float: none;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.list-price-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.list-field-error {
+  margin: 0.375rem 0 0;
+  font-size: 0.875rem;
+  color: var(--rb-danger);
+}
+
+@media (min-width: 992px) {
+  .list-filters-body {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1.25rem;
+  }
+
+  .list-field-condition .form-select {
+    min-width: 10rem;
+  }
+
+  .list-price-inputs {
+    width: 21rem;
+  }
+
+  /* پیام خطای قیمت زیر فیلدها می‌نشیند و ردیف ابزار را جابه‌جا نمی‌کند */
+  .list-field-price {
+    position: relative;
+  }
+
+  .list-field-error {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    white-space: nowrap;
+  }
+
+  .list-toolbar:has(.list-field-error) {
+    margin-bottom: 2.75rem;
+  }
+}
+
+.list-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* عبارت جستجوی بلند نشان را کش نمی‌دهد */
+.list-chip > span {
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-chips-clear {
+  min-height: 2.25rem;
+  padding-inline: 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--rb-ink-muted);
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.list-chips-clear:hover {
+  color: var(--rb-ink);
 }
 
 /* ==========================================================================
