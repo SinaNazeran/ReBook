@@ -40,7 +40,7 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
           aria-pressed={isWishlisted}
         >
           <FiHeart
-            className={isWishlisted ? 'text-danger' : 'text-muted'}
+            className={isWishlisted ? 'text-body' : 'text-muted'}
             fill={isWishlisted ? 'currentColor' : 'none'}
           />
         </button>

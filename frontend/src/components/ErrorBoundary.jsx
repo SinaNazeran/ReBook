@@ -1,5 +1,4 @@
 import React from 'react';
-import { FiAlertTriangle, FiRefreshCw } from 'react-icons/fi';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -22,18 +21,18 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
+      // همان الگوی خطای صفحه‌های فهرست (.list-state)؛ <a> نه Link، تا رفتن به پشتیبانی برنامه را از نو بار کند
       return (
-        <div className="container text-center py-5">
-          <FiAlertTriangle size={48} className="text-danger mb-3" />
-          <h4 className="mb-2">متأسفانه مشکلی پیش آمد</h4>
-          <p className="text-muted mb-4">
-            لطفاً صفحه را دوباره بارگذاری کنید. اگر مشکل ادامه داشت با پشتیبانی
-            تماس بگیرید.
-          </p>
-          <button className="btn btn-primary" onClick={this.handleReload}>
-            <FiRefreshCw className="me-2" />
-            بارگذاری مجدد
-          </button>
+        <div className="container py-5">
+          <div className="list-state" role="alert">
+            <h1 className="h4 mb-2">مشکلی پیش آمد</h1>
+            <p>
+              صفحه را دوباره بارگذاری کن؛ اگر درست نشد، به <a href="/support">پشتیبانی</a> خبر بده.
+            </p>
+            <button type="button" className="btn btn-outline-secondary" onClick={this.handleReload}>
+              تلاش دوباره
+            </button>
+          </div>
         </div>
       );
     }
