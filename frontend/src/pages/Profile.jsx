@@ -138,7 +138,7 @@ function Profile() {
             {avatarFile && <p className="ledger-note text-center mb-0">تصویر تازه با «ذخیره» ثبت می‌شود.</p>}
 
             <p className="profile-username">
-              <bdi className="latin-id">{user?.username}</bdi>
+              <bdi translate="no" className="latin-id">{user?.username}</bdi>
             </p>
             {joinDate && <p className="ledger-note text-center mb-3">عضو از {joinDate}</p>}
 
@@ -199,6 +199,7 @@ function Profile() {
                       value={formData.email}
                       onChange={handleChange}
                       autoComplete="email"
+                      spellCheck={false}
                       dir="ltr"
                       isInvalid={!!error('email')}
                     />
@@ -247,7 +248,7 @@ function Profile() {
 
             <div className="sell-submit">
               <Button type="submit" variant="primary" disabled={loading}>
-                {loading ? 'در حال ذخیره...' : 'ذخیره'}
+                {loading ? 'در حال ذخیره…' : 'ذخیره'}
               </Button>
             </div>
           </Form>

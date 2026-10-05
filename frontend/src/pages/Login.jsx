@@ -82,7 +82,7 @@ function Login() {
           />
 
           <Button type="submit" variant="primary" className="w-100 mt-2" disabled={loading}>
-            {loading ? 'در حال ورود...' : 'ورود'}
+            {loading ? 'در حال ورود…' : 'ورود'}
           </Button>
         </Form>
 

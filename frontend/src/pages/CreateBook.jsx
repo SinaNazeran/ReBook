@@ -32,13 +32,13 @@ function normalizeServerErrors(errorData) {
   let nextGeneralError = '';
 
   if (!errorData) {
-    return { nextFieldErrors, nextGeneralError: 'خطایی رخ داد. لطفاً دوباره تلاش کنید.' };
+    return { nextFieldErrors, nextGeneralError: 'مشکلی پیش آمد. دوباره امتحان کن.' };
   }
   if (typeof errorData === 'string') {
     return { nextFieldErrors, nextGeneralError: errorData };
   }
   if (Array.isArray(errorData)) {
-    return { nextFieldErrors, nextGeneralError: errorData[0] || 'خطایی رخ داد. لطفاً دوباره تلاش کنید.' };
+    return { nextFieldErrors, nextGeneralError: errorData[0] || 'مشکلی پیش آمد. دوباره امتحان کن.' };
   }
 
   Object.entries(errorData).forEach(([key, value]) => {
@@ -51,7 +51,7 @@ function normalizeServerErrors(errorData) {
   });
 
   if (!nextGeneralError && Object.keys(nextFieldErrors).length === 0) {
-    nextGeneralError = 'خطایی رخ داد. لطفاً دوباره تلاش کنید.';
+    nextGeneralError = 'مشکلی پیش آمد. دوباره امتحان کن.';
   }
   return { nextFieldErrors, nextGeneralError };
 }
@@ -98,6 +98,16 @@ function CreateBook() {
       ignore = true;
     };
   }, []);
+
+  // بستن یا رفرش تب با فرم نیمه‌پر، آگهی را بی‌هشدار پاک می‌کرد
+  // ponytail: فقط beforeunload؛ رفتن با لینک‌های داخل برنامه هشدار نمی‌دهد (useBlocker به data router نیاز دارد)
+  const isDirty = coverImage !== null || Object.keys(INITIAL_FORM).some((key) => formData[key] !== INITIAL_FORM[key]);
+  useEffect(() => {
+    if (!isDirty || loading) return undefined;
+    const warn = (event) => event.preventDefault();
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [isDirty, loading]);
 
   const clearFieldError = (name) => {
     if (fieldErrors[name]) {
@@ -247,6 +257,7 @@ function CreateBook() {
                 <Form.Label>عنوان</Form.Label>
                 <Form.Control
                   name="title"
+                  autoComplete="off"
                   value={formData.title}
                   onChange={handleChange}
                   maxLength={200}
@@ -264,6 +275,7 @@ function CreateBook() {
                     <Form.Label>نویسنده</Form.Label>
                     <Form.Control
                       name="author"
+                      autoComplete="off"
                       value={formData.author}
                       onChange={handleChange}
                       maxLength={200}
@@ -282,6 +294,7 @@ function CreateBook() {
                     </Form.Label>
                     <Form.Control
                       name="publisher"
+                      autoComplete="off"
                       value={formData.publisher}
                       onChange={handleChange}
                       maxLength={200}
@@ -304,7 +317,7 @@ function CreateBook() {
                       dir="ltr"
                       inputMode="numeric"
                       autoComplete="off"
-                      placeholder="978-964-..."
+                      placeholder="978-964-…"
                       aria-describedby="isbn-help"
                       isInvalid={!!error('isbn')}
                     />
@@ -467,6 +480,7 @@ function CreateBook() {
                   as="textarea"
                   rows={5}
                   name="description"
+                  autoComplete="off"
                   value={formData.description}
                   onChange={handleChange}
                   dir="auto"
@@ -479,7 +493,7 @@ function CreateBook() {
 
             <div className="sell-submit">
               <Button type="submit" variant="primary" size="lg" disabled={loading}>
-                {loading ? 'در حال ثبت...' : 'ثبت آگهی برای بررسی'}
+                {loading ? 'در حال ثبت…' : 'ثبت آگهی برای بررسی'}
               </Button>
             </div>
           </Form>

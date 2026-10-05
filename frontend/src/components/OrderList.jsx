@@ -46,14 +46,14 @@ function OrderList({ orders, type, onPay, onCancel, busyId }) {
                   <>
                     <span aria-hidden="true"> · </span>
                     <span className="visually-hidden">، </span>
-                    خریدار: <bdi className="latin-id">{order.buyer_detail.username}</bdi>
+                    خریدار: <bdi translate="no" className="latin-id">{order.buyer_detail.username}</bdi>
                   </>
                 )}
               </span>
               {code && (
                 <span className="ledger-note">
                   کد پیگیری:{' '}
-                  <bdi className="latin-id ledger-code" dir="ltr">
+                  <bdi translate="no" className="latin-id ledger-code" dir="ltr">
                     {code}
                   </bdi>
                 </span>
@@ -77,7 +77,7 @@ function OrderList({ orders, type, onPay, onCancel, busyId }) {
                     </Button>
                   )}
                   <Button variant="outline-secondary" onClick={() => onCancel(order.id)} disabled={busyId !== null}>
-                    {busyId === order.id ? 'در حال لغو...' : 'لغو'}
+                    {busyId === order.id ? 'در حال لغو…' : 'لغو'}
                   </Button>
                 </>
               )}

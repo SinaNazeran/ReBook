@@ -378,7 +378,8 @@ function BookList() {
             <Form.Control
               id="book-search"
               type="search"
-              placeholder="عنوان یا نویسنده"
+              name="search"
+              placeholder="عنوان یا نویسنده…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -564,7 +565,7 @@ function BookList() {
                 className={loadingMore ? 'disabled' : undefined}
                 aria-disabled={loadingMore || undefined}
               >
-                {loadingMore ? 'در حال بارگذاری...' : 'نمایش بیشتر'}
+                {loadingMore ? 'در حال بارگذاری…' : 'نمایش بیشتر'}
               </Button>
             </div>
           )}

@@ -31,9 +31,12 @@ function App() {
     <AuthProvider>
       <div className="d-flex flex-column min-vh-100">
         <ScrollToTop />
+        <a href="#main" className="skip-link visually-hidden-focusable">
+          رفتن به محتوای اصلی
+        </a>
         <Navbar />
 
-        <main className="flex-grow-1">
+        <main id="main" className="flex-grow-1" tabIndex={-1}>
           <ErrorBoundary>
             <Suspense fallback={<Loading fullPage />}>
               <Routes>

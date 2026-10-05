@@ -100,7 +100,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
             </p>
             <div className="receipt-code">
               <span className="receipt-code-label">کد پیگیری</span>
-              <bdi className="receipt-code-value latin-id" dir="ltr">
+              <bdi translate="no" className="receipt-code-value latin-id" dir="ltr">
                 {trackingCode}
               </bdi>
               <Button
@@ -147,6 +147,8 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
                 <Form.Label>آدرس ارسال</Form.Label>
                 <Form.Control
                   as="textarea"
+                  name="shipping_address"
+                  autoComplete="street-address"
                   rows={3}
                   value={address}
                   isInvalid={Boolean(addressError)}
@@ -178,7 +180,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
             </Button>
             <Button variant="primary" type="submit" disabled={busy}>
               {busy
-                ? 'در حال پرداخت آزمایشی...'
+                ? 'در حال پرداخت آزمایشی…'
                 : existingOrderId
                   ? 'پرداخت آزمایشی'
                   : 'ثبت سفارش و پرداخت آزمایشی'}

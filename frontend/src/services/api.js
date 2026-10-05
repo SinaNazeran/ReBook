@@ -79,13 +79,13 @@ api.interceptors.response.use(
  */
 export function getErrorMessage(error) {
   if (!error.response) {
-    return "ارتباط با سرور برقرار نشد. اتصال اینترنت خود را بررسی کنید.";
+    return "ارتباط با سرور برقرار نشد. اتصال اینترنتت را بررسی کن و دوباره امتحان کن.";
   }
 
   const data = error.response.data;
 
   if (!data) {
-    return "خطای غیرمنتظره‌ای رخ داد.";
+    return "مشکلی پیش آمد. دوباره امتحان کن؛ اگر تکرار شد، به پشتیبانی خبر بده.";
   }
 
   if (typeof data === "string") {
@@ -108,7 +108,7 @@ export function getErrorMessage(error) {
     return firstFieldError[0];
   }
 
-  return "خطای غیرمنتظره‌ای رخ داد.";
+  return "مشکلی پیش آمد. دوباره امتحان کن؛ اگر تکرار شد، به پشتیبانی خبر بده.";
 }
 
 // ============================================

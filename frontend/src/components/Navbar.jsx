@@ -118,7 +118,7 @@ function Navbar() {
   return (
     <BSNavbar bg="white" expand="lg" expanded={menuOpen} onToggle={setMenuOpen} className="site-navbar sticky-top py-2 navbar-light" aria-label="منوی اصلی">
       <Container>
-        <BSNavbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2">
+        <BSNavbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2" translate="no">
           <span className="brand-mark" aria-hidden="true" />
           ری‌بوک
         </BSNavbar.Brand>
@@ -143,7 +143,8 @@ function Navbar() {
             </span>
             <Form.Control
               type="search"
-              placeholder="جستجوی نام کتاب یا نویسنده..."
+              name="search"
+              placeholder="جستجوی نام کتاب یا نویسنده…"
               aria-label="جستجوی کتاب"
               className="border-start-0"
               value={searchQuery}
@@ -173,7 +174,8 @@ function Navbar() {
               </span>
               <Form.Control
                 type="search"
-                placeholder="جستجوی نام کتاب یا نویسنده..."
+                name="search"
+                placeholder="جستجوی نام کتاب یا نویسنده…"
                 aria-label="جستجوی کتاب"
                 className="border-start-0"
                 value={searchQuery}
@@ -203,7 +205,7 @@ function Navbar() {
                       <span
                         className="nav-user-name text-truncate d-inline-block align-middle"
                       >
-                        {user?.first_name || <bdi className="latin-id">{user?.username}</bdi>}
+                        {user?.first_name || <bdi translate="no" className="latin-id">{user?.username}</bdi>}
                       </span>
                     </span>
                   }
@@ -214,10 +216,10 @@ function Navbar() {
                     <div className="fw-bold text-truncate text-dark">
                       {user?.first_name
                         ? `${user.first_name} ${user.last_name || ''}`
-                        : <bdi className="latin-id">{user?.username}</bdi>}
+                        : <bdi translate="no" className="latin-id">{user?.username}</bdi>}
                     </div>
                     {user?.email && (
-                      <div className="small text-muted text-truncate latin-id">
+                      <div translate="no" className="small text-muted text-truncate latin-id">
                         {user.email}
                       </div>
                     )}

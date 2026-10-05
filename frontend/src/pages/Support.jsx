@@ -111,6 +111,7 @@ function Support() {
               <Form.Label>موضوع</Form.Label>
               <Form.Control
                 name="subject"
+                autoComplete="off"
                 value={formData.subject}
                 onChange={handleChange}
                 maxLength={200}
@@ -128,6 +129,7 @@ function Support() {
                 as="textarea"
                 rows={6}
                 name="message"
+                autoComplete="off"
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="اگر درباره‌ی سفارش است، شماره‌ی سفارش یا نام کتاب را هم بنویس."
@@ -139,7 +141,7 @@ function Support() {
             </Form.Group>
 
             <Button type="submit" variant="primary" disabled={submitting}>
-              {submitting ? 'در حال ارسال...' : 'ارسال پیام'}
+              {submitting ? 'در حال ارسال…' : 'ارسال پیام'}
             </Button>
           </Form>
         </Col>

@@ -113,6 +113,8 @@ function BookDetail() {
   };
 
   const handleCancelOrder = async () => {
+    // مثل «معاملات من»: لغو برگشت‌پذیر نیست
+    if (!window.confirm('این سفارش لغو شود؟ این کار برگشت‌پذیر نیست.')) return;
     setCancelling(true);
     try {
       await orderAPI.cancelOrder(book.open_order.id);
@@ -225,7 +227,7 @@ function BookDetail() {
         <Col lg={4}>
           <figure className="detail-cover" style={{ '--card-ink': ink }}>
             {book.cover_image ? (
-              <img src={book.cover_image} alt={`جلد ${book.title}`} className="detail-cover-img" />
+              <img src={book.cover_image} alt={`جلد ${book.title}`} className="detail-cover-img" fetchPriority="high" />
             ) : (
               <PlainCover title={book.title} author={book.author} rootId={rootId} className="detail-plain-cover" />
             )}
@@ -296,7 +298,7 @@ function BookDetail() {
                 {price} <span className="book-card-currency">تومان</span>
               </p>
               <p className="buy-seller">
-                فروشنده: <bdi className="latin-id">{book.seller?.username}</bdi>
+                فروشنده: <bdi translate="no" className="latin-id">{book.seller?.username}</bdi>
               </p>
             </div>
 
@@ -306,7 +308,7 @@ function BookDetail() {
               {primaryAction && <span className="d-none d-lg-inline-flex">{primaryAction}</span>}
               {canPay && (
                 <Button variant="outline-secondary" onClick={handleCancelOrder} disabled={cancelling}>
-                  {cancelling ? 'در حال لغو...' : 'لغو سفارش'}
+                  {cancelling ? 'در حال لغو…' : 'لغو سفارش'}
                 </Button>
               )}
               {!isOwner && book.status === 'approved' && (

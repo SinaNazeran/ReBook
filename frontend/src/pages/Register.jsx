@@ -132,6 +132,7 @@ function Register() {
               value={formData.email}
               onChange={handleChange}
               autoComplete="email"
+              spellCheck={false}
               dir="ltr"
               isInvalid={!!error('email')}
               required
@@ -221,7 +222,7 @@ function Register() {
           </fieldset>
 
           <Button type="submit" variant="primary" className="w-100 mt-4" disabled={loading}>
-            {loading ? 'در حال ساخت حساب...' : 'ساخت حساب'}
+            {loading ? 'در حال ساخت حساب…' : 'ساخت حساب'}
           </Button>
         </Form>
 

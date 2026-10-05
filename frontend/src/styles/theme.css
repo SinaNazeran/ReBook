@@ -459,3 +459,48 @@ textarea.form-control {
 @keyframes rb-fade-out {
     to { opacity: 0; }
 }
+
+/* ==========================================================================
+   رفتار مرورگر (راهنمای رابط وب، فاز ۶)
+   ========================================================================== */
+
+/* سربرگ چسبان (۱۳۵px در موبایل با جستجو، ۶۷px در دسکتاپ) نباید عنصرِ فوکوس‌گرفته با Tab را بپوشاند */
+html {
+    scroll-padding-top: 9rem;
+    -webkit-tap-highlight-color: transparent; /* بازخورد لمس با حالت فشردن دکمه‌ها و کارت‌هاست، نه لکه‌ی آبی */
+}
+
+@media (min-width: 992px) {
+    html {
+        scroll-padding-top: 5.5rem;
+    }
+}
+
+/* سرتیترها بی‌تک‌کلمه در سطر آخر */
+h1, h2, h3 {
+    text-wrap: balance;
+}
+
+/* اسکرول داخل مودال و برگه‌ی فیلتر به صفحه‌ی زیرین سرریز نمی‌کند */
+.modal,
+.offcanvas,
+.offcanvas-body {
+    overscroll-behavior: contain;
+}
+
+/* لینک پرش؛ فقط با Tab دیده می‌شود */
+.skip-link:focus {
+    position: fixed;
+    inset-block-start: 0.5rem;
+    inset-inline-start: 0.5rem;
+    z-index: 1100;
+    padding: 0.625rem 1rem;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--rb-ink);
+    color: var(--rb-on-ink);
+    text-decoration: none;
+}
+
+main:focus {
+    outline: none; /* مقصد لینک پرش است، نه کنترل؛ حلقه‌ی فوکوس روی کل صفحه معنایی ندارد */
+}

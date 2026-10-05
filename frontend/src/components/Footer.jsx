@@ -14,7 +14,7 @@ function Footer() {
     <footer className="site-footer mt-5">
       <Container className="site-footer-inner">
         <div className="site-footer-brand">
-          <Link to="/" className="site-footer-name">
+          <Link to="/" className="site-footer-name" translate="no">
             <span className="brand-mark" aria-hidden="true" />
             ری‌بوک
           </Link>
