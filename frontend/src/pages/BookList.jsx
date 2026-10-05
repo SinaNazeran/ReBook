@@ -6,6 +6,7 @@ import { bookAPI, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/useAuth.js';
 import BookCard, { BookCardSkeleton } from '../components/BookCard';
 import { seriesInk } from '../utils/series';
+import { onlyDigits } from '../utils/digits';
 import { FiSearch, FiSliders, FiX, FiPlusCircle } from 'react-icons/fi';
 
 const CONDITION_OPTIONS = [
@@ -228,13 +229,6 @@ function BookList() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // بک‌اند فقط عدد صحیح نامنفی را می‌پذیرد (isdecimal)؛ مقدارهایی مثل -۵ یا 1e3 بی‌صدا نادیده گرفته می‌شدند
-    if ([minPrice, maxPrice].some((value) => value && !/^\d+$/.test(value))) {
-      setPriceError('قیمت را به تومان و فقط با رقم وارد کن.');
-      setShowFilters(true);
-      return;
-    }
-
     if (minPrice && maxPrice && Number(minPrice) > Number(maxPrice)) {
       setPriceError('حداقل قیمت نمی‌تواند بیشتر از حداکثر قیمت باشد.');
       setShowFilters(true);
@@ -424,15 +418,14 @@ function BookList() {
                 <InputGroup hasValidation>
                   <Form.Control
                     form={FILTER_FORM_ID}
-                    type="number"
                     inputMode="numeric"
-                    min="0"
+                    autoComplete="off"
                     placeholder="از"
                     aria-label="حداقل قیمت"
                     value={minPrice}
                     isInvalid={Boolean(priceError)}
                     onChange={(e) => {
-                      setMinPrice(e.target.value);
+                      setMinPrice(onlyDigits(e.target.value));
                       setPriceError('');
                     }}
                   />
@@ -441,16 +434,15 @@ function BookList() {
                 <InputGroup>
                   <Form.Control
                     form={FILTER_FORM_ID}
-                    type="number"
                     inputMode="numeric"
-                    min="0"
+                    autoComplete="off"
                     placeholder="تا"
                     aria-label="حداکثر قیمت"
                     value={maxPrice}
                     isInvalid={Boolean(priceError)}
                     aria-describedby={priceError ? 'price-error' : undefined}
                     onChange={(e) => {
-                      setMaxPrice(e.target.value);
+                      setMaxPrice(onlyDigits(e.target.value));
                       setPriceError('');
                     }}
                   />

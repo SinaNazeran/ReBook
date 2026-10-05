@@ -15,3 +15,11 @@ export const CONDITION_NOTES = {
   fair: 'کهنگی یا یادداشت محدود؛ متن کامل و خواناست.',
   poor: 'آسیب ظاهری آشکار؛ برای خواندن مناسب است.',
 };
+
+export const CONDITION_LABELS = {
+  new: 'نو',
+  like_new: 'در حد نو',
+  good: 'خوب',
+  fair: 'قابل قبول',
+  poor: 'فرسوده',
+};
