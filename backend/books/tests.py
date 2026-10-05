@@ -163,6 +163,22 @@ class BookDetailVisibilityTests(APITestCase):
                 self.client.force_authenticate(self.seller)
                 self.assertEqual(self.client.get(url).status_code, 200)
 
+    def test_open_order_is_shown_without_leaking_its_id_to_others(self):
+        book = self.book("approved")
+        url = f"/api/books/{book.pk}/"
+        self.assertIsNone(self.client.get(url).data["open_order"])
+
+        buyer = User.objects.create_user(username="buyer", password="pass")
+        order = Order.objects.create(buyer=buyer, book=book, total_price=100, shipping_address="x")
+
+        # برای بقیه فقط «رزرو شده»، بدون شناسه‌ی سفارش
+        self.assertEqual(self.client.get(url).data["open_order"], {"id": None, "is_mine": False})
+        self.client.force_authenticate(buyer)
+        self.assertEqual(self.client.get(url).data["open_order"], {"id": order.pk, "is_mine": True})
+
+        Order.objects.filter(pk=order.pk).update(status="cancelled")
+        self.assertIsNone(self.client.get(url).data["open_order"])
+
     def test_unapproved_book_cannot_be_wishlisted_by_others(self):
         reader = User.objects.create_user(username="reader", password="pass")
         self.client.force_authenticate(reader)

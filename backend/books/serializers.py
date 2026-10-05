@@ -64,6 +64,7 @@ class BookDetailSerializer(serializers.ModelSerializer):
     )
     status_display = serializers.CharField(source="get_status_display", read_only=True)
     is_wishlisted = serializers.SerializerMethodField()
+    open_order = serializers.SerializerMethodField()
 
     class Meta:
         model = Book
@@ -74,6 +75,19 @@ class BookDetailSerializer(serializers.ModelSerializer):
         if not (request and request.user.is_authenticated):
             return False
         return book.wishlisted_by.filter(user=request.user).exists()
+
+    def get_open_order(self, book):
+        """سفارش در انتظار پرداخت این نسخه (حداکثر یکی، با قید one_pending_order_per_book).
+
+        بقیه فقط می‌بینند که نسخه رزرو است؛ شناسه فقط به خود خریدار داده می‌شود
+        تا همان‌جا پرداخت یا لغوش کند.
+        """
+        order = book.orders.filter(status="pending").only("id", "buyer_id").first()
+        if order is None:
+            return None
+        request = self.context.get("request")
+        is_mine = bool(request and request.user.is_authenticated and order.buyer_id == request.user.id)
+        return {"id": order.id if is_mine else None, "is_mine": is_mine}
 
 
 class BookCreateSerializer(serializers.ModelSerializer):
