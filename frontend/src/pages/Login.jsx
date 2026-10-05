@@ -44,6 +44,7 @@ function Login() {
 
   return (
     <Container className="auth-page">
+      <title>ورود | ری‌بوک</title>
       <div className="auth-panel">
         <h1 className="auth-title">ورود</h1>
         {reason && <p className="auth-reason">{reason}</p>}

@@ -23,6 +23,14 @@ function Navbar() {
   const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  // کنترل‌شده تا دکمه‌ی منو aria-expanded درست داشته باشد (Toggle خودِ react-bootstrap آن را نمی‌گذارد)
+  const [menuOpen, setMenuOpen] = useState(false);
+  // با رفتن به صفحه‌ی دیگر منوی موبایل بسته می‌شود؛ وگرنه روی صفحه‌ی تازه باز می‌ماند
+  const [menuPath, setMenuPath] = useState(location.pathname);
+  if (menuPath !== location.pathname) {
+    setMenuPath(location.pathname);
+    setMenuOpen(false);
+  }
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -80,7 +88,7 @@ function Navbar() {
     navigate(query ? `/books?${query}` : '/books');
   };
 
-  const renderUserAvatar = (size = 28) => {
+  const renderUserAvatar = () => {
     const name = user?.first_name || user?.username || '';
     const initial = name.charAt(0).toUpperCase() || '؟';
 
@@ -88,20 +96,16 @@ function Navbar() {
       return (
         <img
           src={user.avatar}
-          alt="avatar"
-          className="rounded-circle"
-          width={size}
-          height={size}
-          style={{ objectFit: 'cover' }}
+          alt=""
+          className="nav-avatar"
+          width={24}
+          height={24}
         />
       );
     }
 
     return (
-      <span
-        className="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle fw-bold"
-        style={{ width: size, height: size, fontSize: '0.8rem' }}
-      >
+      <span className="nav-avatar" aria-hidden="true">
         {initial}
       </span>
     );
@@ -112,7 +116,7 @@ function Navbar() {
   const showSearch = location.pathname !== '/books';
 
   return (
-    <BSNavbar bg="white" expand="lg" className="site-navbar sticky-top py-2 navbar-light">
+    <BSNavbar bg="white" expand="lg" expanded={menuOpen} onToggle={setMenuOpen} className="site-navbar sticky-top py-2 navbar-light">
       <Container>
         <BSNavbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2">
           <span className="brand-mark" aria-hidden="true" />
@@ -124,7 +128,7 @@ function Navbar() {
           فروش کتاب
         </Link>
 
-        <BSNavbar.Toggle aria-label="باز و بسته کردن منو" className="border-0" />
+        <BSNavbar.Toggle label="باز و بسته کردن منو" aria-controls="site-nav" aria-expanded={menuOpen} className="border-0" />
 
         {/* نوار جستجوی موبایل */}
         {showSearch && (
@@ -149,7 +153,7 @@ function Navbar() {
         </Form>
         )}
 
-        <BSNavbar.Collapse className="mt-2 mt-lg-0">
+        <BSNavbar.Collapse id="site-nav" className="mt-2 mt-lg-0">
           <Nav className="me-auto flex-column flex-lg-row">
             <Nav.Link as={NavLink} to="/books" className="py-2 py-lg-1">
               کتاب‌ها
@@ -159,8 +163,7 @@ function Navbar() {
           {/* جستجوی دسکتاپ */}
           {showSearch && (
           <Form
-            className="d-none d-lg-flex flex-grow-1 mx-lg-3 my-2 my-lg-0"
-            style={{ maxWidth: 380 }}
+            className="nav-search d-none d-lg-flex flex-grow-1 mx-lg-3 my-2 my-lg-0"
             onSubmit={handleSearchSubmit}
             role="search"
           >
@@ -196,10 +199,9 @@ function Navbar() {
                 <NavDropdown
                   title={
                     <span className="d-inline-flex align-items-center gap-2">
-                      {renderUserAvatar(24)}
+                      {renderUserAvatar()}
                       <span
-                        className="text-truncate d-inline-block align-middle"
-                        style={{ maxWidth: 100 }}
+                        className="nav-user-name text-truncate d-inline-block align-middle"
                       >
                         {user?.first_name || <bdi className="latin-id">{user?.username}</bdi>}
                       </span>
@@ -215,7 +217,7 @@ function Navbar() {
                         : <bdi className="latin-id">{user?.username}</bdi>}
                     </div>
                     {user?.email && (
-                      <div className="text-muted text-truncate latin-id" style={{ fontSize: '0.8rem' }}>
+                      <div className="small text-muted text-truncate latin-id">
                         {user.email}
                       </div>
                     )}

@@ -91,6 +91,7 @@ function Register() {
 
   return (
     <Container className="auth-page">
+      <title>ساخت حساب | ری‌بوک</title>
       <div className="auth-panel is-wide">
         <h1 className="auth-title">ساخت حساب</h1>
         <p className="auth-reason">

@@ -11,6 +11,7 @@ function NotFound({
 }) {
   return (
     <div className="container not-found">
+      <title>{`${title} | ری‌بوک`}</title>
       <div className="not-found-cover" aria-hidden="true">
         <PlainCover title="۴۰۴" author="ری‌بوک" rootId={null} />
       </div>

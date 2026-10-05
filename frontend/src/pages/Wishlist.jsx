@@ -56,6 +56,7 @@ function Wishlist() {
 
   return (
     <Container className="ledger-page">
+      <title>علاقه‌مندی‌ها | ری‌بوک</title>
       <header className="ledger-header">
         <h1 className="ledger-title">
           علاقه‌مندی‌ها

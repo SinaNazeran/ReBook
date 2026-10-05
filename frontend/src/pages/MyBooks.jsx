@@ -68,6 +68,7 @@ function MyBooks() {
 
   return (
     <Container className="ledger-page">
+      <title>کتاب‌های من | ری‌بوک</title>
       <header className="ledger-header">
         <h1 className="ledger-title">
           کتاب‌های من

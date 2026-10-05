@@ -150,6 +150,15 @@ function BookList() {
     };
   }, [paramsKey, page, reloadKey]);
 
+  // پس از «نمایش بیشتر» فوکوس به اولین کتاب تازه می‌رود؛ وگرنه کاربر صفحه‌کلید با پنهان‌شدن دکمه در صفحه‌ی آخر گم می‌شود
+  const gridRef = useRef(null);
+  const focusFromRef = useRef(null);
+  useEffect(() => {
+    if (focusFromRef.current === null || loadingMore) return;
+    gridRef.current?.querySelectorAll('.book-card .stretched-link')[focusFromRef.current]?.focus();
+    focusFromRef.current = null;
+  }, [books, loadingMore]);
+
   const handleRetry = () => {
     setLoading(true);
     setLoadError(false);
@@ -157,6 +166,8 @@ function BookList() {
   };
 
   const handleLoadMore = () => {
+    if (loadingMore) return;
+    focusFromRef.current = books.length;
     setLoadingMore(true);
     setSearchParams(
       (prev) => {
@@ -278,6 +289,7 @@ function BookList() {
 
   return (
     <Container className="book-list-page">
+      <title>{`${title} | ری‌بوک`}</title>
       {rootCategories.length > 0 && (
         <nav className="series-tabs" aria-label="دسته‌ها">
           <ul className="series-tabs-list">
@@ -353,6 +365,11 @@ function BookList() {
           </Form.Select>
         </Form.Group>
       </header>
+
+      {/* همیشه در DOM تا تغییر تعداد نتیجه با فیلترها خوانده شود */}
+      <p className="visually-hidden" role="status">
+        {loading ? 'در حال بارگذاری کتاب‌ها' : loadError ? '' : `${count.toLocaleString('fa-IR')} کتاب`}
+      </p>
 
       <div className="list-toolbar">
         <Form id={FILTER_FORM_ID} onSubmit={handleSubmit} role="search" className="list-search">
@@ -515,7 +532,7 @@ function BookList() {
         </div>
       ) : (
         <>
-          <Row className="g-3 g-md-4" aria-busy={loading}>
+          <Row ref={gridRef} className="g-3 g-md-4" aria-busy={loading}>
             {loading
               ? Array.from({ length: 8 }, (_, i) => (
                   <Col key={i} xs={6} md={4} lg={3}>
@@ -532,14 +549,15 @@ function BookList() {
                   </Col>
                 ))}
           </Row>
-          {loading && (
-            <span className="visually-hidden" role="status">
-              در حال بارگذاری کتاب‌ها
-            </span>
-          )}
           {!loading && hasMore && (
             <div className="text-center mt-4">
-              <Button variant="outline-primary" onClick={handleLoadMore} disabled={loadingMore}>
+              {/* aria-disabled به‌جای disabled: دکمه‌ی غیرفعال فوکوس را به body می‌اندازد */}
+              <Button
+                variant="outline-primary"
+                onClick={handleLoadMore}
+                className={loadingMore ? 'disabled' : undefined}
+                aria-disabled={loadingMore || undefined}
+              >
                 {loadingMore ? 'در حال بارگذاری...' : 'نمایش بیشتر'}
               </Button>
             </div>

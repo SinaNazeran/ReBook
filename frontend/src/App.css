@@ -27,6 +27,33 @@
   background-color: var(--rb-brand-red);
 }
 
+/* دکمه‌ی منوی موبایل: پیش‌فرض بوت‌استرپ ۳۸px ارتفاع دارد */
+.site-navbar .navbar-toggler {
+  min-height: var(--rb-touch-target);
+}
+
+.nav-search {
+  max-width: 380px;
+}
+
+.nav-user-name {
+  max-width: 100px;
+}
+
+.nav-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--rb-ink);
+  color: var(--rb-on-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .site-navbar .nav-link.active {
   color: var(--rb-ink);
   text-decoration: underline;
@@ -1213,6 +1240,7 @@
 }
 
 .buy-status p {
+  max-width: 65ch;
   margin: 0;
 }
 

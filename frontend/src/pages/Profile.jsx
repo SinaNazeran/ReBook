@@ -101,6 +101,7 @@ function Profile() {
 
   return (
     <Container className="ledger-page">
+      <title>پروفایل | ری‌بوک</title>
       <header className="ledger-header">
         <h1 className="ledger-title">پروفایل</h1>
       </header>

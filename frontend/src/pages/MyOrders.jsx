@@ -82,6 +82,7 @@ function MyOrders() {
 
   return (
     <Container className="ledger-page">
+      <title>معاملات من | ری‌بوک</title>
       <header className="ledger-header">
         <h1 className="ledger-title">معاملات من</h1>
       </header>

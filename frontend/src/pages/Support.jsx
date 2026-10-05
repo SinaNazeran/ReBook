@@ -90,6 +90,7 @@ function Support() {
 
   return (
     <Container className="ledger-page">
+      <title>پشتیبانی | ری‌بوک</title>
       <header className="ledger-header">
         <div>
           <h1 className="ledger-title">پشتیبانی</h1>

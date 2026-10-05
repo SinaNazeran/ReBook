@@ -221,6 +221,7 @@ function CreateBook() {
 
   return (
     <Container className="sell-page">
+      <title>فروش کتاب | ری‌بوک</title>
       <header className="sell-header">
         <h1 className="sell-title">فروش کتاب</h1>
         <p className="sell-lead">

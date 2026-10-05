@@ -220,6 +220,7 @@ function BookDetail() {
 
   return (
     <Container className="book-detail">
+      <title>{`${book.title} | ری‌بوک`}</title>
       <Row className="g-4 g-lg-5">
         <Col lg={4}>
           <figure className="detail-cover" style={{ '--card-ink': ink }}>

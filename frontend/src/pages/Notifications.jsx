@@ -79,6 +79,7 @@ function Notifications() {
 
   return (
     <Container className="ledger-page notifications-page">
+      <title>اعلان‌ها | ری‌بوک</title>
       <header className="ledger-header">
         <h1 className="ledger-title">
           اعلان‌ها
