@@ -3,16 +3,8 @@ import { Card, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FiHeart } from 'react-icons/fi';
 import PlainCover from './PlainCover';
+import ConditionMeasure from './ConditionMeasure';
 import { seriesInk } from '../utils/series';
-
-// درجه‌ی وضعیت ظاهری روی مقیاس پنج‌تایی: طول بخش پرشده خودِ درجه است، بدون اتکا به رنگ
-const CONDITION_STEPS = {
-  new: 5,
-  like_new: 4,
-  good: 3,
-  fair: 2,
-  poor: 1,
-};
 
 // نگاشت وضعیت آگهی (نه وضعیت فیزیکی کتاب) — از کلاس‌های .status-* موجود در App.css استفاده می‌کند
 const STATUS_CLASS_MAP = {
@@ -46,7 +38,6 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist, showStatus = f
   };
 
   const price = formatPrice(book.price);
-  const conditionSteps = CONDITION_STEPS[book.condition];
 
   return (
     <Card className="book-card h-100" style={{ '--card-ink': seriesInk(book.category_root) }}>
@@ -112,16 +103,7 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist, showStatus = f
         </p>
 
         <div className="book-card-facts">
-          {conditionSteps && (
-            <span className="condition-measure">
-              <span className="condition-steps" aria-hidden="true">
-                {[1, 2, 3, 4, 5].map((step) => (
-                  <span key={step} className={step <= conditionSteps ? 'is-filled' : undefined} />
-                ))}
-              </span>
-              <span className="condition-label">{book.condition_display}</span>
-            </span>
-          )}
+          <ConditionMeasure condition={book.condition} label={book.condition_display} />
 
           <span className="book-card-price">
             {price ? (

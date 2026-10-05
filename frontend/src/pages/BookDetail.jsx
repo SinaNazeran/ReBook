@@ -1,21 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Container, Row, Col, Card, Badge, Alert, Modal, Form, Button } from 'react-bootstrap';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import { FiHeart, FiShoppingCart } from 'react-icons/fi';
 import { bookAPI, orderAPI, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/useAuth.js';
 import Loading from '../components/Loading';
-import NotFound from './NotFound';
-import { toast } from 'react-toastify';
-import { FiHeart, FiShoppingCart, FiUser } from 'react-icons/fi';
 import PlainCover from '../components/PlainCover';
+import ConditionMeasure from '../components/ConditionMeasure';
+import PurchaseModal from '../components/PurchaseModal';
+import NotFound from './NotFound';
+import { seriesInk } from '../utils/series';
+import { CONDITION_NOTES } from '../utils/condition';
 
-const CONDITION_CLASS_MAP = {
-  new: 'badge-condition-new',
-  like_new: 'badge-condition-like-new',
-  good: 'badge-condition-good',
-  fair: 'badge-condition-fair',
-  poor: 'badge-condition-poor',
-};
+// یادداشت بلندتر از این، تا وقتی خواننده نخواهد، چند خط اول را نشان می‌دهد
+const LONG_NOTES = 320;
+
+const formatDate = (value) =>
+  new Date(value).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 
 function BookDetail() {
   const { id } = useParams();
@@ -29,11 +31,10 @@ function BookDetail() {
   const [loadError, setLoadError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [wishlisted, setWishlisted] = useState(false);
-
-  // مودال خرید
-  const [showModal, setShowModal] = useState(false);
-  const [shippingAddress, setShippingAddress] = useState('');
-  const [orderLoading, setOrderLoading] = useState(false);
+  const [showPurchase, setShowPurchase] = useState(false);
+  const [boughtByMe, setBoughtByMe] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -68,57 +69,60 @@ function BookDetail() {
     setReloadKey((key) => key + 1);
   };
 
+  // وضعیت سفارش روی سرور عوض شده (مثلاً خریدار دیگری زودتر سفارش داده)؛ بی‌صدا تازه می‌شود
+  const refreshBook = useCallback(() => {
+    bookAPI
+      .getBook(id)
+      .then((response) => setBook(response.data))
+      .catch(() => {});
+  }, [id]);
+
+  const goToLogin = () => {
+    toast.info('برای ادامه وارد حساب کاربری‌ات شو.');
+    navigate('/login', { state: { from: location } });
+  };
+
   const handleWishlistToggle = async () => {
     if (!isAuthenticated) {
-      toast.warning('لطفاً ابتدا وارد شوید.');
-      navigate('/login', { state: { from: location } });
+      goToLogin();
       return;
     }
 
     const prevState = wishlisted;
     setWishlisted(!prevState); // آپدیت خوش‌بینانه
-
     try {
       const response = await bookAPI.toggleWishlist(id);
       setWishlisted(response.data.wishlisted);
-      toast.success(response.data.message);
     } catch (error) {
-      setWishlisted(prevState); // برگشت در صورت خطا
+      setWishlisted(prevState);
       toast.error(getErrorMessage(error));
     }
   };
 
-  const handleOpenModal = () => {
+  const handleBuy = () => {
     if (!isAuthenticated) {
-      toast.warning('لطفاً ابتدا وارد شوید.');
-      navigate('/login', { state: { from: location } });
+      goToLogin();
       return;
     }
-    setShippingAddress(user?.address || '');
-    setShowModal(true);
+    setShowPurchase(true);
   };
 
-  const handleOrder = async (e) => {
-    e.preventDefault();
+  const handlePaid = () => {
+    setBoughtByMe(true);
+    setBook((prev) => ({ ...prev, status: 'sold', open_order: null }));
+  };
 
-    if (!shippingAddress.trim()) {
-      toast.warning('لطفاً آدرس ارسال را وارد کنید.');
-      return;
-    }
-
-    setOrderLoading(true);
+  const handleCancelOrder = async () => {
+    setCancelling(true);
     try {
-      await orderAPI.createOrder({
-        book: book.id,
-        shipping_address: shippingAddress,
-      });
-      toast.success('سفارش با موفقیت ثبت شد!');
-      setShowModal(false);
-      navigate('/my-orders');
+      await orderAPI.cancelOrder(book.open_order.id);
+      setBook((prev) => ({ ...prev, open_order: null }));
+      toast.success('سفارش لغو شد.');
     } catch (error) {
       toast.error(getErrorMessage(error));
+      refreshBook();
     } finally {
-      setOrderLoading(false);
+      setCancelling(false);
     }
   };
 
@@ -126,12 +130,10 @@ function BookDetail() {
   if (loadError === 'not_found') return <NotFound />;
   if (loadError) {
     return (
-      <Container className="py-5 text-center">
-        <Alert variant="danger" className="d-inline-block">
-          {loadError}
-        </Alert>
-        <div>
-          <Button variant="primary" onClick={handleRetry}>
+      <Container className="py-5">
+        <div className="list-state" role="alert">
+          <p>کتاب بارگذاری نشد. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+          <Button variant="outline-secondary" onClick={handleRetry}>
             تلاش دوباره
           </Button>
         </div>
@@ -141,162 +143,231 @@ function BookDetail() {
   if (!book) return null;
 
   const isOwner = isAuthenticated && user?.id === book.seller?.id;
+  const openOrder = book.open_order;
+  const canBuy = !isOwner && book.status === 'approved' && !openOrder;
+  const canPay = !isOwner && book.status === 'approved' && openOrder?.is_mine;
+  const showBuyBar = canBuy || canPay;
+
+  const rootId = book.category ? book.category.parent || book.category.id : null;
+  const ink = seriesInk(rootId);
+  const price = Number(book.price).toLocaleString('fa-IR');
+  const notes = book.description?.trim();
+  const notesAreLong = notes && notes.length > LONG_NOTES;
+
+  // آنچه در قاب خرید زیر قیمت می‌آید؛ هر حالت یک جمله‌ی روشن و حداکثر یک اقدام
+  let status;
+  if (isOwner) {
+    status = {
+      pending: <p>آگهی‌ات در صف بررسی است و پس از تأیید تیم ری‌بوک در فهرست عمومی دیده می‌شود.</p>,
+      rejected: (
+        <p>
+          این آگهی تأیید نشد و فقط برای تو دیده می‌شود. برای پرسیدن دلیلش به{' '}
+          <Link to="/support">پشتیبانی</Link> پیام بده.
+        </p>
+      ),
+      sold: (
+        <p>
+          این کتاب فروخته شد. جزئیات خریدار و ارسال در <Link to="/my-orders">سفارش‌های من</Link> است.
+        </p>
+      ),
+      approved: openOrder ? (
+        <p>
+          خریداری این کتاب را سفارش داده و پرداختش مانده است. اگر پرداخت نکرد، از{' '}
+          <Link to="/my-orders">سفارش‌های من</Link> لغوش کن.
+        </p>
+      ) : (
+        <p>این آگهی توست و در فهرست عمومی دیده می‌شود.</p>
+      ),
+    }[book.status];
+  } else if (book.status === 'sold') {
+    status = boughtByMe ? (
+      <p>
+        این کتاب را خریدی. وضعیت ارسال را در <Link to="/my-orders">سفارش‌های من</Link> دنبال کن.
+      </p>
+    ) : (
+      <p>
+        این نسخه فروخته شده است.{' '}
+        {book.category && (
+          <Link to={`/books?category=${book.category.slug}`}>نسخه‌های دیگر {book.category.name}</Link>
+        )}
+      </p>
+    );
+  } else if (openOrder?.is_mine) {
+    status = <p>این کتاب را سفارش داده‌ای و پرداختش مانده است.</p>;
+  } else if (openOrder) {
+    status = (
+      <p>این نسخه در انتظار پرداخت خریدار دیگری است. اگر خرید انجام نشود، دوباره قابل سفارش می‌شود.</p>
+    );
+  }
+
+  const primaryAction = canBuy ? (
+    <Button variant="primary" onClick={handleBuy} className="d-inline-flex align-items-center gap-2">
+      <FiShoppingCart aria-hidden="true" />
+      خرید
+    </Button>
+  ) : canPay ? (
+    <Button variant="primary" onClick={() => setShowPurchase(true)}>
+      پرداخت آزمایشی
+    </Button>
+  ) : null;
 
   return (
-    <Container className="py-4">
-      <Row className="g-4">
-        {/* تصویر کتاب */}
-        <Col md={4}>
-          <Card className="shadow-sm">
+    <Container className="book-detail">
+      <Row className="g-4 g-lg-5">
+        <Col lg={4}>
+          <figure className="detail-cover" style={{ '--card-ink': ink }}>
             {book.cover_image ? (
-              <Card.Img src={book.cover_image} alt={book.title} className="book-detail-img" />
+              <img src={book.cover_image} alt={`جلد ${book.title}`} className="detail-cover-img" />
             ) : (
-              <PlainCover
-                title={book.title}
-                author={book.author}
-                rootId={book.category ? book.category.parent || book.category.id : null}
-                className="book-detail-cover"
-              />
+              <PlainCover title={book.title} author={book.author} rootId={rootId} className="detail-plain-cover" />
             )}
-          </Card>
+            <span className="book-card-band" aria-hidden="true" />
+          </figure>
         </Col>
 
-        {/* اطلاعات کتاب */}
-        <Col md={8}>
-          <Card className="shadow-sm">
-            <Card.Body>
-              <h1 className="h2">{book.title}</h1>
-
-              <p className="text-muted mb-2">
-                <strong>نویسنده:</strong> {book.author}
-              </p>
-
+        <Col lg={8}>
+          <header className="detail-head">
+            {book.category && (
+              <Link
+                to={`/books?category=${book.category.slug}`}
+                className="detail-category"
+                style={{ '--series-ink': ink }}
+              >
+                <span className="series-index-mark" aria-hidden="true" />
+                {book.category.name}
+              </Link>
+            )}
+            <h1 className="detail-title">
+              <bdi>{book.title}</bdi>
+            </h1>
+            <p className="detail-byline">
+              <bdi>{book.author}</bdi>
               {book.publisher && (
-                <p className="text-muted mb-2">
-                  <strong>انتشارات:</strong> {book.publisher}
-                </p>
+                <>
+                  <span aria-hidden="true"> · </span>
+                  <span className="visually-hidden">، انتشارات </span>
+                  <bdi>{book.publisher}</bdi>
+                </>
               )}
+            </p>
+          </header>
 
-              {book.isbn && (
-                <p className="text-muted mb-2">
-                  <strong>شابک:</strong> {book.isbn}
-                </p>
-              )}
+          <section className="detail-block" aria-labelledby="condition-title">
+            <h2 id="condition-title" className="detail-label">
+              وضعیت ظاهری
+            </h2>
+            <ConditionMeasure condition={book.condition} label={book.condition_display} className="is-large" />
+            {CONDITION_NOTES[book.condition] && <p className="detail-muted">{CONDITION_NOTES[book.condition]}</p>}
+          </section>
 
-              {book.category && (
-                <p className="text-muted mb-2">
-                  <strong>دسته‌بندی:</strong> {book.category.name}
-                </p>
-              )}
-
-              <p className="mb-2">
-                <strong>وضعیت ظاهری: </strong>
-                <Badge bg="" className={CONDITION_CLASS_MAP[book.condition] || 'badge-condition-poor'}>
-                  {book.condition_display}
-                </Badge>
-              </p>
-
-              <p className="mb-2">
-                <strong>وضعیت آگهی: </strong>
-                <Badge bg="" className={`status-${book.status}`}>
-                  {book.status_display}
-                </Badge>
-              </p>
-
-              <hr />
-
-              {/* قیمت */}
-              <h2 className="text-primary mb-3">
-                {Number(book.price).toLocaleString('fa-IR')} تومان
+          {notes && (
+            <section className="detail-block" aria-labelledby="notes-title">
+              <h2 id="notes-title" className="detail-label">
+                یادداشت فروشنده
               </h2>
-
-              {/* اطلاعات فروشنده */}
-              <Card className="bg-section-alt mb-3">
-                <Card.Body>
-                  <h3 className="h5 d-flex align-items-center gap-2">
-                    <FiUser aria-hidden="true" />
-                    اطلاعات فروشنده
-                  </h3>
-                  <p className="mb-0">نام: <bdi className="latin-id">{book.seller?.username}</bdi></p>
-                </Card.Body>
-              </Card>
-
-              {/* دکمه‌ها */}
-              <div className="d-flex flex-wrap gap-2">
-                {isOwner ? (
-                  <Alert variant="info" className="w-100 mb-0">
-                    این کتاب توسط شما ثبت شده است.
-                  </Alert>
-                ) : book.status === 'approved' ? (
-                  <>
-                    <Button variant="primary" onClick={handleOpenModal}>
-                      <FiShoppingCart className="ms-2" />
-                      خرید کتاب
-                    </Button>
-
-                    <Button
-                      variant={wishlisted ? 'danger' : 'outline-danger'}
-                      onClick={handleWishlistToggle}
-                    >
-                      <FiHeart className="ms-2" fill={wishlisted ? 'currentColor' : 'none'} />
-                      {wishlisted ? 'حذف از علاقه‌مندی' : 'افزودن به علاقه‌مندی'}
-                    </Button>
-                  </>
-                ) : book.status === 'sold' ? (
-                  <Alert variant="warning" className="w-100 mb-0">
-                    این کتاب فروخته شده است.
-                  </Alert>
-                ) : (
-                  <Alert variant="secondary" className="w-100 mb-0">
-                    این کتاب هنوز در انتظار تأیید مدیر است.
-                  </Alert>
-                )}
-              </div>
-
-              {/* توضیحات */}
-              {book.description && (
-                <div className="mt-4">
-                  <h3 className="h5">توضیحات</h3>
-                  <p style={{ whiteSpace: 'pre-line' }}>{book.description}</p>
-                </div>
+              <p id="seller-notes" className={`detail-notes${notesAreLong && !notesOpen ? ' is-clamped' : ''}`} dir="auto">
+                {notes}
+              </p>
+              {notesAreLong && (
+                <button
+                  type="button"
+                  className="detail-more"
+                  aria-expanded={notesOpen}
+                  aria-controls="seller-notes"
+                  onClick={() => setNotesOpen((open) => !open)}
+                >
+                  {notesOpen ? 'کمتر' : 'ادامه‌ی یادداشت'}
+                </button>
               )}
-            </Card.Body>
-          </Card>
+            </section>
+          )}
+
+          <section className="buy-panel" aria-label="خرید">
+            <div className="buy-panel-top">
+              <p className="buy-price">
+                {price} <span className="book-card-currency">تومان</span>
+              </p>
+              <p className="buy-seller">
+                فروشنده: <bdi className="latin-id">{book.seller?.username}</bdi>
+              </p>
+            </div>
+
+            {status && <div className="buy-status">{status}</div>}
+
+            <div className="buy-actions">
+              {primaryAction && <span className="d-none d-lg-inline-flex">{primaryAction}</span>}
+              {canPay && (
+                <Button variant="outline-secondary" onClick={handleCancelOrder} disabled={cancelling}>
+                  {cancelling ? 'در حال لغو...' : 'لغو سفارش'}
+                </Button>
+              )}
+              {!isOwner && book.status === 'approved' && (
+                <Button
+                  variant="outline-secondary"
+                  onClick={handleWishlistToggle}
+                  aria-pressed={wishlisted}
+                  className="d-inline-flex align-items-center gap-2"
+                >
+                  <FiHeart aria-hidden="true" fill={wishlisted ? 'currentColor' : 'none'} />
+                  {wishlisted ? 'در علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
+                </Button>
+              )}
+            </div>
+
+            {(book.status === 'approved' || book.status === 'sold') && (
+              <p className="buy-review">این آگهی پیش از انتشار توسط تیم ری‌بوک بررسی شده است.</p>
+            )}
+          </section>
+
+          <dl className="detail-facts">
+            {book.publisher && (
+              <>
+                <dt>انتشارات</dt>
+                <dd>
+                  <bdi>{book.publisher}</bdi>
+                </dd>
+              </>
+            )}
+            {book.isbn && (
+              <>
+                <dt>شابک</dt>
+                <dd>
+                  <bdi dir="ltr">{book.isbn}</bdi>
+                </dd>
+              </>
+            )}
+            {book.category && (
+              <>
+                <dt>دسته‌بندی</dt>
+                <dd>{book.category.name}</dd>
+              </>
+            )}
+            <dt>تاریخ ثبت</dt>
+            <dd>{formatDate(book.created_at)}</dd>
+          </dl>
         </Col>
       </Row>
 
-      {/* مودال خرید */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Form onSubmit={handleOrder}>
-          <Modal.Header closeButton>
-            <Modal.Title>ثبت سفارش</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p><strong>کتاب:</strong> {book.title}</p>
-            <p><strong>مبلغ:</strong> {Number(book.price).toLocaleString('fa-IR')} تومان</p>
+      {showBuyBar && (
+        <div className="buy-bar d-lg-none">
+          <p className="buy-price">
+            {price} <span className="book-card-currency">تومان</span>
+          </p>
+          {primaryAction}
+        </div>
+      )}
 
-            <Form.Group className="mt-3">
-              <Form.Label>آدرس ارسال *</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={shippingAddress}
-                onChange={(e) => setShippingAddress(e.target.value)}
-                placeholder="آدرس کامل خود را وارد کنید..."
-                required
-              />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>
-              انصراف
-            </Button>
-            <Button variant="primary" type="submit" disabled={orderLoading}>
-              {orderLoading ? 'در حال ثبت...' : 'ثبت سفارش'}
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
+      {showPurchase && (
+        <PurchaseModal
+          show
+          onHide={() => setShowPurchase(false)}
+          book={book}
+          existingOrderId={canPay ? openOrder.id : null}
+          defaultAddress={user?.address || ''}
+          onPaid={handlePaid}
+          onStale={refreshBook}
+        />
+      )}
     </Container>
   );
 }

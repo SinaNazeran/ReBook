@@ -208,16 +208,6 @@
   }
 }
 
-/* جلد کتاب در صفحه‌ی جزئیات؛ کتاب بی‌عکس همان PlainCover کارت را می‌گیرد */
-.book-detail-img {
-  background-color: var(--rb-surface-sunken);
-}
-
-.book-detail-cover {
-  aspect-ratio: 3 / 4;
-  border-radius: var(--bs-card-inner-border-radius);
-}
-
 /* دکمه‌ی علاقه‌مندی روی جلد: ۳۶px دیداری، ناحیه‌ی لمس ۴۴px با ::before */
 .wishlist-toggle-btn {
   position: absolute;
@@ -238,37 +228,6 @@
   content: "";
   position: absolute;
   inset: -4px;
-}
-
-/* ==========================================================================
-   ۳. Badge وضعیت ظاهری کتاب (نو / در حد نو / خوب / قابل‌قبول / فرسوده)
-   مقیاس رنگی مستقل از --bs-primary تا با رنگ CTA و قیمت تداخل نداشته باشد
-   ========================================================================== */
-.badge-condition-new {
-  background-color: var(--rb-success);
-  color: var(--rb-on-ink);
-}
-
-.badge-condition-like-new {
-  background-color: #3f7a69;
-  /* سبز روشن‌تر از success؛ کنتراست ۵:۱ با متن سفید (AA) */
-  color: var(--rb-on-ink);
-}
-
-.badge-condition-good {
-  background-color: var(--rb-info);
-  color: var(--rb-on-ink);
-}
-
-.badge-condition-fair {
-  background-color: var(--rb-warning);
-  /* متن تیره روی زرد گرم (۵٫۵:۱)؛ متن سفید فقط ۲٫۶:۱ بود */
-  color: var(--rb-ink);
-}
-
-.badge-condition-poor {
-  background-color: var(--rb-ink-muted);
-  color: var(--rb-on-ink);
 }
 
 /* ==========================================================================
@@ -911,6 +870,290 @@
 
 .list-chips-clear:hover {
   color: var(--rb-ink);
+}
+
+/* ==========================================================================
+   ۷ج. صفحه‌ی جزئیات کتاب (BookDetail)
+   جلد و نوار مجموعه مثل کارت؛ وضعیت و یادداشت فروشنده پیش از قاب خرید.
+   ========================================================================== */
+.book-detail {
+  padding-block: 2rem 3.5rem;
+}
+
+/* جلد با نسبت خودش؛ در موبایل حداکثر نیمی از صفحه تا قیمت و وضعیت زود دیده شوند */
+.detail-cover {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: var(--bs-border-radius);
+  overflow: hidden;
+  background-color: var(--rb-surface);
+}
+
+.detail-cover-img {
+  display: block;
+  max-width: 100%;
+  max-height: 50vh;
+  background-color: var(--rb-surface-sunken);
+}
+
+/* جلد بی‌عکس اندازه‌ی ذاتی ندارد؛ قاب اندازه را می‌دهد و جلد پرش می‌کند */
+.detail-cover:has(.detail-plain-cover) {
+  width: min(100%, 50vh * 0.75);
+}
+
+.detail-plain-cover {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
+
+.detail-cover .book-card-band {
+  display: block;
+}
+
+@media (min-width: 992px) {
+  .detail-cover {
+    position: sticky;
+    inset-block-start: 5.5rem;
+    margin-inline: 0;
+  }
+
+  .detail-cover-img {
+    max-height: min(75vh, 42rem);
+  }
+
+  .detail-cover:has(.detail-plain-cover) {
+    width: 100%;
+  }
+}
+
+.detail-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--rb-touch-target);
+  color: var(--rb-ink-muted);
+  text-decoration: none;
+}
+
+.detail-category:hover {
+  color: var(--rb-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.4em;
+}
+
+.detail-title {
+  margin-bottom: 0.25rem;
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+}
+
+.detail-byline {
+  margin-bottom: 1.75rem;
+  font-size: 1.125rem;
+  color: var(--rb-ink-muted);
+}
+
+.detail-block {
+  margin-bottom: 1.5rem;
+}
+
+.detail-label {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: var(--rb-font-weight-ui);
+  color: var(--rb-ink-muted);
+}
+
+.condition-measure.is-large {
+  gap: 0.625rem;
+  color: var(--rb-ink);
+  font-weight: var(--rb-font-weight-ui);
+}
+
+.condition-measure.is-large .condition-steps > span {
+  width: 0.625rem;
+  height: 1.125rem;
+}
+
+.detail-muted {
+  margin: 0.25rem 0 0;
+  color: var(--rb-ink-muted);
+}
+
+.detail-notes {
+  max-width: 70ch;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.detail-notes.is-clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.detail-more {
+  min-height: 2.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--rb-ink);
+  font-weight: var(--rb-font-weight-ui);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+/* قاب خرید: تنها کارت صفحه، چون تصمیم همین‌جا گرفته می‌شود */
+.buy-panel {
+  margin-block: 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+.buy-panel-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+}
+
+.buy-price {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: var(--rb-heading-line-height);
+}
+
+.buy-price .book-card-currency {
+  font-size: 1rem;
+}
+
+.buy-seller {
+  margin: 0;
+  color: var(--rb-ink-muted);
+}
+
+.buy-status {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rb-rule);
+}
+
+.buy-status p {
+  margin: 0;
+}
+
+.buy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.buy-actions:empty {
+  display: none;
+}
+
+.buy-review {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  color: var(--rb-ink-muted);
+}
+
+.detail-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 2rem;
+  margin: 0;
+}
+
+.detail-facts dt {
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+.detail-facts dd {
+  margin: 0;
+}
+
+/* نوار خرید چسبان موبایل: قیمت و اقدام اصلی همیشه در دسترس */
+.buy-bar {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 1020;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--rb-rule);
+  background-color: var(--rb-surface);
+}
+
+.buy-bar .buy-price {
+  font-size: 1.25rem;
+}
+
+/* نوار چسبان نباید ته فوتر را بپوشاند */
+@media (max-width: 991.98px) {
+  body:has(.buy-bar) .site-footer {
+    padding-bottom: calc(1.5rem + 4.5rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* رسید خرید آزمایشی */
+.purchase-summary {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.purchase-summary dt {
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+.purchase-summary dd {
+  margin: 0;
+}
+
+.purchase-price {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.purchase-note {
+  font-size: 0.875rem;
+  color: var(--rb-ink-muted);
+}
+
+.receipt-code {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 1rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface-sunken);
+}
+
+.receipt-code-label {
+  color: var(--rb-ink-muted);
+}
+
+.receipt-code-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  user-select: all;
 }
 
 /* ==========================================================================
