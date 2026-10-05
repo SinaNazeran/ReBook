@@ -86,7 +86,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
   return (
     <Modal show={show} onHide={handleHide} centered className="purchase-modal" aria-labelledby="purchase-title">
       {trackingCode ? (
-        <>
+        <div className="purchase-receipt">
           <Modal.Header closeButton closeLabel="بستن">
             <Modal.Title id="purchase-title" as="h2" className="h5">
               پرداخت آزمایشی انجام شد
@@ -121,7 +121,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
               بستن
             </Button>
           </Modal.Footer>
-        </>
+        </div>
       ) : (
         <Form onSubmit={handleSubmit} noValidate>
           <Modal.Header closeButton={!busy} closeLabel="بستن">

@@ -397,6 +397,12 @@ textarea.form-control {
         }
     }
 
+    /* باز و بسته شدن منوی موبایل و آکاردئون: ۳۵۰ms ease پیش‌فرض کند است. انیمیشن height سازوکار خودِ Collapse بوت‌استرپ است
+       (ارتفاع را inline می‌گذارد)؛ اینجا فقط کوتاه‌ترش می‌کنیم */
+    .collapsing {
+        transition: height 250ms var(--rb-ease-out);
+    }
+
     /* مودال پیش‌فرض ۵۰px از بالا سر می‌خورد؛ مودال به دکمه‌ای وصل نیست، پس از وسط و کمی کوچک‌تر باز می‌شود */
     .modal.fade .modal-dialog {
         transform: scale(0.96);

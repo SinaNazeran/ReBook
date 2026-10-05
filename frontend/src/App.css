@@ -201,8 +201,22 @@
   }
 }
 
+/* کارت تازه (جای اسکلت، یا ردیف «نمایش بیشتر») کوتاه محو می‌آید تا جای نتایج تازه دیده شود؛ فقط opacity، پس در حرکت کم هم می‌ماند */
+.book-card {
+  transition: opacity var(--rb-duration) var(--rb-ease-out);
+}
+
+@starting-style {
+  .book-card {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .book-card,
+  .book-card {
+    transition: opacity var(--rb-duration) var(--rb-ease-out), transform var(--rb-duration) var(--rb-ease-out);
+  }
+
   .book-card-band {
     transition: transform var(--rb-duration) var(--rb-ease-out);
   }
@@ -1308,6 +1322,18 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   user-select: all;
+}
+
+/* لحظه‌ی امضایی خرید: رسید جای فرم را می‌گیرد و کد پیگیری مثل نمونه‌ی چاپی صفحه‌ی خانه از تاری به وضوح می‌رسد.
+   یک‌بار در هر خرید دیده می‌شود، پس جای کمی زمان بیشتر دارد. */
+.purchase-receipt {
+  animation: rb-fade-in 240ms var(--rb-ease-out) both;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .purchase-receipt .receipt-code-value {
+    animation: hero-focus 560ms var(--rb-ease-out) 140ms backwards;
+  }
 }
 
 /* ==========================================================================
