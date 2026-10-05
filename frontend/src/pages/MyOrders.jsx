@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Container, Tabs, Tab } from 'react-bootstrap';
-import { useSearchParams } from 'react-router-dom';
+import { Container, Tabs, Tab, Button } from 'react-bootstrap';
+import { Link, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { orderAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
-import OrdersTable from '../components/OrdersTable';
+import OrderList from '../components/OrderList';
+import PurchaseModal from '../components/PurchaseModal';
 
 const fetchOrders = () => Promise.all([orderAPI.getMyOrders(), orderAPI.getMySales()]);
 
@@ -15,7 +16,10 @@ function MyOrders() {
   const [purchases, setPurchases] = useState([]);
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [busyId, setBusyId] = useState(null); // سفارشی که پرداخت یا لغوش در جریان است
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [busyId, setBusyId] = useState(null); // سفارشی که لغوش در جریان است
+  const [payingOrder, setPayingOrder] = useState(null);
 
   const showOrders = ([purchasesRes, salesRes]) => {
     setPurchases(purchasesRes.data.results ?? purchasesRes.data);
@@ -28,8 +32,8 @@ function MyOrders() {
       .then((responses) => {
         if (!ignore) showOrders(responses);
       })
-      .catch((error) => {
-        if (!ignore) toast.error(getErrorMessage(error));
+      .catch(() => {
+        if (!ignore) setLoadError(true);
       })
       .finally(() => {
         if (!ignore) setLoading(false);
@@ -37,7 +41,13 @@ function MyOrders() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [reloadKey]);
+
+  const handleRetry = () => {
+    setLoadError(false);
+    setLoading(true);
+    setReloadKey((key) => key + 1);
+  };
 
   // هر دو فهرست: لغو توسط فروشنده «فروش‌های من» را عوض می‌کند و لغو توسط خریدار «خریدهای من» را
   const refreshAll = async () => {
@@ -48,21 +58,8 @@ function MyOrders() {
     }
   };
 
-  const handlePay = async (orderId) => {
-    setBusyId(orderId);
-    try {
-      const response = await orderAPI.payOrder(orderId);
-      toast.success(<>پرداخت موفق! کد پیگیری: <bdi className="latin-id">{response.data.reference_code}</bdi></>);
-      await refreshAll();
-    } catch (error) {
-      toast.error(getErrorMessage(error));
-    } finally {
-      setBusyId(null);
-    }
-  };
-
   const handleCancel = async (orderId) => {
-    if (!window.confirm('این سفارش لغو شود؟ این کار قابل بازگشت نیست.')) return;
+    if (!window.confirm('این سفارش لغو شود؟ این کار برگشت‌پذیر نیست.')) return;
     setBusyId(orderId);
     try {
       const response = await orderAPI.cancelOrder(orderId);
@@ -81,32 +78,69 @@ function MyOrders() {
 
   if (loading) return <Loading fullPage />;
 
+  const tabTitle = (label, list) => (list.length ? `${label} (${list.length.toLocaleString('fa-IR')})` : label);
+
   return (
-    <Container className="py-5">
-      <h1 className="h3 mb-4">معاملات من</h1>
+    <Container className="ledger-page">
+      <header className="ledger-header">
+        <h1 className="ledger-title">معاملات من</h1>
+      </header>
 
-      <Tabs activeKey={activeTab} onSelect={handleTabSelect} className="mb-4">
-        <Tab eventKey="purchases" title={`خریدهای من${purchases.length ? ` (${purchases.length})` : ''}`}>
-          <OrdersTable
-            orders={purchases}
-            type="purchase"
-            onPay={handlePay}
-            onCancel={handleCancel}
-            busyId={busyId}
-            emptyMessage="هنوز خریدی ثبت نکرده‌اید."
-          />
-        </Tab>
+      {loadError ? (
+        <div className="list-state" role="alert">
+          <p>سفارش‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+          <Button variant="outline-secondary" onClick={handleRetry}>
+            تلاش دوباره
+          </Button>
+        </div>
+      ) : (
+        <Tabs activeKey={activeTab} onSelect={handleTabSelect} variant="underline" className="ledger-tabs">
+          <Tab eventKey="purchases" title={tabTitle('خریدهای من', purchases)}>
+            {purchases.length ? (
+              <OrderList
+                orders={purchases}
+                type="purchase"
+                onPay={setPayingOrder}
+                onCancel={handleCancel}
+                busyId={busyId}
+              />
+            ) : (
+              <div className="list-state">
+                <p>هنوز کتابی نخریده‌ای.</p>
+                <Link to="/books" className="btn btn-primary">
+                  مرور کتاب‌ها
+                </Link>
+              </div>
+            )}
+          </Tab>
 
-        <Tab eventKey="sales" title={`فروش‌های من${sales.length ? ` (${sales.length})` : ''}`}>
-          <OrdersTable
-            orders={sales}
-            type="sale"
-            onCancel={handleCancel}
-            busyId={busyId}
-            emptyMessage="هنوز فروشی نداشته‌اید."
-          />
-        </Tab>
-      </Tabs>
+          <Tab eventKey="sales" title={tabTitle('فروش‌های من', sales)}>
+            {sales.length ? (
+              <OrderList orders={sales} type="sale" onCancel={handleCancel} busyId={busyId} />
+            ) : (
+              <div className="list-state">
+                <p>هنوز کسی از تو کتابی نخریده. آگهی‌هایت در «کتاب‌های من» است.</p>
+                <Link to="/my-books" className="btn btn-outline-secondary">
+                  کتاب‌های من
+                </Link>
+              </div>
+            )}
+          </Tab>
+        </Tabs>
+      )}
+
+      {payingOrder && (
+        <PurchaseModal
+          show
+          onHide={() => {
+            setPayingOrder(null);
+            refreshAll();
+          }}
+          book={{ ...payingOrder.book_detail, price: payingOrder.total_price }}
+          existingOrderId={payingOrder.id}
+          onStale={refreshAll}
+        />
+      )}
     </Container>
   );
 }

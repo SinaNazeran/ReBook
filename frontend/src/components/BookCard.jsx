@@ -1,18 +1,10 @@
 import React from 'react';
-import { Card, Badge } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FiHeart } from 'react-icons/fi';
 import PlainCover from './PlainCover';
 import ConditionMeasure from './ConditionMeasure';
 import { seriesInk } from '../utils/series';
-
-// نگاشت وضعیت آگهی (نه وضعیت فیزیکی کتاب) — از کلاس‌های .status-* موجود در App.css استفاده می‌کند
-const STATUS_CLASS_MAP = {
-  pending: 'status-pending',
-  approved: 'status-approved',
-  rejected: 'status-rejected',
-  sold: 'status-sold',
-};
 
 function formatPrice(price) {
   const numericPrice = Number(price);
@@ -27,10 +19,8 @@ function formatPrice(price) {
  * @param {boolean} [isWishlisted] - آیا این کتاب در علاقه‌مندی‌های کاربر است
  * @param {(bookId: number|string) => void} [onToggleWishlist] - در صورت پاس‌دادن،
  *   دکمه‌ی قلب روی کارت نمایش داده می‌شود.
- * @param {boolean} [showStatus] - نمایش badge وضعیت آگهی (در انتظار تأیید/فروخته‌شده و...)
- *   فقط باید در صفحاتی مثل «کتاب‌های من» فعال شود، نه در لیست عمومی.
  */
-function BookCard({ book, isWishlisted = false, onToggleWishlist, showStatus = false }) {
+function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
   const handleWishlistClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -54,17 +44,6 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist, showStatus = f
             fill={isWishlisted ? 'currentColor' : 'none'}
           />
         </button>
-      )}
-
-      {/* نشان وضعیت آگهی — فقط وقتی صراحتاً درخواست شده باشد (مثلاً در MyBooks) */}
-      {showStatus && book.status && (
-        <Badge
-          bg=""
-          className={`position-absolute top-0 end-0 m-2 ${STATUS_CLASS_MAP[book.status] || 'status-sold'}`}
-          style={{ zIndex: 2 }}
-        >
-          {book.status_display || book.status}
-        </Badge>
       )}
 
       {/* کل کارت با stretched-link عنوان کلیک‌پذیر است؛ جلد لینک جداگانه ندارد */}

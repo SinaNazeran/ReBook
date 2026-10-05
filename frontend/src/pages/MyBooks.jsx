@@ -1,45 +1,62 @@
 import { useState, useEffect } from 'react';
-import { Container, Card, Badge, Button, Table } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FiPlusCircle, FiTrash2 } from 'react-icons/fi';
 import { bookAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
-import { FiPlus, FiTrash2, FiInbox } from 'react-icons/fi';
+import StatusMark from '../components/StatusMark';
+import CoverThumb from '../components/CoverThumb';
 
-const STATUS_MAP = {
-  pending: { text: 'در انتظار تأیید', className: 'status-pending' },
-  approved: { text: 'تأیید شده', className: 'status-approved' },
-  rejected: { text: 'رد شده', className: 'status-rejected' },
-  sold: { text: 'فروخته شده', className: 'status-sold' },
+// وضعیت آگهی از نگاه فروشنده؛ هر کدام یک جمله‌ی کوتاه درباره‌ی قدم بعد
+const LISTING_STATUS = {
+  pending: { tone: 'waiting', label: 'در انتظار بررسی', note: 'پس از تأیید تیم ری‌بوک در فهرست دیده می‌شود.' },
+  approved: { tone: 'done', label: 'در فهرست' },
+  rejected: { tone: 'closed', label: 'تأیید نشد', note: 'فقط برای تو دیده می‌شود.' },
+  sold: { tone: 'sold', label: 'فروخته شد' },
 };
+
+const formatDate = (value) => new Date(value).toLocaleDateString('fa-IR');
 
 function MyBooks() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
-    const fetchMyBooks = async () => {
-      try {
-        const response = await bookAPI.getMyBooks();
-        setBooks(response.data.results ?? response.data);
-      } catch (error) {
-        toast.error(getErrorMessage(error));
-      } finally {
-        setLoading(false);
-      }
+    let ignore = false;
+    bookAPI
+      .getMyBooks()
+      .then((response) => {
+        if (!ignore) setBooks(response.data.results ?? response.data);
+      })
+      .catch(() => {
+        if (!ignore) setLoadError(true);
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+    return () => {
+      ignore = true;
     };
-    fetchMyBooks();
-  }, []);
+  }, [reloadKey]);
 
-  const handleDelete = async (bookId) => {
-    if (!window.confirm('آیا از حذف این کتاب مطمئن هستید؟')) return;
+  const handleRetry = () => {
+    setLoadError(false);
+    setLoading(true);
+    setReloadKey((key) => key + 1);
+  };
 
-    setDeletingId(bookId);
+  const handleDelete = async (book) => {
+    if (!window.confirm(`آگهی «${book.title}» حذف شود؟ این کار برگشت‌پذیر نیست.`)) return;
+
+    setDeletingId(book.id);
     try {
-      await bookAPI.deleteBook(bookId);
-      setBooks((prev) => prev.filter((b) => b.id !== bookId));
-      toast.success('کتاب حذف شد.');
+      await bookAPI.deleteBook(book.id);
+      setBooks((prev) => prev.filter((b) => b.id !== book.id));
+      toast.success('آگهی حذف شد.');
     } catch (error) {
       toast.error(getErrorMessage(error));
     } finally {
@@ -50,71 +67,87 @@ function MyBooks() {
   if (loading) return <Loading fullPage />;
 
   return (
-    <Container className="py-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="h3 mb-0">کتاب‌های من</h1>
+    <Container className="ledger-page">
+      <header className="ledger-header">
+        <h1 className="ledger-title">
+          کتاب‌های من
+          {!loadError && books.length > 0 && (
+            <span className="list-count">{books.length.toLocaleString('fa-IR')} آگهی</span>
+          )}
+        </h1>
         <Link to="/create-book" className="btn btn-primary d-inline-flex align-items-center gap-2">
-          <FiPlus />
-          ثبت کتاب جدید
+          <FiPlusCircle aria-hidden="true" />
+          فروش کتاب
         </Link>
-      </div>
+      </header>
 
-      {books.length === 0 ? (
-        <Card className="text-center py-5 border-0 shadow-sm">
-          <Card.Body>
-            <FiInbox size={64} className="text-muted" aria-hidden="true" />
-            <h2 className="h5 mt-3">هنوز کتابی ثبت نکرده‌اید</h2>
-            <Link to="/create-book" className="btn btn-primary mt-3">
-              ثبت اولین کتاب
-            </Link>
-          </Card.Body>
-        </Card>
+      {loadError ? (
+        <div className="list-state" role="alert">
+          <p>آگهی‌هایت بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+          <Button variant="outline-secondary" onClick={handleRetry}>
+            تلاش دوباره
+          </Button>
+        </div>
+      ) : books.length === 0 ? (
+        <div className="list-state">
+          <p>هنوز کتابی برای فروش نگذاشته‌ای. کتابی که خوانده‌ای و دیگر سراغش نمی‌روی، اینجا خریدار پیدا می‌کند.</p>
+          <Link to="/create-book" className="btn btn-primary">
+            فروش کتاب
+          </Link>
+        </div>
       ) : (
-        <Card className="shadow-sm border-0">
-          <Table responsive hover className="mb-0 align-middle">
-            <thead className="table-light">
-              <tr>
-                <th>عنوان</th>
-                <th>نویسنده</th>
-                <th>قیمت</th>
-                <th>وضعیت</th>
-                <th>تاریخ ثبت</th>
-                <th>عملیات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {books.map((book) => {
-                const status = STATUS_MAP[book.status] || { text: book.status, className: 'status-sold' };
-                return (
-                  <tr key={book.id}>
-                    <td>
-                      <Link to={`/books/${book.id}`}>{book.title}</Link>
-                    </td>
-                    <td>{book.author}</td>
-                    <td>{Number(book.price).toLocaleString('fa-IR')} تومان</td>
-                    <td>
-                      <Badge bg="" className={status.className}>{status.text}</Badge>
-                    </td>
-                    <td>{new Date(book.created_at).toLocaleDateString('fa-IR')}</td>
-                    <td>
-                      {book.status !== 'sold' && (
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => handleDelete(book.id)}
-                          disabled={deletingId === book.id}
-                          aria-label={`حذف کتاب ${book.title}`}
-                        >
-                          <FiTrash2 />
-                        </Button>
+        <ul className="ledger">
+          {books.map((book) => {
+            const status = LISTING_STATUS[book.status] ?? { tone: 'closed', label: book.status_display };
+            return (
+              <li key={book.id} className="ledger-row">
+                <CoverThumb book={book} />
+                <div className="ledger-main">
+                  <Link to={`/books/${book.id}`} className="ledger-name">
+                    <bdi>{book.title}</bdi>
+                  </Link>
+                  <span className="ledger-meta">
+                    <bdi>{book.author}</bdi>
+                    <span aria-hidden="true"> · </span>
+                    <span className="visually-hidden">، ثبت در </span>
+                    {formatDate(book.created_at)}
+                  </span>
+                  {status.note && (
+                    <span className="ledger-note">
+                      {status.note}
+                      {book.status === 'rejected' && (
+                        <>
+                          {' '}
+                          دلیلش را از <Link to="/support">پشتیبانی</Link> بپرس.
+                        </>
                       )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        </Card>
+                    </span>
+                  )}
+                </div>
+                <span className="ledger-amount">
+                  {Number(book.price).toLocaleString('fa-IR')} <span className="book-card-currency">تومان</span>
+                </span>
+                <span className="ledger-status">
+                  <StatusMark tone={status.tone}>{status.label}</StatusMark>
+                </span>
+                <span className="ledger-actions">
+                  {book.status !== 'sold' && (
+                    <Button
+                      variant="outline-secondary"
+                      className="ledger-icon-btn"
+                      onClick={() => handleDelete(book)}
+                      disabled={deletingId === book.id}
+                      aria-label={`حذف آگهی ${book.title}`}
+                      title="حذف آگهی"
+                    >
+                      <FiTrash2 aria-hidden="true" />
+                    </Button>
+                  )}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </Container>
   );

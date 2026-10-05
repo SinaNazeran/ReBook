@@ -231,55 +231,217 @@
 }
 
 /* ==========================================================================
-   ۴. Badge وضعیت آگهی کتاب (در انتظار تأیید / تأیید‌شده / رد‌شده / فروخته‌شده)
+   ۴. نشان وضعیت (StatusMark): شکل آیکن جدا از رنگ وضعیت را می‌گوید
    ========================================================================== */
-.status-pending {
-  background-color: var(--rb-warning);
-  color: var(--rb-ink);
-  /* متن تیره روی زرد گرم، کنتراست کافی */
+.status-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--mark-border);
+  border-radius: 2px;
+  background-color: var(--mark-bg);
+  color: var(--mark-text);
+  font-size: 0.8125rem;
+  font-weight: var(--rb-font-weight-ui);
+  white-space: nowrap;
 }
 
-.status-approved {
-  background-color: var(--rb-success);
-  color: var(--rb-on-ink);
+.status-mark.is-waiting {
+  --mark-bg: var(--bs-warning-bg-subtle);
+  --mark-border: var(--bs-warning-border-subtle);
+  --mark-text: var(--bs-warning-text-emphasis);
 }
 
-.status-rejected {
-  background-color: var(--rb-danger);
-  color: var(--rb-on-ink);
+.status-mark.is-done {
+  --mark-bg: var(--bs-success-bg-subtle);
+  --mark-border: var(--bs-success-border-subtle);
+  --mark-text: var(--bs-success-text-emphasis);
 }
 
-.status-sold {
-  background-color: var(--rb-ink-muted);
-  color: var(--rb-on-ink);
+.status-mark.is-closed {
+  --mark-bg: var(--bs-danger-bg-subtle);
+  --mark-border: var(--bs-danger-border-subtle);
+  --mark-text: var(--bs-danger-text-emphasis);
+}
+
+.status-mark.is-moving {
+  --mark-bg: var(--bs-info-bg-subtle);
+  --mark-border: var(--bs-info-border-subtle);
+  --mark-text: var(--bs-info-text-emphasis);
+}
+
+.status-mark.is-sold {
+  --mark-bg: var(--rb-surface-sunken);
+  --mark-border: var(--rb-rule);
+  --mark-text: var(--rb-ink);
 }
 
 /* ==========================================================================
-   ۵. Badge وضعیت سفارش/معامله (MyOrders)
+   ۵. ردیف‌های «کتاب‌های من» و «معاملات من» (به‌جای جدول)
+   هر ردیف: جلد کوچک، نام و جزئیات، مبلغ، وضعیت، اقدام. در موبایل دو ردیفه می‌شود.
    ========================================================================== */
-.order-status-pending {
-  background-color: var(--rb-warning);
+.ledger-page {
+  padding-block: 2rem 3.5rem;
+}
+
+.ledger-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ledger-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+}
+
+.ledger-tabs {
+  margin-bottom: 1.25rem;
+}
+
+.ledger {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+.ledger-row {
+  display: grid;
+  grid-template-areas: "thumb main amount status actions";
+  align-items: center;
+  gap: 0.25rem 1.25rem;
+  padding: 0.875rem 1rem;
+}
+
+/* ستون‌ها روی خود فهرست تعریف می‌شوند و ردیف‌ها subgrid می‌گیرند تا مبلغ، وضعیت و اقدام در همه‌ی ردیف‌ها هم‌تراز باشند */
+@media (min-width: 768px) {
+  .ledger {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr) max-content max-content max-content;
+    column-gap: 1.25rem;
+    padding-inline: 1rem;
+  }
+
+  /* padding روی ردیفِ subgrid به ستون‌های لبه اضافه می‌شود و جلد را روی فاصله می‌برد؛ پس روی خود فهرست است */
+  .ledger-row {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    padding-inline: 0;
+  }
+}
+
+.ledger-row + .ledger-row {
+  border-top: 1px solid var(--rb-rule);
+}
+
+.cover-thumb {
+  grid-area: thumb;
+  display: block;
+  width: 3rem;
+  aspect-ratio: 3 / 4;
+  border-radius: 2px;
+  object-fit: cover;
+  background-color: var(--rb-surface-sunken);
+}
+
+.ledger-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ledger-name {
+  overflow: hidden;
   color: var(--rb-ink);
+  font-weight: 700;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.order-status-paid {
-  background-color: var(--rb-success);
-  color: var(--rb-on-ink);
+.ledger-name:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
 }
 
-.order-status-shipped {
-  background-color: var(--rb-info);
-  color: var(--rb-on-ink);
+.ledger-meta,
+.ledger-note {
+  font-size: 0.875rem;
+  color: var(--rb-ink-muted);
 }
 
-.order-status-delivered {
-  background-color: var(--rb-ink);
-  color: var(--rb-on-ink);
+.ledger-code {
+  color: var(--rb-ink);
+  font-variant-numeric: tabular-nums;
+  user-select: all;
 }
 
-.order-status-cancelled {
-  background-color: var(--rb-danger);
-  color: var(--rb-on-ink);
+.ledger-amount {
+  grid-area: amount;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ledger-status {
+  grid-area: status;
+}
+
+.ledger-actions {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.ledger-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: var(--rb-touch-target);
+  height: var(--rb-touch-target);
+  padding: 0;
+}
+
+/* موبایل: جلد کنار نام؛ مبلغ و وضعیت زیرش؛ اقدام‌ها تمام‌عرض */
+@media (max-width: 767.98px) {
+  .ledger-row {
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      "thumb main main"
+      "thumb amount status"
+      "actions actions actions";
+    align-items: start;
+    gap: 0.5rem 0.875rem;
+  }
+
+  .ledger-name {
+    white-space: normal;
+  }
+
+  .ledger-status {
+    justify-self: end;
+  }
+
+  .ledger-actions {
+    justify-content: flex-start;
+  }
+
+  .ledger-actions:empty {
+    display: none;
+  }
 }
 
 /* ==========================================================================
