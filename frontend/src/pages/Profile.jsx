@@ -1,9 +1,15 @@
 import { useState } from 'react';
-import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FiUser, FiCamera } from 'react-icons/fi';
 import { useAuth } from '../context/useAuth.js';
 import { getErrorMessage } from '../services/api';
-import { FiUser, FiCamera } from 'react-icons/fi';
+import { onlyDigits } from '../utils/digits';
+
+// باید با سقف سرور (UserProfileSerializer.validate_avatar) یکی باشد
+const MAX_AVATAR_MB = 3;
+const ACCEPTED_IMAGES = 'image/jpeg,image/png,image/webp';
 
 function Profile() {
   const { user, updateUser } = useAuth();
@@ -18,29 +24,35 @@ function Profile() {
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [generalError, setGeneralError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    // ستون phone یازده رقم لاتین است؛ رقم فارسی، فاصله و خط تیره همین‌جا یکدست می‌شوند
+    const value = name === 'phone' ? onlyDigits(e.target.value).slice(0, 11) : e.target.value;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (fieldErrors[name]) {
-      setFieldErrors((prev) => ({ ...prev, [name]: null }));
-    }
+    if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: null }));
   };
 
   const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      toast.warning('لطفاً فقط فایل تصویری انتخاب کنید.');
+    if (!ACCEPTED_IMAGES.split(',').includes(file.type)) {
+      setFieldErrors((prev) => ({ ...prev, avatar: ['فقط تصویر JPG، PNG یا WebP.'] }));
       return;
     }
-    if (file.size > 3 * 1024 * 1024) {
-      toast.warning('اندازه تصویر نباید بیشتر از ۳ مگابایت باشد.');
+    if (file.size > MAX_AVATAR_MB * 1024 * 1024) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        avatar: [`حجم تصویر بیشتر از ${MAX_AVATAR_MB.toLocaleString('fa-IR')} مگابایت است.`],
+      }));
       return;
     }
 
+    setFieldErrors((prev) => ({ ...prev, avatar: null }));
     setAvatarFile(file);
     const reader = new FileReader();
     reader.onloadend = () => setAvatarPreview(reader.result);
@@ -49,26 +61,32 @@ function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setGeneralError('');
+
+    if (formData.phone && !/^09\d{9}$/.test(formData.phone)) {
+      setFieldErrors({ phone: ['شماره‌ی موبایل ۱۱ رقم است و با ۰۹ شروع می‌شود.'] });
+      document.getElementById('phone')?.focus();
+      return;
+    }
+
     setFieldErrors({});
     setLoading(true);
-
     try {
       const data = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        data.append(key, value ?? '');
-      });
-      if (avatarFile) {
-        data.append('avatar', avatarFile);
-      }
+      Object.entries(formData).forEach(([key, value]) => data.append(key, value.trim()));
+      if (avatarFile) data.append('avatar', avatarFile);
 
       await updateUser(data);
-      toast.success('پروفایل با موفقیت بروزرسانی شد.');
+      setAvatarFile(null);
+      toast.success('تغییرات ذخیره شد.');
     } catch (error) {
       const errorData = error.response?.data;
-      if (errorData && typeof errorData === 'object') {
+      if (errorData && typeof errorData === 'object' && !errorData.detail) {
         setFieldErrors(errorData);
+        const first = ['first_name', 'last_name', 'email', 'phone', 'address'].find((key) => errorData[key]);
+        if (first) document.getElementById(first)?.focus();
       } else {
-        toast.error(getErrorMessage(error));
+        setGeneralError(getErrorMessage(error));
       }
     } finally {
       setLoading(false);
@@ -76,135 +94,161 @@ function Profile() {
   };
 
   const joinDate = user?.created_at
-    ? new Date(user.created_at).toLocaleDateString('fa-IR')
-    : 'نامشخص';
+    ? new Date(user.created_at).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long' })
+    : null;
+
+  const error = (name) => fieldErrors[name]?.[0];
 
   return (
-    <Container className="py-5">
-      <Row className="justify-content-center">
-        <Col md={8} lg={7}>
-          <Card className="shadow-sm border-0">
-            <Card.Body className="p-4 p-md-5">
-              <h1 className="h3 text-center mb-4">پروفایل من</h1>
+    <Container className="ledger-page">
+      <header className="ledger-header">
+        <h1 className="ledger-title">پروفایل</h1>
+      </header>
 
-              {/* آواتار */}
-              <Form.Label htmlFor="avatar-input" className="avatar-upload-wrapper mb-3">
+      <Row className="g-4 g-lg-5">
+        <Col lg={4}>
+          <aside className="profile-card" aria-label="حساب کاربری">
+            <div className="profile-avatar-field">
+              <label htmlFor="avatar-input" className="profile-avatar" title="تغییر تصویر">
                 {avatarPreview ? (
-                  <img src={avatarPreview} alt="تصویر پروفایل" />
+                  <img src={avatarPreview} alt="" />
                 ) : (
-                  <FiUser size={48} className="text-muted" />
+                  <FiUser size={40} aria-hidden="true" />
                 )}
-                <div className="avatar-upload-overlay">
-                  <FiCamera size={22} />
-                </div>
-              </Form.Label>
-              <Form.Control
+                <span className="profile-avatar-badge" aria-hidden="true">
+                  <FiCamera />
+                </span>
+                <span className="visually-hidden">تغییر تصویر پروفایل</span>
+              </label>
+              <input
                 id="avatar-input"
                 type="file"
-                accept="image/*"
+                accept={ACCEPTED_IMAGES}
                 onChange={handleAvatarChange}
-                className="d-none"
+                className="visually-hidden"
               />
+            </div>
+            {error('avatar') && (
+              <p className="sell-error text-center" role="alert">
+                {error('avatar')}
+              </p>
+            )}
+            {avatarFile && <p className="ledger-note text-center mb-0">تصویر تازه با «ذخیره» ثبت می‌شود.</p>}
 
-              {/* اطلاعات ثابت */}
-              <div className="profile-meta-box mb-4 text-center">
-                <div className="mb-1">
-                  <strong>نام کاربری:</strong> <bdi className="latin-id">{user?.username}</bdi>
-                </div>
-                <div>
-                  <strong>تاریخ عضویت:</strong> {joinDate}
-                </div>
-              </div>
+            <p className="profile-username">
+              <bdi className="latin-id">{user?.username}</bdi>
+            </p>
+            {joinDate && <p className="ledger-note text-center mb-3">عضو از {joinDate}</p>}
 
-              <Form onSubmit={handleSubmit} noValidate>
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label htmlFor="first_name">نام</Form.Label>
-                      <Form.Control
-                        id="first_name"
-                        type="text"
-                        name="first_name"
-                        value={formData.first_name}
-                        onChange={handleChange}
-                        isInvalid={!!fieldErrors.first_name}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {fieldErrors.first_name?.[0]}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label htmlFor="last_name">نام خانوادگی</Form.Label>
-                      <Form.Control
-                        id="last_name"
-                        type="text"
-                        name="last_name"
-                        value={formData.last_name}
-                        onChange={handleChange}
-                        isInvalid={!!fieldErrors.last_name}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {fieldErrors.last_name?.[0]}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Col>
-                </Row>
+            <nav className="profile-links" aria-label="بخش‌های حساب">
+              <Link to="/my-books">کتاب‌های من</Link>
+              <Link to="/my-orders">معاملات من</Link>
+              <Link to="/wishlist">علاقه‌مندی‌ها</Link>
+              <Link to="/support">پشتیبانی</Link>
+            </nav>
+          </aside>
+        </Col>
 
-                <Form.Group className="mb-3">
-                  <Form.Label htmlFor="email">ایمیل</Form.Label>
-                  <Form.Control
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    isInvalid={!!fieldErrors.email}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {fieldErrors.email?.[0]}
-                  </Form.Control.Feedback>
-                </Form.Group>
+        <Col lg={8}>
+          {generalError && (
+            <Alert variant="danger" role="alert">
+              {generalError}
+            </Alert>
+          )}
 
-                <Form.Group className="mb-3">
-                  <Form.Label htmlFor="phone">شماره موبایل</Form.Label>
-                  <Form.Control
-                    id="phone"
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="۰۹۱۲۳۴۵۶۷۸۹"
-                    isInvalid={!!fieldErrors.phone}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {fieldErrors.phone?.[0]}
-                  </Form.Control.Feedback>
-                </Form.Group>
+          <Form onSubmit={handleSubmit} noValidate>
+            <fieldset className="sell-section">
+              <legend>نام و راه تماس</legend>
+              <Row className="g-3">
+                <Col md={6}>
+                  <Form.Group controlId="first_name">
+                    <Form.Label>نام</Form.Label>
+                    <Form.Control
+                      name="first_name"
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      autoComplete="given-name"
+                      dir="auto"
+                      isInvalid={!!error('first_name')}
+                    />
+                    <Form.Control.Feedback type="invalid">{error('first_name')}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group controlId="last_name">
+                    <Form.Label>نام خانوادگی</Form.Label>
+                    <Form.Control
+                      name="last_name"
+                      value={formData.last_name}
+                      onChange={handleChange}
+                      autoComplete="family-name"
+                      dir="auto"
+                      isInvalid={!!error('last_name')}
+                    />
+                    <Form.Control.Feedback type="invalid">{error('last_name')}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group controlId="email">
+                    <Form.Label>ایمیل</Form.Label>
+                    <Form.Control
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      autoComplete="email"
+                      dir="ltr"
+                      isInvalid={!!error('email')}
+                    />
+                    <Form.Control.Feedback type="invalid">{error('email')}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group controlId="phone">
+                    <Form.Label>موبایل</Form.Label>
+                    <Form.Control
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      autoComplete="tel"
+                      inputMode="numeric"
+                      dir="ltr"
+                      placeholder="09123456789"
+                      isInvalid={!!error('phone')}
+                    />
+                    <Form.Control.Feedback type="invalid">{error('phone')}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              </Row>
+            </fieldset>
 
-                <Form.Group className="mb-4">
-                  <Form.Label htmlFor="address">آدرس</Form.Label>
-                  <Form.Control
-                    id="address"
-                    as="textarea"
-                    rows={3}
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    isInvalid={!!fieldErrors.address}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {fieldErrors.address?.[0]}
-                  </Form.Control.Feedback>
-                </Form.Group>
+            <fieldset className="sell-section">
+              <legend>آدرس ارسال</legend>
+              <Form.Group controlId="address">
+                <Form.Label className="visually-hidden">آدرس ارسال</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  autoComplete="street-address"
+                  placeholder="استان، شهر، خیابان، پلاک، کد پستی"
+                  aria-describedby="address-help"
+                  isInvalid={!!error('address')}
+                />
+                <Form.Text id="address-help">هنگام خرید، این آدرس از پیش در فرم ارسال نوشته می‌شود.</Form.Text>
+                <Form.Control.Feedback type="invalid">{error('address')}</Form.Control.Feedback>
+              </Form.Group>
+            </fieldset>
 
-                <Button type="submit" className="btn-primary w-100" disabled={loading}>
-                  {loading ? 'در حال بروزرسانی...' : 'ذخیره تغییرات'}
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
+            <div className="sell-submit">
+              <Button type="submit" variant="primary" disabled={loading}>
+                {loading ? 'در حال ذخیره...' : 'ذخیره'}
+              </Button>
+            </div>
+          </Form>
         </Col>
       </Row>
     </Container>

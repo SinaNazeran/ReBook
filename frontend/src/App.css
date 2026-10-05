@@ -445,24 +445,6 @@
 }
 
 /* ==========================================================================
-   ۶. Badge وضعیت تیکت پشتیبانی (Support)
-   ========================================================================== */
-.ticket-status-open {
-  background-color: var(--rb-warning);
-  color: var(--rb-ink);
-}
-
-.ticket-status-in_progress {
-  background-color: var(--rb-info);
-  color: var(--rb-on-ink);
-}
-
-.ticket-status-closed {
-  background-color: var(--rb-success);
-  color: var(--rb-on-ink);
-}
-
-/* ==========================================================================
    ۷. صفحه اصلی
    روی همان کاغذ زمینه، بدون پنل رنگی: جلدها تنها سطح‌های تمام‌رنگ‌اند.
    ========================================================================== */
@@ -1519,76 +1501,257 @@
 
 /* ==========================================================================
    ۱۰. اعلان‌ها (Notifications)
+   خوانده‌نشده با وزن عنوان و یک نشان مربعی مرکب دیده می‌شود، نه با پس‌زمینه‌ی رنگی
    ========================================================================== */
-.notification-item.unread {
-  background-color: var(--rb-surface-sunken);
+.notice-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
 }
 
-.notification-item:focus-visible {
-  outline: 2px solid var(--rb-ink);
+.notice-list > li + li {
+  border-top: 1px solid var(--rb-rule);
+}
+
+.notice {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.25rem 1rem;
+  width: 100%;
+  padding-block: 1rem;
+  padding-inline: 1rem 1.75rem;
+  border: 0;
+  background: none;
+  color: var(--rb-ink-muted);
+  text-align: start;
+}
+
+.notice:focus-visible {
+  outline: 2px solid var(--rb-focus);
   outline-offset: -2px;
 }
 
-.notification-icon-wrapper {
-  width: 40px;
-  height: 40px;
+.notice[aria-disabled="true"] {
+  cursor: default;
+}
+
+.notice-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 50%;
+  background-color: var(--rb-surface-sunken);
+  color: var(--rb-ink-muted);
+}
+
+.notice-body {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.notice-title {
+  color: var(--rb-ink);
+}
+
+.notice-message {
+  font-size: 0.9375rem;
+}
+
+.notice-date {
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.notice.is-unread .notice-title {
+  font-weight: 700;
+}
+
+.notice.is-unread .notice-icon {
+  background-color: var(--rb-ink);
+  color: var(--rb-on-ink);
+}
+
+/* نشان «تازه»: مربع کوچک مرکب در لبه‌ی انتهایی ردیف */
+.notice-dot {
+  position: absolute;
+  inset-block-start: 1.5rem;
+  inset-inline-end: 0.75rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 1px;
+  background-color: var(--rb-ink);
+}
+
+@media (max-width: 575.98px) {
+  .notice {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+  }
+
+  .notice-date {
+    grid-column: 2;
+  }
 }
 
 /* ==========================================================================
-   ۱۱. آواتار پروفایل (Profile)
+   ۱۱. پشتیبانی (Support)
    ========================================================================== */
-.avatar-upload-wrapper {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid var(--rb-surface-sunken);
-  margin: 0 auto;
-  cursor: pointer;
-  position: relative;
-  background-color: var(--rb-ground);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.support-heading {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
 }
 
-.avatar-upload-wrapper img {
+.support-form {
+  padding: 1.25rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+.ticket-list {
+  --bs-accordion-border-color: var(--rb-rule);
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-focus) 35%, transparent);
+  --bs-accordion-active-bg: var(--rb-surface-sunken);
+  --bs-accordion-active-color: var(--rb-ink);
+}
+
+.ticket-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  width: 100%;
+  margin-inline-end: 1rem;
+}
+
+.ticket-subject {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-weight: var(--rb-font-weight-ui);
+}
+
+.ticket-date {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+.ticket-message {
+  max-width: 70ch;
+  white-space: pre-line;
+}
+
+.ticket-reply {
+  padding: 0.875rem 1rem;
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface-sunken);
+}
+
+.ticket-reply .ticket-message {
+  margin: 0;
+}
+
+.ticket-reply-label {
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: var(--rb-font-weight-ui);
+}
+
+/* ==========================================================================
+   ۱۲. پروفایل (Profile)
+   ========================================================================== */
+.profile-card {
+  padding: 1.5rem 1.25rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+.profile-avatar-field {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.profile-avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  background-color: var(--rb-surface-sunken);
+  color: var(--rb-ink-muted);
+  cursor: pointer;
+}
+
+.profile-avatar img {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
   object-fit: cover;
 }
 
-.avatar-upload-overlay {
+.profile-avatar-badge {
   position: absolute;
-  inset: 0;
-  background-color: color-mix(in srgb, var(--rb-ink) 45%, transparent);
+  inset-block-end: 0.25rem;
+  inset-inline-end: 0.25rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--rb-surface);
+  border-radius: 50%;
+  background-color: var(--rb-ink);
   color: var(--rb-on-ink);
+}
+
+.profile-avatar-field:has(input:focus-visible) .profile-avatar {
+  outline: 2px solid var(--rb-focus);
+  outline-offset: 3px;
+}
+
+.profile-username {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.profile-links {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--rb-rule);
+}
+
+.profile-links a {
   display: flex;
   align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.15s ease;
+  min-height: var(--rb-touch-target);
+  border-bottom: 1px solid var(--rb-rule);
+  color: var(--rb-ink);
+  text-decoration: none;
 }
 
-.avatar-upload-wrapper:hover .avatar-upload-overlay {
-  opacity: 1;
+.profile-links a:last-child {
+  border-bottom: 0;
 }
 
-/* جعبه‌ی اطلاعات ثابت پروفایل (نام کاربری، تاریخ عضویت) */
-.profile-meta-box {
-  background-color: var(--rb-surface-sunken);
-  border: 1px solid var(--rb-rule);
-  border-radius: var(--bs-border-radius);
-  padding: 1rem 1.25rem;
+.profile-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
 }
 
 /* ==========================================================================
-   ۱۲. فوتر
+   ۱۳. فوتر
    ========================================================================== */
 .site-footer {
   background-color: var(--rb-ink);

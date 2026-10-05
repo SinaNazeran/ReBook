@@ -1,62 +1,86 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, Card, Badge, Accordion } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Accordion } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { notificationAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
-import { FiHelpCircle, FiInbox } from 'react-icons/fi';
+import StatusMark from '../components/StatusMark';
 
-const STATUS_MAP = {
-  open: { text: 'باز', className: 'ticket-status-open' },
-  in_progress: { text: 'در حال بررسی', className: 'ticket-status-in_progress' },
-  closed: { text: 'بسته شده', className: 'ticket-status-closed' },
+const TICKET_STATUS = {
+  open: { tone: 'waiting', label: 'در انتظار پاسخ' },
+  in_progress: { tone: 'waiting', label: 'در حال بررسی' },
+  closed: { tone: 'done', label: 'بسته شد' },
 };
+
+const formatDate = (value) =>
+  new Date(value).toLocaleDateString('fa-IR', { month: 'long', day: 'numeric', year: 'numeric' });
 
 function Support() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [formData, setFormData] = useState({ subject: '', message: '' });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const response = await notificationAPI.getMyTickets();
-        setTickets(response.data.results ?? response.data);
-      } catch (error) {
-        toast.error(getErrorMessage(error));
-      } finally {
-        setLoading(false);
-      }
+    let ignore = false;
+    notificationAPI
+      .getMyTickets()
+      .then((response) => {
+        if (!ignore) setTickets(response.data.results ?? response.data);
+      })
+      .catch(() => {
+        if (!ignore) setLoadError(true);
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+    return () => {
+      ignore = true;
     };
-    fetchTickets();
-  }, []);
+  }, [reloadKey]);
+
+  const handleRetry = () => {
+    setLoadError(false);
+    setLoading(true);
+    setReloadKey((key) => key + 1);
+  };
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.subject.trim() || !formData.message.trim()) {
-      toast.warning('لطفاً موضوع و متن پیام را کامل وارد کنید.');
+    const errors = {};
+    if (!formData.subject.trim()) errors.subject = 'موضوع را در یک خط بنویس.';
+    if (!formData.message.trim()) errors.message = 'پیامت را بنویس.';
+    if (errors.subject || errors.message) {
+      setFieldErrors(errors);
+      document.getElementById(errors.subject ? 'subject' : 'message')?.focus();
       return;
     }
 
     setSubmitting(true);
     try {
-      await notificationAPI.createTicket({
+      const response = await notificationAPI.createTicket({
         subject: formData.subject.trim(),
         message: formData.message.trim(),
       });
-      toast.success('تیکت شما با موفقیت ارسال شد.');
+      toast.success('پیامت رسید؛ پاسخ را همین‌جا می‌بینی.');
       setFormData({ subject: '', message: '' });
-
-      // رفرش لیست تیکت‌ها
-      const response = await notificationAPI.getMyTickets();
-      setTickets(response.data.results ?? response.data);
+      setTickets((prev) => [response.data, ...prev]);
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      const data = error.response?.data;
+      if (data && typeof data === 'object' && (data.subject || data.message)) {
+        setFieldErrors({ subject: data.subject?.[0], message: data.message?.[0] });
+      } else {
+        toast.error(getErrorMessage(error));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -65,107 +89,112 @@ function Support() {
   if (loading) return <Loading fullPage />;
 
   return (
-    <Container className="py-5">
-      <h1 className="h3 mb-4 d-flex align-items-center gap-2">
-        <FiHelpCircle />
-        پشتیبانی
-      </h1>
+    <Container className="ledger-page">
+      <header className="ledger-header">
+        <div>
+          <h1 className="ledger-title">پشتیبانی</h1>
+          <p className="sell-lead mt-2 mb-0">
+            سؤال درباره‌ی سفارش، پرداخت یا آگهی‌ات را بپرس؛ پاسخ تیم ری‌بوک در همین صفحه می‌آید.
+          </p>
+        </div>
+      </header>
 
-      <Row className="g-4">
-        {/* فرم ارسال تیکت */}
-        <Col md={5}>
-          <Card className="shadow-sm border-0">
-            <Card.Body className="p-4">
-              <h2 className="h5 mb-3">ارسال تیکت جدید</h2>
-              <Form onSubmit={handleSubmit} noValidate>
-                <Form.Group className="mb-3">
-                  <Form.Label htmlFor="subject">موضوع</Form.Label>
-                  <Form.Control
-                    id="subject"
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    placeholder="مثال: مشکل در ثبت سفارش"
-                    required
-                  />
-                </Form.Group>
+      <Row className="g-4 g-lg-5">
+        <Col lg={5}>
+          <Form onSubmit={handleSubmit} noValidate className="support-form" aria-labelledby="new-ticket-title">
+            <h2 id="new-ticket-title" className="support-heading">
+              پیام تازه
+            </h2>
+            <Form.Group controlId="subject" className="mb-3">
+              <Form.Label>موضوع</Form.Label>
+              <Form.Control
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                maxLength={200}
+                placeholder="مثلاً: آگهی‌ام تأیید نشد"
+                required
+                aria-required="true"
+                isInvalid={!!fieldErrors.subject}
+              />
+              <Form.Control.Feedback type="invalid">{fieldErrors.subject}</Form.Control.Feedback>
+            </Form.Group>
 
-                <Form.Group className="mb-3">
-                  <Form.Label htmlFor="message">متن پیام</Form.Label>
-                  <Form.Control
-                    id="message"
-                    as="textarea"
-                    rows={5}
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="مشکل یا سؤال خود را با جزئیات شرح دهید..."
-                    required
-                  />
-                </Form.Group>
+            <Form.Group controlId="message" className="mb-3">
+              <Form.Label>پیام</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={6}
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                placeholder="اگر درباره‌ی سفارش است، شماره‌ی سفارش یا نام کتاب را هم بنویس."
+                required
+                aria-required="true"
+                isInvalid={!!fieldErrors.message}
+              />
+              <Form.Control.Feedback type="invalid">{fieldErrors.message}</Form.Control.Feedback>
+            </Form.Group>
 
-                <Button type="submit" className="btn-primary w-100" disabled={submitting}>
-                  {submitting ? 'در حال ارسال...' : 'ارسال تیکت'}
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
+            <Button type="submit" variant="primary" disabled={submitting}>
+              {submitting ? 'در حال ارسال...' : 'ارسال پیام'}
+            </Button>
+          </Form>
         </Col>
 
-        {/* لیست تیکت‌ها */}
-        <Col md={7}>
-          <Card className="shadow-sm border-0">
-            <Card.Body className="p-4">
-              <h2 className="h5 mb-3">تیکت‌های من</h2>
+        <Col lg={7}>
+          <section aria-labelledby="tickets-title">
+            <h2 id="tickets-title" className="support-heading">
+              پیام‌های من
+            </h2>
 
-              {tickets.length === 0 ? (
-                <div className="text-center py-4">
-                  <FiInbox size={48} className="text-muted" aria-hidden="true" />
-                  <p className="text-muted mt-3 mb-0">تیکتی ارسال نشده است.</p>
-                </div>
-              ) : (
-                <Accordion>
-                  {tickets.map((ticket, index) => {
-                    const status = STATUS_MAP[ticket.status] || {
-                      text: ticket.status,
-                      className: 'ticket-status-closed',
-                    };
-                    return (
-                      <Accordion.Item key={ticket.id} eventKey={String(index)}>
-                        <Accordion.Header>
-                          <div className="d-flex justify-content-between align-items-center w-100 me-3">
-                            <span>{ticket.subject}</span>
-                            <Badge bg="" className={status.className}>{status.text}</Badge>
+            {loadError ? (
+              <div className="list-state" role="alert">
+                <p>پیام‌هایت بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+                <Button variant="outline-secondary" onClick={handleRetry}>
+                  تلاش دوباره
+                </Button>
+              </div>
+            ) : tickets.length === 0 ? (
+              <div className="list-state">
+                <p>هنوز پیامی نفرستاده‌ای. هر پیامی که بفرستی با وضعیت و پاسخش اینجا می‌ماند.</p>
+              </div>
+            ) : (
+              <Accordion className="ticket-list">
+                {tickets.map((ticket) => {
+                  const status = TICKET_STATUS[ticket.status] ?? { tone: 'closed', label: ticket.status };
+                  return (
+                    <Accordion.Item key={ticket.id} eventKey={String(ticket.id)}>
+                      <Accordion.Header>
+                        <span className="ticket-head">
+                          <span className="ticket-subject">
+                            <bdi>{ticket.subject}</bdi>
+                            <span className="ticket-date">{formatDate(ticket.created_at)}</span>
+                          </span>
+                          <StatusMark tone={status.tone}>{status.label}</StatusMark>
+                        </span>
+                      </Accordion.Header>
+                      <Accordion.Body>
+                        <p className="ticket-message" dir="auto">
+                          {ticket.message}
+                        </p>
+                        {ticket.admin_reply ? (
+                          <div className="ticket-reply">
+                            <p className="ticket-reply-label">پاسخ پشتیبانی</p>
+                            <p className="ticket-message" dir="auto">
+                              {ticket.admin_reply}
+                            </p>
                           </div>
-                        </Accordion.Header>
-                        <Accordion.Body>
-                          <p className="mb-1">
-                            <strong>پیام شما:</strong>
-                          </p>
-                          <p className="text-muted">{ticket.message}</p>
-
-                          {ticket.admin_reply && (
-                            <>
-                              <hr />
-                              <p className="mb-1">
-                                <strong>پاسخ پشتیبانی:</strong>
-                              </p>
-                              <p style={{ color: 'var(--rb-success)' }}>{ticket.admin_reply}</p>
-                            </>
-                          )}
-
-                          <small className="text-muted">
-                            {new Date(ticket.created_at).toLocaleDateString('fa-IR')}
-                          </small>
-                        </Accordion.Body>
-                      </Accordion.Item>
-                    );
-                  })}
-                </Accordion>
-              )}
-            </Card.Body>
-          </Card>
+                        ) : (
+                          <p className="ledger-note mb-0">هنوز پاسخی نیامده.</p>
+                        )}
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  );
+                })}
+              </Accordion>
+            )}
+          </section>
         </Col>
       </Row>
     </Container>

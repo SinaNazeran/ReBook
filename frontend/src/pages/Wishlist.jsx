@@ -1,76 +1,91 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { bookAPI, getErrorMessage } from '../services/api';
 import BookCard from '../components/BookCard';
 import Loading from '../components/Loading';
-import { FiHeart } from 'react-icons/fi';
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    const fetchWishlist = async () => {
-      try {
-        const response = await bookAPI.getWishlist();
-        setWishlist(response.data.results ?? response.data);
-      } catch (error) {
-        toast.error(getErrorMessage(error));
-      } finally {
-        setLoading(false);
-      }
+    let ignore = false;
+    bookAPI
+      .getWishlist()
+      .then((response) => {
+        if (!ignore) setWishlist(response.data.results ?? response.data);
+      })
+      .catch(() => {
+        if (!ignore) setLoadError(true);
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+    return () => {
+      ignore = true;
     };
-    fetchWishlist();
-  }, []);
+  }, [reloadKey]);
 
-  const handleRemoveFromWishlist = useCallback(async (bookId) => {
-    // بروزرسانی خوش‌بینانه: کارت فوراً از لیست حذف می‌شود
-    const previousWishlist = wishlist;
-    setWishlist((prev) => prev.filter((item) => item.book.id !== bookId));
+  const handleRetry = () => {
+    setLoadError(false);
+    setLoading(true);
+    setReloadKey((key) => key + 1);
+  };
+
+  // خوش‌بینانه: کارت فوراً می‌رود؛ اگر درخواست نشد، سر جایش برمی‌گردد
+  const handleRemove = useCallback(async (bookId) => {
+    let removed;
+    setWishlist((prev) => {
+      removed = prev.find((item) => item.book.id === bookId);
+      return prev.filter((item) => item.book.id !== bookId);
+    });
 
     try {
       await bookAPI.toggleWishlist(bookId);
-      toast.success('از علاقه‌مندی‌ها حذف شد.');
     } catch (error) {
-      // در صورت شکست درخواست، لیست به حالت قبل بازمی‌گردد
-      setWishlist(previousWishlist);
+      if (removed) setWishlist((prev) => [removed, ...prev]);
       toast.error(getErrorMessage(error));
     }
-  }, [wishlist]);
+  }, []);
 
   if (loading) return <Loading fullPage />;
 
   return (
-    <Container className="py-5">
-      <h1 className="h3 mb-4 d-flex align-items-center gap-2">
-        <FiHeart />
-        علاقه‌مندی‌ها
-      </h1>
+    <Container className="ledger-page">
+      <header className="ledger-header">
+        <h1 className="ledger-title">
+          علاقه‌مندی‌ها
+          {!loadError && wishlist.length > 0 && (
+            <span className="list-count">{wishlist.length.toLocaleString('fa-IR')} کتاب</span>
+          )}
+        </h1>
+      </header>
 
-      {wishlist.length === 0 ? (
-        <Card className="text-center py-5 border-0 shadow-sm">
-          <Card.Body>
-            <FiHeart size={64} className="text-muted" aria-hidden="true" />
-            <h2 className="h5 mt-3">لیست علاقه‌مندی شما خالی است</h2>
-            <p className="text-muted">
-              کتاب‌های موردعلاقه‌تان را نشان کنید تا اینجا نمایش داده شوند.
-            </p>
-            <Link to="/books" className="btn btn-primary mt-2">
-              مشاهده کتاب‌ها
-            </Link>
-          </Card.Body>
-        </Card>
+      {loadError ? (
+        <div className="list-state" role="alert">
+          <p>علاقه‌مندی‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+          <Button variant="outline-secondary" onClick={handleRetry}>
+            تلاش دوباره
+          </Button>
+        </div>
+      ) : wishlist.length === 0 ? (
+        <div className="list-state">
+          <p>
+            هنوز کتابی را نشان نکرده‌ای. روی قلبِ گوشه‌ی جلد هر کتاب بزن تا اینجا بماند و بعداً سراغش بیایی.
+          </p>
+          <Link to="/books" className="btn btn-primary">
+            مرور کتاب‌ها
+          </Link>
+        </div>
       ) : (
-        <Row className="g-4">
+        <Row className="g-3 g-md-4">
           {wishlist.map((item) => (
-            <Col key={item.id} xs={12} sm={6} md={4} lg={3}>
-              <BookCard
-                book={item.book}
-                isWishlisted={true}
-                onToggleWishlist={handleRemoveFromWishlist}
-              />
+            <Col key={item.id} xs={6} md={4} lg={3}>
+              <BookCard book={item.book} isWishlisted onToggleWishlist={handleRemove} />
             </Col>
           ))}
         </Row>
