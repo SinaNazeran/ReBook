@@ -221,189 +221,194 @@ function BookDetail() {
   ) : null;
 
   return (
-    <Container className="book-detail">
-      <title>{`${book.title} | ری‌بوک`}</title>
-      <Row className="g-4 g-lg-5">
-        <Col lg={4}>
-          <figure className="detail-cover" style={{ '--card-ink': ink }}>
-            {book.cover_image ? (
-              <div className="book-cover-hinge">
-                <img src={book.cover_image} alt={`جلد ${book.title}`} className="detail-cover-img" fetchPriority="high" />
-              </div>
-            ) : (
-              <PlainCover
-                title={book.title}
-                author={book.author}
-                rootId={rootId}
-                className="detail-plain-cover"
-              />
-            )}
-            <div className="book-card-band">
-              {book.category && <span className="book-card-series">{book.category.name}</span>}
-            </div>
-          </figure>
-        </Col>
-
-        <Col lg={8}>
-          <header className="detail-head">
-            {book.category && (
-              <Link
-                to={`/books?category=${book.category.slug}`}
-                className="detail-category"
-                style={{ '--series-ink': ink }}
-              >
-                <span className="series-index-mark" aria-hidden="true" />
-                {book.category.name}
-              </Link>
-            )}
-            <h1 className="detail-title">
-              <bdi>{book.title}</bdi>
-            </h1>
-            <p className="detail-byline">
-              <bdi>{book.author}</bdi>
-              {book.publisher && (
-                <>
-                  <span aria-hidden="true"> · </span>
-                  <span className="visually-hidden">، انتشارات </span>
-                  <bdi>{book.publisher}</bdi>
-                </>
+    <div className="series-paper" style={{ '--series': ink }}>
+      <Container className="book-detail">
+        <title>{`${book.title} | ری‌بوک`}</title>
+        <Row className="g-4 g-lg-5">
+          <Col lg={4}>
+            <figure className="detail-cover" style={{ '--card-ink': ink }}>
+              {book.cover_image ? (
+                <div className="book-cover-hinge">
+                  <img src={book.cover_image} alt={`جلد ${book.title}`} className="detail-cover-img" fetchPriority="high" />
+                </div>
+              ) : (
+                <PlainCover
+                  title={book.title}
+                  author={book.author}
+                  rootId={rootId}
+                  className="detail-plain-cover"
+                />
               )}
-            </p>
-          </header>
+              <div className="book-card-band">
+                {book.category && <span className="book-card-series">{book.category.name}</span>}
+              </div>
+            </figure>
+          </Col>
 
-          <section className="detail-block" aria-labelledby="condition-title">
-            <h2 id="condition-title" className="detail-label">
-              وضعیت ظاهری
-            </h2>
-            <ConditionMeasure condition={book.condition} label={book.condition_display} className="is-large" />
-            {CONDITION_NOTES[book.condition] && <p className="detail-muted">{CONDITION_NOTES[book.condition]}</p>}
-          </section>
-
-          {notes && (
-            <section className="detail-block" aria-labelledby="notes-title">
-              <h2 id="notes-title" className="detail-label">
-                یادداشت فروشنده
-              </h2>
-              <p id="seller-notes" className={`detail-notes${notesAreLong && !notesOpen ? ' is-clamped' : ''}`} dir="auto">
-                {notes}
-              </p>
-              {notesAreLong && (
-                <button
-                  type="button"
-                  className="detail-more"
-                  aria-expanded={notesOpen}
-                  aria-controls="seller-notes"
-                  onClick={() => setNotesOpen((open) => !open)}
+          <Col lg={8}>
+            <header className="detail-head">
+              {book.category && (
+                <Link
+                  to={`/books?category=${book.category.slug}`}
+                  className="detail-category"
+                  style={{ '--series-ink': ink }}
                 >
-                  {notesOpen ? 'کمتر' : 'ادامه‌ی یادداشت'}
-                </button>
+                  <span className="series-index-mark" aria-hidden="true" />
+                  {book.category.name}
+                </Link>
+              )}
+              <h1 className="detail-title display-type">
+                <bdi>{book.title}</bdi>
+              </h1>
+              <p className="detail-byline">
+                <bdi>{book.author}</bdi>
+                {book.publisher && (
+                  <>
+                    <span aria-hidden="true"> · </span>
+                    <span className="visually-hidden">، انتشارات </span>
+                    <bdi>{book.publisher}</bdi>
+                  </>
+                )}
+              </p>
+            </header>
+
+            <section className="detail-block" aria-labelledby="condition-title">
+              <h2 id="condition-title" className="detail-label">
+                وضعیت ظاهری
+              </h2>
+              <ConditionMeasure condition={book.condition} label={book.condition_display} className="is-large" />
+              {CONDITION_NOTES[book.condition] && <p className="detail-muted">{CONDITION_NOTES[book.condition]}</p>}
+            </section>
+
+            {notes && (
+              <section className="detail-block" aria-labelledby="notes-title">
+                <h2 id="notes-title" className="detail-label">
+                  یادداشت فروشنده
+                </h2>
+                <p id="seller-notes" className={`detail-notes${notesAreLong && !notesOpen ? ' is-clamped' : ''}`} dir="auto">
+                  {notes}
+                </p>
+                {notesAreLong && (
+                  <button
+                    type="button"
+                    className="detail-more"
+                    aria-expanded={notesOpen}
+                    aria-controls="seller-notes"
+                    onClick={() => setNotesOpen((open) => !open)}
+                  >
+                    {notesOpen ? 'کمتر' : 'ادامه‌ی یادداشت'}
+                  </button>
+                )}
+              </section>
+            )}
+
+            <section className="buy-panel" aria-label="خرید">
+              <div className="buy-panel-top">
+                <p className="buy-price">
+                  <span className="price-tag">
+                    {price} <span className="book-card-currency">تومان</span>
+                  </span>
+                </p>
+                <p className="buy-seller">
+                  فروشنده: <bdi translate="no" className="latin-id">{book.seller?.username}</bdi>
+                </p>
+              </div>
+
+              {status && <div className="buy-status">{status}</div>}
+
+              <div className="buy-actions">
+                {primaryAction && <span className="d-none d-lg-inline-flex">{primaryAction}</span>}
+                {canPay && (
+                  <Button variant="outline-secondary" onClick={handleCancelOrder} disabled={cancelling}>
+                    {cancelling ? 'در حال لغو…' : 'لغو سفارش'}
+                  </Button>
+                )}
+                {!isOwner && book.status === 'approved' && (
+                  <Button
+                    variant="outline-secondary"
+                    onClick={handleWishlistToggle}
+                    aria-pressed={wishlisted}
+                    className="d-inline-flex align-items-center gap-2"
+                  >
+                    <FiHeart aria-hidden="true" fill={wishlisted ? 'currentColor' : 'none'} />
+                    {wishlisted ? 'در علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
+                  </Button>
+                )}
+              </div>
+
+              {(book.status === 'approved' || book.status === 'sold') && (
+                <p className="buy-review">این آگهی پیش از انتشار توسط تیم ری‌بوک بررسی شده است.</p>
               )}
             </section>
-          )}
 
-          <section className="buy-panel" aria-label="خرید">
-            <div className="buy-panel-top">
-              <p className="buy-price">
-                {price} <span className="book-card-currency">تومان</span>
-              </p>
-              <p className="buy-seller">
-                فروشنده: <bdi translate="no" className="latin-id">{book.seller?.username}</bdi>
-              </p>
-            </div>
+            {/* شناسنامه، مثل صفحه‌ی شناسنامه‌ی کتاب چاپی: قاب دوخطی، سطرها با نقطه‌چین به مقدار می‌رسند */}
+            <section className="colophon" aria-labelledby="colophon-title">
+              <h2 id="colophon-title" className="colophon-title display-type">
+                شناسنامه‌ی کتاب
+              </h2>
+              <span className="ornament-rule colophon-ornament" aria-hidden="true" />
+              <dl className="colophon-list">
+                <dt>عنوان</dt>
+                <dd>
+                  <bdi>{book.title}</bdi>
+                </dd>
+                <dt>نویسنده</dt>
+                <dd>
+                  <bdi>{book.author}</bdi>
+                </dd>
+                {book.publisher && (
+                  <>
+                    <dt>ناشر</dt>
+                    <dd>
+                      <bdi>{book.publisher}</bdi>
+                    </dd>
+                  </>
+                )}
+                {book.isbn && (
+                  <>
+                    <dt>شابک</dt>
+                    <dd>
+                      <bdi dir="ltr">{book.isbn}</bdi>
+                    </dd>
+                  </>
+                )}
+                {book.category && (
+                  <>
+                    <dt>مجموعه</dt>
+                    <dd>{book.category.name}</dd>
+                  </>
+                )}
+                <dt>وضعیت ظاهری</dt>
+                <dd>{book.condition_display}</dd>
+                <dt>ثبت در ری‌بوک</dt>
+                <dd>{formatDate(book.created_at)}</dd>
+              </dl>
+            </section>
+          </Col>
+        </Row>
 
-            {status && <div className="buy-status">{status}</div>}
+        {showBuyBar && (
+          <div className="buy-bar d-lg-none">
+            <p className="buy-price">
+              {price} <span className="book-card-currency">تومان</span>
+            </p>
+            {primaryAction}
+          </div>
+        )}
 
-            <div className="buy-actions">
-              {primaryAction && <span className="d-none d-lg-inline-flex">{primaryAction}</span>}
-              {canPay && (
-                <Button variant="outline-secondary" onClick={handleCancelOrder} disabled={cancelling}>
-                  {cancelling ? 'در حال لغو…' : 'لغو سفارش'}
-                </Button>
-              )}
-              {!isOwner && book.status === 'approved' && (
-                <Button
-                  variant="outline-secondary"
-                  onClick={handleWishlistToggle}
-                  aria-pressed={wishlisted}
-                  className="d-inline-flex align-items-center gap-2"
-                >
-                  <FiHeart aria-hidden="true" fill={wishlisted ? 'currentColor' : 'none'} />
-                  {wishlisted ? 'در علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
-                </Button>
-              )}
-            </div>
-
-            {(book.status === 'approved' || book.status === 'sold') && (
-              <p className="buy-review">این آگهی پیش از انتشار توسط تیم ری‌بوک بررسی شده است.</p>
-            )}
-          </section>
-
-          {/* شناسنامه، مثل صفحه‌ی شناسنامه‌ی کتاب چاپی: قاب دوخطی، سطرها با نقطه‌چین به مقدار می‌رسند */}
-          <section className="colophon" aria-labelledby="colophon-title">
-            <h2 id="colophon-title" className="colophon-title">
-              شناسنامه‌ی کتاب
-            </h2>
-            <dl className="colophon-list">
-              <dt>عنوان</dt>
-              <dd>
-                <bdi>{book.title}</bdi>
-              </dd>
-              <dt>نویسنده</dt>
-              <dd>
-                <bdi>{book.author}</bdi>
-              </dd>
-              {book.publisher && (
-                <>
-                  <dt>ناشر</dt>
-                  <dd>
-                    <bdi>{book.publisher}</bdi>
-                  </dd>
-                </>
-              )}
-              {book.isbn && (
-                <>
-                  <dt>شابک</dt>
-                  <dd>
-                    <bdi dir="ltr">{book.isbn}</bdi>
-                  </dd>
-                </>
-              )}
-              {book.category && (
-                <>
-                  <dt>مجموعه</dt>
-                  <dd>{book.category.name}</dd>
-                </>
-              )}
-              <dt>وضعیت ظاهری</dt>
-              <dd>{book.condition_display}</dd>
-              <dt>ثبت در ری‌بوک</dt>
-              <dd>{formatDate(book.created_at)}</dd>
-            </dl>
-          </section>
-        </Col>
-      </Row>
-
-      {showBuyBar && (
-        <div className="buy-bar d-lg-none">
-          <p className="buy-price">
-            {price} <span className="book-card-currency">تومان</span>
-          </p>
-          {primaryAction}
-        </div>
-      )}
-
-      {showPurchase && (
-        <PurchaseModal
-          show
-          onHide={() => setShowPurchase(false)}
-          book={book}
-          existingOrderId={canPay ? openOrder.id : null}
-          defaultAddress={user?.address || ''}
-          onPaid={handlePaid}
-          onStale={refreshBook}
-        />
-      )}
-    </Container>
+        {showPurchase && (
+          <PurchaseModal
+            show
+            onHide={() => setShowPurchase(false)}
+            book={book}
+            existingOrderId={canPay ? openOrder.id : null}
+            defaultAddress={user?.address || ''}
+            onPaid={handlePaid}
+            onStale={refreshBook}
+          />
+        )}
+      </Container>
+    </div>
   );
 }
 

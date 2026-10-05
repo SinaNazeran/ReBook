@@ -10,6 +10,8 @@ import "bootstrap/dist/css/bootstrap.rtl.min.css";
 //    @font-face تا وقتی استفاده نشود دانلود نمی‌شود
 import "vazirmatn/misc/Farsi-Digits/Vazirmatn-FD-font-face.css";
 import "vazirmatn/Vazirmatn-font-face.css";
+// حروف نمایشی (تیترهای بزرگ، برند، جلد ساده)؛ فقط زیرمجموعه‌ی عربی
+import "@fontsource/lalezar/arabic-400.css";
 
 // 3. تم اختصاصی
 import "./styles/theme.css";

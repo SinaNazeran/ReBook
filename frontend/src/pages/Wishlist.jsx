@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { bookAPI, getErrorMessage } from '../services/api';
 import BookCard from '../components/BookCard';
 import Loading from '../components/Loading';
+import EmptyShelf from '../components/EmptyShelf';
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);
@@ -75,6 +76,7 @@ function Wishlist() {
         </div>
       ) : wishlist.length === 0 ? (
         <div className="list-state">
+          <EmptyShelf />
           <p>
             هنوز کتابی را نشان نکرده‌ای. روی قلبِ گوشه‌ی جلد هر کتاب بزن تا اینجا بماند و بعداً سراغش بیایی.
           </p>

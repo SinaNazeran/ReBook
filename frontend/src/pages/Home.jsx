@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { bookAPI } from '../services/api';
 import BookCard, { BookCardSkeleton } from '../components/BookCard';
 import PlainCover from '../components/PlainCover';
+import EmptyShelf from '../components/EmptyShelf';
 import { seriesInk } from '../utils/series';
 import { FiArrowLeft, FiPlusCircle } from 'react-icons/fi';
 
@@ -72,7 +73,7 @@ function Home() {
         <Container>
           <Row className="gy-4 align-items-end">
             <Col lg={6}>
-              <h1 className="home-hero-title">کتاب بعدی‌ات را پیدا&nbsp;کن، کتاب‌هایی را که خواندی بفروش.</h1>
+              <h1 className="home-hero-title display-type">کتاب بعدی‌ات را پیدا&nbsp;کن، کتاب‌هایی را که خواندی بفروش.</h1>
               <p className="home-hero-lead">
                 نسخه‌های دست دوم را با عکس جلد، وضعیت ظاهری و قیمت کنار هم ببین.
               </p>
@@ -134,19 +135,19 @@ function Home() {
       {shelves.length > 0 && (
         <section className="series-key" aria-labelledby="series-key-title">
           <Container>
-            <h2 id="series-key-title" className="home-section-title">
+            <h2 id="series-key-title" className="home-section-title display-type">
               مجموعه‌ها
             </h2>
-            <ul className="series-key-list">
+            {/* مجموعه‌ها مثل عطف کتاب‌ها روی قفسه: هر دسته یک عطف تمام‌رنگ با نامش */}
+            <ul className="series-spines">
               {shelves.map((cat) => (
                 <li key={cat.id}>
                   <Link
                     to={`/books?category=${cat.slug}`}
-                    className="series-key-link"
+                    className="spine"
                     style={{ '--series-ink': seriesInk(cat.id) }}
                   >
-                    {cat.name}
-                    <FiArrowLeft aria-hidden="true" />
+                    <span className="spine-title display-type">{cat.name}</span>
                   </Link>
                 </li>
               ))}
@@ -159,7 +160,7 @@ function Home() {
         <section className="home-latest" aria-labelledby="latest-title">
           <Container>
             <div className="d-flex justify-content-between align-items-baseline gap-3 mb-3">
-              <h2 id="latest-title" className="home-section-title">در قفسه</h2>
+              <h2 id="latest-title" className="home-section-title display-type">در قفسه</h2>
               <Link to="/books" className="home-more-link">
                 همه‌ی کتاب‌ها
                 <FiArrowLeft aria-hidden="true" />
@@ -175,6 +176,7 @@ function Home() {
               </div>
             ) : status === 'ready' && latestBooks.length === 0 ? (
               <div className="list-state">
+                <EmptyShelf />
                 <p>هنوز کتابی در قفسه نیست. اولین کتاب را تو ثبت کن.</p>
                 <Link to="/create-book" className="btn btn-primary">
                   فروش کتاب
@@ -202,7 +204,8 @@ function Home() {
 
       <section className="home-sell" aria-labelledby="sell-title">
         <Container>
-          <h2 id="sell-title" className="home-section-title">کتابی داری که دیگر سراغش نمی‌روی؟</h2>
+          <span className="ornament-rule home-ornament" aria-hidden="true" />
+          <h2 id="sell-title" className="home-section-title display-type">کتابی داری که دیگر سراغش نمی‌روی؟</h2>
           <ol className="sell-steps">
             {SELL_STEPS.map(({ title, text }) => (
               <li key={title} className="sell-step">

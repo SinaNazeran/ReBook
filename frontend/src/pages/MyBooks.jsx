@@ -7,6 +7,7 @@ import { bookAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
 import StatusMark from '../components/StatusMark';
 import CoverThumb from '../components/CoverThumb';
+import EmptyShelf from '../components/EmptyShelf';
 
 // وضعیت آگهی از نگاه فروشنده؛ هر کدام یک جمله‌ی کوتاه درباره‌ی قدم بعد
 const LISTING_STATUS = {
@@ -91,6 +92,7 @@ function MyBooks() {
         </div>
       ) : books.length === 0 ? (
         <div className="list-state">
+          <EmptyShelf />
           <p>هنوز کتابی برای فروش نگذاشته‌ای. کتابی که خوانده‌ای و دیگر سراغش نمی‌روی، اینجا خریدار پیدا می‌کند.</p>
           <Link to="/create-book" className="btn btn-primary">
             فروش کتاب

@@ -6,6 +6,7 @@ import { orderAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
 import OrderList from '../components/OrderList';
 import PurchaseModal from '../components/PurchaseModal';
+import EmptyShelf from '../components/EmptyShelf';
 
 const fetchOrders = () => Promise.all([orderAPI.getMyOrders(), orderAPI.getMySales()]);
 
@@ -116,6 +117,7 @@ function MyOrders() {
               />
             ) : (
               <div className="list-state">
+                <EmptyShelf />
                 <p>هنوز کتابی نخریده‌ای.</p>
                 <Link to="/books" className="btn btn-primary">
                   مرور کتاب‌ها
@@ -129,6 +131,7 @@ function MyOrders() {
               <OrderList orders={sales} type="sale" onCancel={handleCancel} busyId={busyId} />
             ) : (
               <div className="list-state">
+                <EmptyShelf />
                 <p>هنوز کسی از تو کتابی نخریده. آگهی‌هایت در «کتاب‌های من» است.</p>
                 <Link to="/my-books" className="btn btn-outline-secondary">
                   کتاب‌های من

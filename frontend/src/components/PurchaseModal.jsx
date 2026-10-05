@@ -4,6 +4,7 @@ import { Modal, Button, Alert } from 'react-bootstrap';
 import Form from './Form';
 import { FiCopy, FiCheck } from 'react-icons/fi';
 import { orderAPI, getErrorMessage } from '../services/api';
+import { seriesInk } from '../utils/series';
 
 /**
  * خرید یک‌مرحله‌ای: خلاصه → آدرس → ثبت سفارش و پرداخت آزمایشی → رسید با کد پیگیری.
@@ -22,6 +23,8 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
   const [busy, setBusy] = useState(false);
   const [trackingCode, setTrackingCode] = useState('');
   const [copied, setCopied] = useState(false);
+  // جزئیات کتاب دسته را شیء می‌دهد، فهرست سفارش‌ها category_root را
+  const seriesRoot = book.category_root ?? (book.category ? book.category.parent || book.category.id : null);
 
   const price = Number(book.price).toLocaleString('fa-IR');
 
@@ -94,9 +97,21 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-              «<bdi>{book.title}</bdi>» به نام تو ثبت شد و فروشنده خبردار شد. وضعیت ارسال را در «معاملات من»
-              دنبال کن.
+            {/* رسید به شکل برچسب «اکس‌لیبریس» که داخل جلد کتاب می‌چسبانند، در مرکب مجموعه‌ی همین کتاب */}
+            <div className="bookplate" style={{ '--series': seriesInk(seriesRoot) }}>
+              <p className="bookplate-title display-type">از کتابخانه‌ی تو</p>
+              <span className="ornament-rule" aria-hidden="true" />
+              <p className="bookplate-book display-type">
+                <bdi>{book.title}</bdi>
+              </p>
+              {book.author && (
+                <p className="bookplate-author">
+                  <bdi>{book.author}</bdi>
+                </p>
+              )}
+            </div>
+            <p className="bookplate-note">
+              به نام تو ثبت شد و فروشنده خبردار شد. وضعیت ارسال را در «معاملات من» دنبال کن.
             </p>
             <div className="receipt-code">
               <span className="receipt-code-label">کد پیگیری</span>

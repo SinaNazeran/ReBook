@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { notificationAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
 import StatusMark from '../components/StatusMark';
+import EmptyShelf from '../components/EmptyShelf';
 
 const TICKET_STATUS = {
   open: { tone: 'waiting', label: 'در انتظار پاسخ' },
@@ -161,6 +162,7 @@ function Support() {
               </div>
             ) : tickets.length === 0 ? (
               <div className="list-state">
+                <EmptyShelf />
                 <p>هنوز پیامی نفرستاده‌ای. هر پیامی که بفرستی با وضعیت و پاسخش اینجا می‌ماند.</p>
               </div>
             ) : (

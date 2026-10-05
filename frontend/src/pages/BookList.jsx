@@ -8,6 +8,7 @@ import BookCard, { BookCardSkeleton } from '../components/BookCard';
 import { seriesInk } from '../utils/series';
 import { onlyDigits } from '../utils/digits';
 import { FiSearch, FiSliders, FiX, FiPlusCircle } from 'react-icons/fi';
+import EmptyShelf from '../components/EmptyShelf';
 
 const CONDITION_OPTIONS = [
   { value: '', label: 'همه وضعیت‌ها' },
@@ -288,292 +289,295 @@ function BookList() {
   const titleInk = activeRoot ? seriesInk(activeRoot.id) : 'var(--rb-ink)';
 
   return (
-    <Container className="book-list-page">
-      <title>{`${title} | ری‌بوک`}</title>
-      {rootCategories.length > 0 && (
-        <nav className="series-tabs" aria-label="دسته‌ها">
-          <ul className="series-tabs-list">
-            <li>
-              <Link
-                to={categoryHref('')}
-                className="series-tab"
-                aria-current={!activeSlug ? 'page' : undefined}
-                style={{ '--series-ink': 'var(--rb-ink)' }}
-              >
-                همه
-              </Link>
-            </li>
-            {rootCategories.map((cat) => (
-              <li key={cat.id}>
+    <div className="series-paper" style={{ '--series': activeRoot ? seriesInk(activeRoot.id) : undefined }}>
+      <Container className="book-list-page">
+        <title>{`${title} | ری‌بوک`}</title>
+        {rootCategories.length > 0 && (
+          <nav className="series-tabs" aria-label="دسته‌ها">
+            <ul className="series-tabs-list">
+              <li>
                 <Link
-                  to={categoryHref(cat.slug)}
+                  to={categoryHref('')}
                   className="series-tab"
-                  aria-current={activeRoot?.id === cat.id ? 'page' : undefined}
-                  style={{ '--series-ink': seriesInk(cat.id) }}
+                  aria-current={!activeSlug ? 'page' : undefined}
+                  style={{ '--series-ink': 'var(--rb-ink)' }}
                 >
-                  <span className="series-index-mark" aria-hidden="true" />
-                  {cat.name}
+                  همه
                 </Link>
               </li>
-            ))}
-          </ul>
-        </nav>
-      )}
+              {rootCategories.map((cat) => (
+                <li key={cat.id}>
+                  <Link
+                    to={categoryHref(cat.slug)}
+                    className="series-tab"
+                    aria-current={activeRoot?.id === cat.id ? 'page' : undefined}
+                    style={{ '--series-ink': seriesInk(cat.id) }}
+                  >
+                    <span className="series-index-mark" aria-hidden="true" />
+                    {cat.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
-      {subCategories.length > 0 && (
-        <nav className="sub-tabs" aria-label={`زیرشاخه‌های ${activeRoot.name}`}>
-          <Link
-            to={categoryHref(activeRoot.slug)}
-            className="sub-tab"
-            aria-current={activeCategory.id === activeRoot.id ? 'page' : undefined}
-          >
-            همه‌ی {activeRoot.name}
-          </Link>
-          {subCategories.map((cat) => (
+        {subCategories.length > 0 && (
+          <nav className="sub-tabs" aria-label={`زیرشاخه‌های ${activeRoot.name}`}>
             <Link
-              key={cat.id}
-              to={categoryHref(cat.slug)}
+              to={categoryHref(activeRoot.slug)}
               className="sub-tab"
-              aria-current={activeCategory.id === cat.id ? 'page' : undefined}
+              aria-current={activeCategory.id === activeRoot.id ? 'page' : undefined}
             >
-              {cat.name}
+              همه‌ی {activeRoot.name}
             </Link>
-          ))}
-        </nav>
-      )}
-
-      {/* سرصفحه‌ی مجموعه: مرکب دسته‌ی فعال نوار پهن بالای سرصفحه می‌شود */}
-      <header className="list-header" style={{ '--series-ink': titleInk }}>
-        <div>
-          <h1 className="list-title">
-            {title}
-            {!loading && !loadError && (
-              <span className="list-count">
-                <span className="list-count-number">{count.toLocaleString('fa-IR')}</span> کتاب
-              </span>
-            )}
-          </h1>
-          <p className="list-note">همه‌ی آگهی‌ها پیش از انتشار بررسی می‌شوند.</p>
-        </div>
-
-        <Form.Group controlId="ordering" className="list-sort">
-          <Form.Label>مرتب‌سازی</Form.Label>
-          <Form.Select value={ordering} onChange={handleOrderingChange}>
-            {ORDERING_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-      </header>
-
-      {/* همیشه در DOM تا تغییر تعداد نتیجه با فیلترها خوانده شود */}
-      <p className="visually-hidden" role="status">
-        {loading ? 'در حال بارگذاری کتاب‌ها' : loadError ? '' : `${count.toLocaleString('fa-IR')} کتاب`}
-      </p>
-
-      <div className="list-toolbar">
-        <Form id={FILTER_FORM_ID} onSubmit={handleSubmit} role="search" className="list-search">
-          <Form.Label htmlFor="book-search">جستجو</Form.Label>
-          <InputGroup>
-            <Form.Control
-              id="book-search"
-              type="search"
-              name="search"
-              placeholder="عنوان یا نویسنده…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <Button type="submit" variant="outline-secondary" aria-label="جستجو">
-              <FiSearch aria-hidden="true" />
-            </Button>
-          </InputGroup>
-        </Form>
-
-        <Button
-          variant="outline-secondary"
-          className="list-filters-toggle d-lg-none d-inline-flex align-items-center gap-2"
-          onClick={() => setShowFilters(true)}
-          aria-controls="list-filters"
-          aria-expanded={showFilters}
-        >
-          <FiSliders aria-hidden="true" />
-          فیلترها
-          {sheetFilterCount > 0 && <span className="list-filters-count">{sheetFilterCount.toLocaleString('fa-IR')}</span>}
-        </Button>
-
-        <Offcanvas
-          id="list-filters"
-          show={showFilters}
-          onHide={() => setShowFilters(false)}
-          responsive="lg"
-          placement="bottom"
-          className="list-filters"
-          aria-labelledby="list-filters-title"
-        >
-          <Offcanvas.Header closeButton closeLabel="بستن" className="d-lg-none">
-            <Offcanvas.Title id="list-filters-title" as="h2" className="h5">
-              فیلترها
-            </Offcanvas.Title>
-          </Offcanvas.Header>
-          <Offcanvas.Body className="list-filters-body">
-            <Form.Group controlId="filter-condition" className="list-field-condition">
-              <Form.Label>وضعیت ظاهری</Form.Label>
-              <Form.Select
-                form={FILTER_FORM_ID}
-                value={selectedCondition}
-                onChange={(e) => setSelectedCondition(e.target.value)}
+            {subCategories.map((cat) => (
+              <Link
+                key={cat.id}
+                to={categoryHref(cat.slug)}
+                className="sub-tab"
+                aria-current={activeCategory.id === cat.id ? 'page' : undefined}
               >
-                {CONDITION_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-
-            <fieldset className="list-field-price">
-              <legend className="form-label">قیمت</legend>
-              <div className="list-price-inputs">
-                <InputGroup hasValidation>
-                  <Form.Control
-                    form={FILTER_FORM_ID}
-                    inputMode="numeric"
-                    autoComplete="off"
-                    placeholder="از"
-                    aria-label="حداقل قیمت"
-                    value={minPrice}
-                    isInvalid={Boolean(priceError)}
-                    aria-invalid={Boolean(priceError) || undefined}
-                    aria-describedby={priceError ? 'price-error' : undefined}
-                    onChange={(e) => {
-                      setMinPrice(onlyDigits(e.target.value));
-                      setPriceError('');
-                    }}
-                  />
-                  <InputGroup.Text>تومان</InputGroup.Text>
-                </InputGroup>
-                <InputGroup>
-                  <Form.Control
-                    form={FILTER_FORM_ID}
-                    inputMode="numeric"
-                    autoComplete="off"
-                    placeholder="تا"
-                    aria-label="حداکثر قیمت"
-                    value={maxPrice}
-                    isInvalid={Boolean(priceError)}
-                    aria-invalid={Boolean(priceError) || undefined}
-                    aria-describedby={priceError ? 'price-error' : undefined}
-                    onChange={(e) => {
-                      setMaxPrice(onlyDigits(e.target.value));
-                      setPriceError('');
-                    }}
-                  />
-                  <InputGroup.Text>تومان</InputGroup.Text>
-                </InputGroup>
-              </div>
-              {priceError && (
-                <p id="price-error" className="list-field-error" role="alert">
-                  {priceError}
-                </p>
-              )}
-            </fieldset>
-
-            <Button type="submit" form={FILTER_FORM_ID} className="list-apply">
-              اعمال
-            </Button>
-          </Offcanvas.Body>
-        </Offcanvas>
-      </div>
-
-      {chips.length > 0 && (
-        <div className="list-chips" aria-label="فیلترهای فعال">
-          {chips.map((chip) => (
-            <Link
-              key={chip.key}
-              to={{ search: withParams({ [chip.key]: '' }).toString() }}
-              className="list-chip"
-              aria-label={`حذف فیلتر ${chip.label}`}
-            >
-              <span dir="auto">{chip.label}</span>
-              <FiX aria-hidden="true" />
-            </Link>
-          ))}
-          {chips.length > 1 && (
-            <button type="button" className="list-chips-clear" onClick={clearChips}>
-              حذف همه
-            </button>
-          )}
-        </div>
-      )}
-
-      {loadError ? (
-        <div className="list-state" role="alert">
-          <p>کتاب‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
-          <Button variant="outline-secondary" onClick={handleRetry}>
-            تلاش دوباره
-          </Button>
-        </div>
-      ) : !loading && books.length === 0 ? (
-        <div className="list-state">
-          {chips.length > 0 ? (
-            <>
-              <p>با این فیلترها کتابی پیدا نشد.</p>
-              <Button variant="outline-secondary" onClick={clearChips}>
-                حذف فیلترها
-              </Button>
-            </>
-          ) : (
-            <>
-              <p>
-                {activeCategory ? `در «${activeCategory.name}» هنوز کتابی نیست.` : 'هنوز کتابی در قفسه نیست.'}{' '}
-                کتابی داری که دیگر سراغش نمی‌روی؟
-              </p>
-              <Link to="/create-book" className="btn btn-primary d-inline-flex align-items-center gap-2">
-                <FiPlusCircle aria-hidden="true" />
-                فروش کتاب
+                {cat.name}
               </Link>
-            </>
-          )}
-        </div>
-      ) : (
-        <>
-          {/* عنوان کارت‌ها h3 است؛ این h2 سلسله‌مراتب را کامل می‌کند و پرشی برای صفحه‌خوان به نتیجه‌هاست */}
-          <h2 className="visually-hidden">نتیجه‌ها</h2>
-          <Row ref={gridRef} className="g-3 g-md-4" aria-busy={loading}>
-            {loading
-              ? Array.from({ length: 8 }, (_, i) => (
-                  <Col key={i} xs={6} md={4} lg={3}>
-                    <BookCardSkeleton />
-                  </Col>
-                ))
-              : books.map((book) => (
-                  <Col key={book.id} xs={6} md={4} lg={3}>
-                    <BookCard
-                      book={book}
-                      isWishlisted={displayedWishlistIds.has(book.id)}
-                      onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined}
-                    />
-                  </Col>
-                ))}
-          </Row>
-          {!loading && hasMore && (
-            <div className="text-center mt-4">
-              {/* aria-disabled به‌جای disabled: دکمه‌ی غیرفعال فوکوس را به body می‌اندازد */}
-              <Button
-                variant="outline-primary"
-                onClick={handleLoadMore}
-                className={loadingMore ? 'disabled' : undefined}
-                aria-disabled={loadingMore || undefined}
-              >
-                {loadingMore ? 'در حال بارگذاری…' : 'نمایش بیشتر'}
+            ))}
+          </nav>
+        )}
+
+        {/* سرصفحه‌ی مجموعه: مرکب دسته‌ی فعال نوار پهن بالای سرصفحه می‌شود */}
+        <header className="list-header" style={{ '--series-ink': titleInk }}>
+          <div>
+            <h1 className="list-title display-type">
+              {title}
+              {!loading && !loadError && (
+                <span className="list-count">
+                  <span className="list-count-number">{count.toLocaleString('fa-IR')}</span> کتاب
+                </span>
+              )}
+            </h1>
+            <p className="list-note">همه‌ی آگهی‌ها پیش از انتشار بررسی می‌شوند.</p>
+          </div>
+
+          <Form.Group controlId="ordering" className="list-sort">
+            <Form.Label>مرتب‌سازی</Form.Label>
+            <Form.Select value={ordering} onChange={handleOrderingChange}>
+              {ORDERING_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+        </header>
+
+        {/* همیشه در DOM تا تغییر تعداد نتیجه با فیلترها خوانده شود */}
+        <p className="visually-hidden" role="status">
+          {loading ? 'در حال بارگذاری کتاب‌ها' : loadError ? '' : `${count.toLocaleString('fa-IR')} کتاب`}
+        </p>
+
+        <div className="list-toolbar">
+          <Form id={FILTER_FORM_ID} onSubmit={handleSubmit} role="search" className="list-search">
+            <Form.Label htmlFor="book-search">جستجو</Form.Label>
+            <InputGroup>
+              <Form.Control
+                id="book-search"
+                type="search"
+                name="search"
+                placeholder="عنوان یا نویسنده…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <Button type="submit" variant="outline-secondary" aria-label="جستجو">
+                <FiSearch aria-hidden="true" />
               </Button>
-            </div>
-          )}
-        </>
-      )}
-    </Container>
+            </InputGroup>
+          </Form>
+
+          <Button
+            variant="outline-secondary"
+            className="list-filters-toggle d-lg-none d-inline-flex align-items-center gap-2"
+            onClick={() => setShowFilters(true)}
+            aria-controls="list-filters"
+            aria-expanded={showFilters}
+          >
+            <FiSliders aria-hidden="true" />
+            فیلترها
+            {sheetFilterCount > 0 && <span className="list-filters-count">{sheetFilterCount.toLocaleString('fa-IR')}</span>}
+          </Button>
+
+          <Offcanvas
+            id="list-filters"
+            show={showFilters}
+            onHide={() => setShowFilters(false)}
+            responsive="lg"
+            placement="bottom"
+            className="list-filters"
+            aria-labelledby="list-filters-title"
+          >
+            <Offcanvas.Header closeButton closeLabel="بستن" className="d-lg-none">
+              <Offcanvas.Title id="list-filters-title" as="h2" className="h5">
+                فیلترها
+              </Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body className="list-filters-body">
+              <Form.Group controlId="filter-condition" className="list-field-condition">
+                <Form.Label>وضعیت ظاهری</Form.Label>
+                <Form.Select
+                  form={FILTER_FORM_ID}
+                  value={selectedCondition}
+                  onChange={(e) => setSelectedCondition(e.target.value)}
+                >
+                  {CONDITION_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+
+              <fieldset className="list-field-price">
+                <legend className="form-label">قیمت</legend>
+                <div className="list-price-inputs">
+                  <InputGroup hasValidation>
+                    <Form.Control
+                      form={FILTER_FORM_ID}
+                      inputMode="numeric"
+                      autoComplete="off"
+                      placeholder="از"
+                      aria-label="حداقل قیمت"
+                      value={minPrice}
+                      isInvalid={Boolean(priceError)}
+                      aria-invalid={Boolean(priceError) || undefined}
+                      aria-describedby={priceError ? 'price-error' : undefined}
+                      onChange={(e) => {
+                        setMinPrice(onlyDigits(e.target.value));
+                        setPriceError('');
+                      }}
+                    />
+                    <InputGroup.Text>تومان</InputGroup.Text>
+                  </InputGroup>
+                  <InputGroup>
+                    <Form.Control
+                      form={FILTER_FORM_ID}
+                      inputMode="numeric"
+                      autoComplete="off"
+                      placeholder="تا"
+                      aria-label="حداکثر قیمت"
+                      value={maxPrice}
+                      isInvalid={Boolean(priceError)}
+                      aria-invalid={Boolean(priceError) || undefined}
+                      aria-describedby={priceError ? 'price-error' : undefined}
+                      onChange={(e) => {
+                        setMaxPrice(onlyDigits(e.target.value));
+                        setPriceError('');
+                      }}
+                    />
+                    <InputGroup.Text>تومان</InputGroup.Text>
+                  </InputGroup>
+                </div>
+                {priceError && (
+                  <p id="price-error" className="list-field-error" role="alert">
+                    {priceError}
+                  </p>
+                )}
+              </fieldset>
+
+              <Button type="submit" form={FILTER_FORM_ID} className="list-apply">
+                اعمال
+              </Button>
+            </Offcanvas.Body>
+          </Offcanvas>
+        </div>
+
+        {chips.length > 0 && (
+          <div className="list-chips" aria-label="فیلترهای فعال">
+            {chips.map((chip) => (
+              <Link
+                key={chip.key}
+                to={{ search: withParams({ [chip.key]: '' }).toString() }}
+                className="list-chip"
+                aria-label={`حذف فیلتر ${chip.label}`}
+              >
+                <span dir="auto">{chip.label}</span>
+                <FiX aria-hidden="true" />
+              </Link>
+            ))}
+            {chips.length > 1 && (
+              <button type="button" className="list-chips-clear" onClick={clearChips}>
+                حذف همه
+              </button>
+            )}
+          </div>
+        )}
+
+        {loadError ? (
+          <div className="list-state" role="alert">
+            <p>کتاب‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+            <Button variant="outline-secondary" onClick={handleRetry}>
+              تلاش دوباره
+            </Button>
+          </div>
+        ) : !loading && books.length === 0 ? (
+          <div className="list-state">
+            <EmptyShelf />
+            {chips.length > 0 ? (
+              <>
+                <p>با این فیلترها کتابی پیدا نشد.</p>
+                <Button variant="outline-secondary" onClick={clearChips}>
+                  حذف فیلترها
+                </Button>
+              </>
+            ) : (
+              <>
+                <p>
+                  {activeCategory ? `در «${activeCategory.name}» هنوز کتابی نیست.` : 'هنوز کتابی در قفسه نیست.'}{' '}
+                  کتابی داری که دیگر سراغش نمی‌روی؟
+                </p>
+                <Link to="/create-book" className="btn btn-primary d-inline-flex align-items-center gap-2">
+                  <FiPlusCircle aria-hidden="true" />
+                  فروش کتاب
+                </Link>
+              </>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* عنوان کارت‌ها h3 است؛ این h2 سلسله‌مراتب را کامل می‌کند و پرشی برای صفحه‌خوان به نتیجه‌هاست */}
+            <h2 className="visually-hidden">نتیجه‌ها</h2>
+            <Row ref={gridRef} className="g-3 g-md-4" aria-busy={loading}>
+              {loading
+                ? Array.from({ length: 8 }, (_, i) => (
+                    <Col key={i} xs={6} md={4} lg={3}>
+                      <BookCardSkeleton />
+                    </Col>
+                  ))
+                : books.map((book) => (
+                    <Col key={book.id} xs={6} md={4} lg={3}>
+                      <BookCard
+                        book={book}
+                        isWishlisted={displayedWishlistIds.has(book.id)}
+                        onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined}
+                      />
+                    </Col>
+                  ))}
+            </Row>
+            {!loading && hasMore && (
+              <div className="text-center mt-4">
+                {/* aria-disabled به‌جای disabled: دکمه‌ی غیرفعال فوکوس را به body می‌اندازد */}
+                <Button
+                  variant="outline-primary"
+                  onClick={handleLoadMore}
+                  className={loadingMore ? 'disabled' : undefined}
+                  aria-disabled={loadingMore || undefined}
+                >
+                  {loadingMore ? 'در حال بارگذاری…' : 'نمایش بیشتر'}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </Container>
+    </div>
   );
 }
 

@@ -29,7 +29,7 @@
     --rb-info: #2B5C8A;
 
     /* --- مرکب مجموعه‌ها: یکی برای هر دسته‌بندی سطح اول (بر اساس شناسه، در BookCard)، زیرشاخه‌ها مرکب والد را می‌گیرند.
-       فقط برای نوار باریک و نشانه‌ی زبانه؛ هرگز سطح بزرگ (جلد تنها سطح تمام‌رنگ است) --- */
+       نوار و خط چاپی، جلد ساده، و «کاغذ رنگی»: کاغذ صفحه و کارت با ته‌رنگ مرکب مجموعه‌ی خودش (--series) --- */
     --rb-series-1: #2846A8;
     --rb-series-2: #1F6F6B;
     --rb-series-3: #8C6508;
@@ -38,6 +38,20 @@
     --rb-series-6: #AD3B6C;
     --rb-series-7: #5E3F9E;
     --rb-series-8: #5A6B7B;
+
+    /* کاغذ رنگی: درصد مرکب مجموعه در کاغذ. متن مرکب و مرکب کم‌رنگ روی هر دو بالای ۵:۱ می‌ماند */
+    --rb-paper-tint: 12%;       /* کاغذ صفحه (مخلوط با زمینه) */
+    --rb-card-tint: 7%;         /* کاغذ کارت (مخلوط با سفید) */
+
+    /* --- زعفرانی: رنگ دوم و گرم. فقط برچسب قیمت، نشان «تازه» و کاغذ هیرو؛ همیشه با متن مرکبی (۹٫۶:۱).
+       نه اقدام اصلی (مرکب است) و نه هشدار --- */
+    --rb-accent: #F2B33D;
+    --rb-accent-deep: #9C6A10;  /* خط دور برچسب، ۳:۱ روی کاغذ */
+    --rb-accent-paper: color-mix(in oklab, var(--rb-accent) 24%, var(--rb-surface));
+
+    /* --- حروف نمایشی: لاله‌زار (پوستر و جلد چاپی ایرانی) فقط برای تیترهای بزرگ، نام برند و جلد ساده؛
+       فقط زیرمجموعه‌ی عربی بارگذاری می‌شود، پس رقم و حرف لاتین به وزیرمتن FD برمی‌گردند (رقم فارسی می‌ماند) --- */
+    --rb-font-display: "Lalezar", "Vazirmatn FD", Tahoma, sans-serif;
 
     /* --- عمق: کارت‌ها سایه ندارند؛ سایه‌ی نرم و پخش فقط برای لایه‌های واقعاً شناور (منو، مودال، toast) --- */
     --rb-shadow-overlay: 0 12px 32px -12px rgba(26, 25, 24, 0.22), 0 2px 6px rgba(26, 25, 24, 0.06);
@@ -503,4 +517,83 @@ h1, h2, h3 {
 
 main:focus {
     outline: none; /* مقصد لینک پرش است، نه کنترل؛ حلقه‌ی فوکوس روی کل صفحه معنایی ندارد */
+}
+
+/* ==========================================================================
+   کاغذ رنگی، حروف نمایشی، تزیین (گذر رنگ و جزئیات)
+   ========================================================================== */
+
+/* حروف نمایشی: لاله‌زار فقط یک وزن دارد؛ وزن ۴۰۰ و بی‌ضخیم‌سازی مصنوعی */
+.display-type,
+.navbar-brand,
+.site-footer-name {
+    font-family: var(--rb-font-display);
+    font-weight: 400;
+    font-synthesis: none;
+    letter-spacing: 0;
+}
+
+/* کاغذ رنگی: ظرفی تمام‌عرض که --series را می‌گیرد؛ بی --series همان زمینه‌ی خنثی می‌ماند */
+.series-paper {
+    background-color: color-mix(in oklab, var(--series, var(--rb-ground)) var(--rb-paper-tint), var(--rb-ground));
+}
+
+/* نوار تزیینی، مثل نقش ضربی جلدسازی: خط باریک، لوزی و دو نقطه، تکرارشونده.
+   با mask کشیده می‌شود تا رنگش همان currentColor باشد (پیش‌فرض: مرکب مجموعه یا مرکب) */
+.ornament-rule {
+    display: block;
+    height: 12px;
+    color: var(--series, var(--rb-ink));
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 12'%3E%3Cpath d='M0 5.5h32v1H0z'/%3E%3Cpath d='M16 1.5l4.5 4.5-4.5 4.5-4.5-4.5z'/%3E%3Ccircle cx='4.5' cy='6' r='1.6'/%3E%3Ccircle cx='27.5' cy='6' r='1.6'/%3E%3C/svg%3E") repeat-x center / 32px 12px;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 12'%3E%3Cpath d='M0 5.5h32v1H0z'/%3E%3Cpath d='M16 1.5l4.5 4.5-4.5 4.5-4.5-4.5z'/%3E%3Ccircle cx='4.5' cy='6' r='1.6'/%3E%3Ccircle cx='27.5' cy='6' r='1.6'/%3E%3C/svg%3E") repeat-x center / 32px 12px;
+}
+
+/* برچسب قیمت زعفرانی، مثل برچسبی که کتاب‌فروشی دست‌دوم روی جلد می‌چسباند: سوراخ نخ در سمت شروع */
+.price-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+    padding: 0.125rem 0.625rem 0.125rem 0.5rem;
+    padding-inline-start: 1.125rem;
+    border: 1px solid var(--rb-accent-deep);
+    border-radius: 2px;
+    background-color: var(--rb-accent);
+    color: var(--rb-ink);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.price-tag::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0.4375rem;
+    top: 50%;
+    width: 0.3125rem;
+    height: 0.3125rem;
+    margin-top: -0.15625rem;
+    border-radius: 50%;
+    background-color: var(--rb-surface);
+    box-shadow: inset 0 0 0 1px var(--rb-accent-deep);
+}
+
+.price-tag .book-card-currency,
+.price-tag-currency {
+    font-weight: 400;
+    color: var(--rb-ink);
+}
+
+/* نشان «تازه»: برای کتابی که در هفت روز گذشته ثبت شده؛ زعفرانی با متن مرکبی */
+.new-mark {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 2px;
+    background-color: var(--rb-accent);
+    color: var(--rb-ink);
+    font-size: 0.8125rem;
+    font-weight: var(--rb-font-weight-ui);
+    line-height: 1.6;
 }

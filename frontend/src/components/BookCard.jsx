@@ -6,6 +6,10 @@ import PlainCover from './PlainCover';
 import ConditionMeasure from './ConditionMeasure';
 import { seriesInk } from '../utils/series';
 
+// «تازه»: کتابی که در هفت روز گذشته ثبت شده
+const NEW_FOR_MS = 7 * 24 * 60 * 60 * 1000;
+const isNewListing = (createdAt) => Boolean(createdAt) && Date.now() - new Date(createdAt).getTime() < NEW_FOR_MS;
+
 function formatPrice(price) {
   const numericPrice = Number(price);
   if (price == null || Number.isNaN(numericPrice)) {
@@ -48,6 +52,7 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
 
       {/* کل کارت با stretched-link عنوان کلیک‌پذیر است؛ جلد لینک جداگانه ندارد */}
       <div className="book-card-cover book-cover-hinge">
+        {isNewListing(book.created_at) && <span className="new-mark book-card-new">تازه</span>}
         {book.cover_image ? (
           <Card.Img
             variant="top"
@@ -85,15 +90,13 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
         <div className="book-card-facts">
           <ConditionMeasure condition={book.condition} label={book.condition_display} />
 
-          <span className="book-card-price">
-            {price ? (
-              <>
-                {price} <span className="book-card-currency">تومان</span>
-              </>
-            ) : (
-              'قیمت نامشخص'
-            )}
-          </span>
+          {price ? (
+            <span className="book-card-price price-tag">
+              {price} <span className="book-card-currency">تومان</span>
+            </span>
+          ) : (
+            <span className="book-card-price">قیمت نامشخص</span>
+          )}
         </div>
       </Card.Body>
     </Card>

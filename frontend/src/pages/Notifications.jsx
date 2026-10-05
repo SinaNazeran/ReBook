@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { FiShoppingBag, FiCreditCard, FiCheckSquare, FiXCircle, FiInfo } from 'react-icons/fi';
 import { notificationAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
+import EmptyShelf from '../components/EmptyShelf';
 
 // نوع اعلان با شکل آیکن شناخته می‌شود؛ رنگ‌ها خنثی می‌مانند تا «خوانده‌نشده» تنها نشانه‌ی پررنگ باشد
 const TYPE_ICON = {
@@ -101,6 +102,7 @@ function Notifications() {
         </div>
       ) : notifications.length === 0 ? (
         <div className="list-state">
+          <EmptyShelf />
           <p>
             هنوز اعلانی نداری. وقتی کسی کتابت را سفارش بدهد یا پرداختی انجام شود، همین‌جا خبرت می‌کنیم.
           </p>
