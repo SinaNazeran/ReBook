@@ -61,7 +61,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
           await orderAPI.cancelOrder(orderId);
           setError(`پرداخت انجام نشد و سفارش لغو شد؛ می‌توانی دوباره امتحان کنی. (${getErrorMessage(err)})`);
         } catch {
-          setError('پرداخت انجام نشد. سفارش در «سفارش‌های من» در انتظار پرداخت مانده است.');
+          setError('پرداخت انجام نشد. سفارش در «معاملات من» در انتظار پرداخت مانده است.');
           onStale?.();
         }
       }
@@ -95,7 +95,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
           </Modal.Header>
           <Modal.Body>
             <p>
-              «<bdi>{book.title}</bdi>» به نام تو ثبت شد و فروشنده خبردار شد. وضعیت ارسال را در «سفارش‌های من»
+              «<bdi>{book.title}</bdi>» به نام تو ثبت شد و فروشنده خبردار شد. وضعیت ارسال را در «معاملات من»
               دنبال کن.
             </p>
             <div className="receipt-code">
@@ -116,7 +116,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
           </Modal.Body>
           <Modal.Footer>
             <Link to="/my-orders" className="btn btn-outline-secondary">
-              سفارش‌های من
+              معاملات من
             </Link>
             <Button variant="primary" onClick={onHide}>
               بستن

@@ -41,7 +41,7 @@ class OrderCreateView(generics.CreateAPIView):
         Notification.objects.create(
             user=order.book.seller,
             title="سفارش جدید",
-            message=f'کتاب "{order.book.title}" سفارش داده شد.',
+            message=f"کتاب «{order.book.title}» سفارش داده شد.",
             notification_type="order",
         )
 
@@ -136,7 +136,7 @@ class FakePaymentView(APIView):
         Notification.objects.create(
             user=order.book.seller,
             title="پرداخت سفارش",
-            message=f'خریدار کتاب "{order.book.title}" پرداخت را انجام داد.',
+            message=f"خریدار کتاب «{order.book.title}» پرداخت را انجام داد.",
             notification_type="payment",
         )
 
@@ -176,10 +176,10 @@ class OrderCancelView(APIView):
         # اعلان به طرف دیگر معامله
         if order.buyer_id == user.id:
             recipient = order.book.seller
-            message = f'خریدار سفارش کتاب "{order.book.title}" را لغو کرد؛ کتاب دوباره قابل خرید است.'
+            message = f"خریدار سفارش کتاب «{order.book.title}» را لغو کرد؛ کتاب دوباره قابل خرید است."
         else:
             recipient = order.buyer
-            message = f'فروشنده سفارش شما برای کتاب "{order.book.title}" را لغو کرد.'
+            message = f"فروشنده سفارشت برای کتاب «{order.book.title}» را لغو کرد."
         Notification.objects.create(
             user=recipient, title="لغو سفارش", message=message, notification_type="order"
         )

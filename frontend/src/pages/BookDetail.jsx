@@ -176,13 +176,13 @@ function BookDetail() {
       ),
       sold: (
         <p>
-          این کتاب فروخته شد. جزئیات خریدار و ارسال در <Link to="/my-orders">سفارش‌های من</Link> است.
+          این کتاب فروخته شد. جزئیات خریدار و ارسال در <Link to="/my-orders?tab=sales">معاملات من</Link> است.
         </p>
       ),
       approved: openOrder ? (
         <p>
           خریداری این کتاب را سفارش داده و پرداختش مانده است. اگر پرداخت نکرد، از{' '}
-          <Link to="/my-orders">سفارش‌های من</Link> لغوش کن.
+          <Link to="/my-orders?tab=sales">معاملات من</Link> لغوش کن.
         </p>
       ) : (
         <p>این آگهی توست و در فهرست عمومی دیده می‌شود.</p>
@@ -191,7 +191,7 @@ function BookDetail() {
   } else if (book.status === 'sold') {
     status = boughtByMe ? (
       <p>
-        این کتاب را خریدی. وضعیت ارسال را در <Link to="/my-orders">سفارش‌های من</Link> دنبال کن.
+        این کتاب را خریدی. وضعیت ارسال را در <Link to="/my-orders">معاملات من</Link> دنبال کن.
       </p>
     ) : (
       <p>

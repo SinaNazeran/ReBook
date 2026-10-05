@@ -212,7 +212,8 @@ function Navbar() {
                   align="end"
                   className="w-100 w-lg-auto text-center text-lg-start mt-2 mt-lg-0"
                 >
-                  <NavDropdown.Header className="pb-2">
+                  {/* نام و ایمیل متن معمولی‌اند، نه سرتیتر (پیش‌فرض react-bootstrap role="heading" است) */}
+                  <NavDropdown.Header className="pb-2" role="none">
                     <div className="fw-bold text-truncate text-dark">
                       {user?.first_name
                         ? `${user.first_name} ${user.last_name || ''}`
@@ -237,7 +238,7 @@ function Navbar() {
 
                   <NavDropdown.Item as={Link} to="/my-orders" className="d-flex align-items-center gap-2 py-2">
                     <FiShoppingBag size={16} className="text-muted" />
-                    سفارش‌های من
+                    معاملات من
                   </NavDropdown.Item>
 
                   <NavDropdown.Item as={Link} to="/notifications" className="d-flex align-items-center gap-2 py-2">
