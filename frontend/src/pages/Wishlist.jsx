@@ -83,13 +83,16 @@ function Wishlist() {
           </Link>
         </div>
       ) : (
-        <Row className="g-3 g-md-4">
-          {wishlist.map((item) => (
-            <Col key={item.id} xs={6} md={4} lg={3}>
-              <BookCard book={item.book} isWishlisted onToggleWishlist={handleRemove} />
-            </Col>
-          ))}
-        </Row>
+        <>
+          <h2 className="visually-hidden">کتاب‌های نشان‌شده</h2>
+          <Row className="g-3 g-md-4">
+            {wishlist.map((item) => (
+              <Col key={item.id} xs={6} md={4} lg={3}>
+                <BookCard book={item.book} isWishlisted onToggleWishlist={handleRemove} />
+              </Col>
+            ))}
+          </Row>
+        </>
       )}
     </Container>
   );

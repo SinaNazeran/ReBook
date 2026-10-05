@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Modal, Form, Button, Alert } from 'react-bootstrap';
+import { Modal, Button, Alert } from 'react-bootstrap';
+import Form from './Form';
 import { FiCopy, FiCheck } from 'react-icons/fi';
 import { orderAPI, getErrorMessage } from '../services/api';
 

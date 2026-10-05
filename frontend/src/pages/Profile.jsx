@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
+import Form from '../components/Form';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FiUser, FiCamera } from 'react-icons/fi';

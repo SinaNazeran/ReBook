@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Container, Row, Col, Form, Button, Alert, InputGroup } from 'react-bootstrap';
+import { Container, Row, Col, Button, Alert, InputGroup } from 'react-bootstrap';
+import Form from '../components/Form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FiUpload, FiTrash2 } from 'react-icons/fi';

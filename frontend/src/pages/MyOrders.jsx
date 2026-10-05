@@ -11,7 +11,15 @@ const fetchOrders = () => Promise.all([orderAPI.getMyOrders(), orderAPI.getMySal
 
 function MyOrders() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get('tab') === 'sales' ? 'sales' : 'purchases';
+  const urlTab = searchParams.get('tab') === 'sales' ? 'sales' : 'purchases';
+  // زبانه در state محلی هم نگه داشته می‌شود: URL یک رندر دیرتر به‌روز می‌شود و react-bootstrap با کلید جهت‌نما
+  // فوکوس را روی زبانه‌ی قبلی می‌گذاشت، پس «فروش‌های من» با صفحه‌کلید در دسترس نبود. URL (عقب/جلو) هنوز منبع است.
+  const [activeTab, setActiveTab] = useState(urlTab);
+  const [prevUrlTab, setPrevUrlTab] = useState(urlTab);
+  if (urlTab !== prevUrlTab) {
+    setPrevUrlTab(urlTab);
+    setActiveTab(urlTab);
+  }
 
   const [purchases, setPurchases] = useState([]);
   const [sales, setSales] = useState([]);
@@ -73,6 +81,7 @@ function MyOrders() {
   };
 
   const handleTabSelect = (key) => {
+    setActiveTab(key);
     setSearchParams(key === 'sales' ? { tab: 'sales' } : {});
   };
 

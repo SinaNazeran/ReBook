@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Container, Form, Button, Alert } from 'react-bootstrap';
+import { Container, Button, Alert } from 'react-bootstrap';
+import Form from '../components/Form';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/useAuth.js';

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Form, InputGroup, Button } from 'react-bootstrap';
+import { InputGroup, Button } from 'react-bootstrap';
+import Form from './Form';
 
 /** فیلد رمز با دکمه‌ی نمایش؛ روی موبایل تایپ رمز بی‌دیدن خطاساز است */
 function PasswordField({ id, label, error, help, ...inputProps }) {

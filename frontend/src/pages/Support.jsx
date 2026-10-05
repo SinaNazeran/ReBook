@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, Accordion } from 'react-bootstrap';
+import { Container, Row, Col, Button, Accordion } from 'react-bootstrap';
+import Form from '../components/Form';
 import { toast } from 'react-toastify';
 import { notificationAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';

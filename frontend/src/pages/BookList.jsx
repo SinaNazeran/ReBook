@@ -393,6 +393,7 @@ function BookList() {
           className="list-filters-toggle d-lg-none d-inline-flex align-items-center gap-2"
           onClick={() => setShowFilters(true)}
           aria-controls="list-filters"
+          aria-expanded={showFilters}
         >
           <FiSliders aria-hidden="true" />
           فیلترها
@@ -441,6 +442,8 @@ function BookList() {
                     aria-label="حداقل قیمت"
                     value={minPrice}
                     isInvalid={Boolean(priceError)}
+                    aria-invalid={Boolean(priceError) || undefined}
+                    aria-describedby={priceError ? 'price-error' : undefined}
                     onChange={(e) => {
                       setMinPrice(onlyDigits(e.target.value));
                       setPriceError('');
@@ -457,6 +460,7 @@ function BookList() {
                     aria-label="حداکثر قیمت"
                     value={maxPrice}
                     isInvalid={Boolean(priceError)}
+                    aria-invalid={Boolean(priceError) || undefined}
                     aria-describedby={priceError ? 'price-error' : undefined}
                     onChange={(e) => {
                       setMaxPrice(onlyDigits(e.target.value));
@@ -532,6 +536,8 @@ function BookList() {
         </div>
       ) : (
         <>
+          {/* عنوان کارت‌ها h3 است؛ این h2 سلسله‌مراتب را کامل می‌کند و پرشی برای صفحه‌خوان به نتیجه‌هاست */}
+          <h2 className="visually-hidden">نتیجه‌ها</h2>
           <Row ref={gridRef} className="g-3 g-md-4" aria-busy={loading}>
             {loading
               ? Array.from({ length: 8 }, (_, i) => (
