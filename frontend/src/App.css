@@ -68,7 +68,7 @@
 }
 
 .site-navbar .nav-link.active {
-  color: var(--rb-ink);
+  color: var(--rb-brand);
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 0.6em;
@@ -605,7 +605,7 @@
   margin: 0;
   padding: 0 0 0.75rem;
   list-style: none;
-  border-bottom: 3px solid var(--rb-ink);
+  border-bottom: 3px solid var(--rb-brand);
 }
 
 /* ۵ جلد به پهنای ۳۰٪ با گام ۱۷٫۵٪ دقیقاً کل عرض را پر می‌کنند */
@@ -688,7 +688,7 @@
   margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
-  border-bottom: 3px solid var(--rb-ink);
+  border-bottom: 3px solid var(--rb-brand);
 }
 
 /* عطف‌ها باریک‌اند، مثل کتاب واقعی؛ باقی قفسه جای خالی است */
@@ -2195,9 +2195,10 @@
 /* ==========================================================================
    ۱۳. فوتر
    ========================================================================== */
+/* فوتر میدان لاجوردی برند؛ متن ثانویه لاجوردی‌روشن (~۶:۱) */
 .site-footer {
-  background-color: var(--rb-ink);
-  color: var(--rb-on-ink-muted);
+  background-color: var(--rb-brand);
+  color: var(--rb-on-brand-muted);
 }
 
 /* کاغذ رنگی صفحه تا فوتر می‌رسد: main ستونی می‌شود و کاغذ جای باقی‌مانده را پر می‌کند، بی فاصله‌ی خنثی بالای فوتر */
@@ -2446,4 +2447,27 @@ body:has(.not-found) main {
 
 .condition-option:has(:checked) {
   background-color: color-mix(in oklab, var(--rb-accent) 22%, var(--rb-surface));
+}
+
+/* ==========================================================================
+   ۱۵. لاجوردی برند: تیترهای نمایشی و نام برند به لاجوردی؛ متن بدنه مرکب می‌ماند
+   ========================================================================== */
+.navbar-brand,
+.home-hero-title,
+.home-section-title,
+.list-title,
+.detail-title,
+.ledger-title,
+.sell-title,
+.auth-title,
+.not-found-title,
+.colophon-title,
+.support-heading,
+.profile-username {
+  color: var(--rb-brand);
+}
+
+.navbar-brand:hover,
+.navbar-brand:focus {
+  color: var(--rb-brand);
 }

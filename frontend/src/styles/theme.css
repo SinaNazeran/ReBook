@@ -13,6 +13,13 @@
     --rb-surface-sunken: #ECEBE6;  /* جای خالی جلد، اعلان خوانده‌نشده، بخش متمایز */
     --rb-ink: #1A1918;             /* متن و اقدام اصلی؛ سیاه خالص نیست */
     --rb-ink-hover: #3A3835;
+
+    /* لاجوردی: رنگ برند و اقدام اصلی (دکمه، پیوند، فوکوس، تیتر نمایشی، فوتر). با زعفرانی، لاجورد و زر تذهیب نسخه‌های ایرانی.
+       متن سفید روی آن ۱۱٫۳:۱؛ روی کاغذ زمینه ۱۰٫۳:۱ */
+    --rb-brand: #1F3385;
+    --rb-brand-hover: #2D46A1;     /* ۸٫۴:۱ با متن سفید */
+    --rb-on-brand: #FFFFFF;
+    --rb-on-brand-muted: #C3CAE6;  /* متن ثانویه روی فوتر لاجوردی، ~۶:۱ */
     --rb-ink-muted: #5C5B57;       /* متن ثانویه؛ ۶٫۲:۱ روی زمینه */
     --rb-on-ink: #FFFFFF;
     --rb-on-ink-muted: #B9B8B1;    /* متن ثانویه روی سطح مرکبی (فوتر) */
@@ -20,7 +27,7 @@
     --rb-field-border: #8E8D86;    /* مرز فیلد فرم؛ ۳٫۳:۱ برای تشخیص کنترل */
     --rb-placeholder: #6E6D68;
     --rb-brand-red: #D7261E;       /* فقط نشان برند؛ اقدام اصلی با مرکب است تا با «دیوار» و قرمز خطر یکی نشود */
-    --rb-focus: #0A63D6;          /* آبی رابط، جدا از مرکب چاپی مجموعه‌ی ۱ */
+    --rb-focus: #2D46A1;          /* حلقه‌ی فوکوس به لاجوردی برند (۷٫۷:۱ روی زمینه) */
 
     /* --- معنایی --- */
     --rb-success: #2E7A4F;
@@ -74,9 +81,9 @@
     --rb-duration: 200ms;
 
     /* --- بازتعریف بوت‌استرپ 5.3 --- */
-    --bs-primary: var(--rb-ink);
-    --bs-primary-rgb: 26, 25, 24;
-    --bs-primary-text-emphasis: var(--rb-ink);
+    --bs-primary: var(--rb-brand);
+    --bs-primary-rgb: 31, 51, 133;
+    --bs-primary-text-emphasis: var(--rb-brand);
     --bs-primary-bg-subtle: var(--rb-surface-sunken);
     --bs-primary-border-subtle: var(--rb-rule);
 
@@ -118,13 +125,13 @@
     --bs-border-color: var(--rb-rule);
     --bs-heading-color: inherit;
 
-    --bs-link-color: var(--rb-ink);
-    --bs-link-color-rgb: 26, 25, 24;
-    --bs-link-hover-color: var(--rb-focus);
-    --bs-link-hover-color-rgb: 10, 99, 214;
+    --bs-link-color: var(--rb-brand);
+    --bs-link-color-rgb: 31, 51, 133;
+    --bs-link-hover-color: var(--rb-brand-hover);
+    --bs-link-hover-color-rgb: 45, 70, 161;
     --bs-link-decoration: underline;
 
-    --bs-focus-ring-color: rgba(10, 99, 214, 0.35);
+    --bs-focus-ring-color: rgba(45, 70, 161, 0.35);
 
     /* گوشه‌های کوچک و تقریباً چهارگوش، مثل کتاب جیبی؛ شعاع داخلی کارت از --bs-card-inner-border-radius هم‌مرکز می‌ماند */
     --bs-border-radius: 0.25rem;
@@ -145,7 +152,7 @@
     --rb-heading-line-height: 1.35;
     --rb-font-weight-ui: 500;
 
-    accent-color: var(--rb-ink);
+    accent-color: var(--rb-brand);
     caret-color: var(--rb-focus);
 }
 
@@ -153,7 +160,7 @@
    سطوح مرورگر: انتخاب متن، اسکرول‌بار، زیرخط، فوکوس
    ========================================================================== */
 ::selection {
-    background-color: rgba(10, 99, 214, 0.18);
+    background-color: rgba(31, 51, 133, 0.16);
     color: var(--rb-ink);
 }
 
@@ -235,28 +242,28 @@ input[autocomplete="username"] {
 
 .btn-primary {
     --bs-btn-color: var(--rb-on-ink);
-    --bs-btn-bg: var(--rb-ink);
-    --bs-btn-border-color: var(--rb-ink);
-    --bs-btn-hover-color: var(--rb-on-ink);
-    --bs-btn-hover-bg: var(--rb-ink-hover);
-    --bs-btn-hover-border-color: var(--rb-ink-hover);
-    --bs-btn-active-color: var(--rb-on-ink);
-    --bs-btn-active-bg: var(--rb-ink);
-    --bs-btn-active-border-color: var(--rb-ink);
+    --bs-btn-bg: var(--rb-brand);
+    --bs-btn-border-color: var(--rb-brand);
+    --bs-btn-hover-color: var(--rb-on-brand);
+    --bs-btn-hover-bg: var(--rb-brand-hover);
+    --bs-btn-hover-border-color: var(--rb-brand-hover);
+    --bs-btn-active-color: var(--rb-on-brand);
+    --bs-btn-active-bg: var(--rb-brand);
+    --bs-btn-active-border-color: var(--rb-brand);
     --bs-btn-disabled-color: var(--rb-on-ink);
     --bs-btn-disabled-bg: var(--rb-ink-muted);
     --bs-btn-disabled-border-color: var(--rb-ink-muted);
 }
 
 .btn-outline-primary {
-    --bs-btn-color: var(--rb-ink);
-    --bs-btn-border-color: var(--rb-ink);
-    --bs-btn-hover-color: var(--rb-on-ink);
-    --bs-btn-hover-bg: var(--rb-ink);
-    --bs-btn-hover-border-color: var(--rb-ink);
-    --bs-btn-active-color: var(--rb-on-ink);
-    --bs-btn-active-bg: var(--rb-ink);
-    --bs-btn-active-border-color: var(--rb-ink);
+    --bs-btn-color: var(--rb-brand);
+    --bs-btn-border-color: var(--rb-brand);
+    --bs-btn-hover-color: var(--rb-on-brand);
+    --bs-btn-hover-bg: var(--rb-brand);
+    --bs-btn-hover-border-color: var(--rb-brand);
+    --bs-btn-active-color: var(--rb-on-brand);
+    --bs-btn-active-bg: var(--rb-brand);
+    --bs-btn-active-border-color: var(--rb-brand);
     --bs-btn-disabled-color: var(--rb-ink-muted);
     --bs-btn-disabled-border-color: var(--rb-rule);
 }
@@ -342,7 +349,7 @@ input[autocomplete="username"] {
 
 .form-control:focus,
 .form-select:focus {
-    border-color: var(--rb-ink);
+    border-color: var(--rb-brand);
     box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
 }
 
@@ -355,7 +362,7 @@ input[autocomplete="username"] {
 
 .input-group:focus-within > .form-control,
 .input-group:focus-within > .input-group-text {
-    border-color: var(--rb-ink);
+    border-color: var(--rb-brand);
     box-shadow: none;
 }
 
@@ -364,12 +371,12 @@ textarea.form-control {
 }
 
 .form-check-input:checked {
-    background-color: var(--rb-ink);
-    border-color: var(--rb-ink);
+    background-color: var(--rb-brand);
+    border-color: var(--rb-brand);
 }
 
 .form-check-input:focus {
-    border-color: var(--rb-ink);
+    border-color: var(--rb-brand);
     box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
 }
 
@@ -393,7 +400,7 @@ textarea.form-control {
 .dropdown-menu {
     --bs-dropdown-border-color: var(--rb-rule);
     --bs-dropdown-box-shadow: var(--rb-shadow-overlay);
-    --bs-dropdown-link-active-bg: var(--rb-ink);
+    --bs-dropdown-link-active-bg: var(--rb-brand);
     --bs-dropdown-link-hover-bg: var(--rb-surface-sunken);
     box-shadow: var(--bs-dropdown-box-shadow);
 }
@@ -554,7 +561,7 @@ main:focus {
 .ornament-rule {
     display: block;
     height: 12px;
-    color: var(--series, var(--rb-ink));
+    color: var(--series, var(--rb-brand));
     background-color: currentColor;
     -webkit-mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
     mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
