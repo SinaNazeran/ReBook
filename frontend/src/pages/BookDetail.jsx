@@ -227,11 +227,20 @@ function BookDetail() {
         <Col lg={4}>
           <figure className="detail-cover" style={{ '--card-ink': ink }}>
             {book.cover_image ? (
-              <img src={book.cover_image} alt={`جلد ${book.title}`} className="detail-cover-img" fetchPriority="high" />
+              <div className="book-cover-hinge">
+                <img src={book.cover_image} alt={`جلد ${book.title}`} className="detail-cover-img" fetchPriority="high" />
+              </div>
             ) : (
-              <PlainCover title={book.title} author={book.author} rootId={rootId} className="detail-plain-cover" />
+              <PlainCover
+                title={book.title}
+                author={book.author}
+                rootId={rootId}
+                className="detail-plain-cover"
+              />
             )}
-            <span className="book-card-band" aria-hidden="true" />
+            <div className="book-card-band">
+              {book.category && <span className="book-card-series">{book.category.name}</span>}
+            </div>
           </figure>
         </Col>
 
@@ -329,32 +338,48 @@ function BookDetail() {
             )}
           </section>
 
-          <dl className="detail-facts">
-            {book.publisher && (
-              <>
-                <dt>انتشارات</dt>
-                <dd>
-                  <bdi>{book.publisher}</bdi>
-                </dd>
-              </>
-            )}
-            {book.isbn && (
-              <>
-                <dt>شابک</dt>
-                <dd>
-                  <bdi dir="ltr">{book.isbn}</bdi>
-                </dd>
-              </>
-            )}
-            {book.category && (
-              <>
-                <dt>دسته‌بندی</dt>
-                <dd>{book.category.name}</dd>
-              </>
-            )}
-            <dt>تاریخ ثبت</dt>
-            <dd>{formatDate(book.created_at)}</dd>
-          </dl>
+          {/* شناسنامه، مثل صفحه‌ی شناسنامه‌ی کتاب چاپی: قاب دوخطی، سطرها با نقطه‌چین به مقدار می‌رسند */}
+          <section className="colophon" aria-labelledby="colophon-title">
+            <h2 id="colophon-title" className="colophon-title">
+              شناسنامه‌ی کتاب
+            </h2>
+            <dl className="colophon-list">
+              <dt>عنوان</dt>
+              <dd>
+                <bdi>{book.title}</bdi>
+              </dd>
+              <dt>نویسنده</dt>
+              <dd>
+                <bdi>{book.author}</bdi>
+              </dd>
+              {book.publisher && (
+                <>
+                  <dt>ناشر</dt>
+                  <dd>
+                    <bdi>{book.publisher}</bdi>
+                  </dd>
+                </>
+              )}
+              {book.isbn && (
+                <>
+                  <dt>شابک</dt>
+                  <dd>
+                    <bdi dir="ltr">{book.isbn}</bdi>
+                  </dd>
+                </>
+              )}
+              {book.category && (
+                <>
+                  <dt>مجموعه</dt>
+                  <dd>{book.category.name}</dd>
+                </>
+              )}
+              <dt>وضعیت ظاهری</dt>
+              <dd>{book.condition_display}</dd>
+              <dt>ثبت در ری‌بوک</dt>
+              <dd>{formatDate(book.created_at)}</dd>
+            </dl>
+          </section>
         </Col>
       </Row>
 

@@ -47,7 +47,7 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
       )}
 
       {/* کل کارت با stretched-link عنوان کلیک‌پذیر است؛ جلد لینک جداگانه ندارد */}
-      <div className="book-card-cover">
+      <div className="book-card-cover book-cover-hinge">
         {book.cover_image ? (
           <Card.Img
             variant="top"
@@ -66,8 +66,10 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
         )}
       </div>
 
-      {/* نوار مجموعه: تنها نشانه‌ی رنگی کارت جز جلد */}
-      <div className="book-card-band" aria-hidden="true" />
+      {/* نوار مجموعه با نام دسته: تنها نشانه‌ی رنگی کارت جز جلد */}
+      <div className="book-card-band">
+        {book.category_name && <span className="book-card-series">{book.category_name}</span>}
+      </div>
 
       <Card.Body className="book-card-body">
         <Card.Title as="h3" className="book-card-title">
@@ -78,7 +80,6 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
 
         <p className="book-card-meta">
           <span className="book-card-author" dir="auto">{book.author}</span>
-          {book.category_name && <span className="book-card-category">{book.category_name}</span>}
         </p>
 
         <div className="book-card-facts">

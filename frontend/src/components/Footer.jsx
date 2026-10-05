@@ -1,5 +1,6 @@
 import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import BrandMark from './BrandMark';
 
 // سال جاری به تقویم شمسی، بدون نیاز به کتابخانه‌ی جانبی
 function getCurrentPersianYear() {
@@ -12,10 +13,16 @@ function getCurrentPersianYear() {
 function Footer() {
   return (
     <footer className="site-footer mt-5">
+      {/* کلید مجموعه‌ها، مثل نوار رنگ‌های پشت جلد کتاب جیبی: هشت مرکب کنار هم */}
+      <div className="series-rule" aria-hidden="true">
+        {Array.from({ length: 8 }, (_, i) => (
+          <span key={i} style={{ backgroundColor: `var(--rb-series-${i + 1})` }} />
+        ))}
+      </div>
       <Container className="site-footer-inner">
         <div className="site-footer-brand">
           <Link to="/" className="site-footer-name" translate="no">
-            <span className="brand-mark" aria-hidden="true" />
+            <BrandMark />
             ری‌بوک
           </Link>
           <p className="mb-0">جایی برای دادن زندگی دوباره به کتاب‌هایتان.</p>

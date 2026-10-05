@@ -342,13 +342,15 @@ function BookList() {
         </nav>
       )}
 
-      <header className="list-header">
+      {/* سرصفحه‌ی مجموعه: مرکب دسته‌ی فعال نوار پهن بالای سرصفحه می‌شود */}
+      <header className="list-header" style={{ '--series-ink': titleInk }}>
         <div>
-          <h1 className="list-title" style={{ '--series-ink': titleInk }}>
-            <span className="list-title-mark" aria-hidden="true" />
+          <h1 className="list-title">
             {title}
             {!loading && !loadError && (
-              <span className="list-count">{count.toLocaleString('fa-IR')} کتاب</span>
+              <span className="list-count">
+                <span className="list-count-number">{count.toLocaleString('fa-IR')}</span> کتاب
+              </span>
             )}
           </h1>
           <p className="list-note">همه‌ی آگهی‌ها پیش از انتشار بررسی می‌شوند.</p>

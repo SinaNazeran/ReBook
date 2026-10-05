@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar as BSNavbar, Nav, Container, Badge, NavDropdown, Form } from 'react-bootstrap';
 import { useAuth } from '../context/useAuth.js';
+import BrandMark from './BrandMark';
 import { notificationAPI, ADMIN_URL } from '../services/api';
 import {
   FiBell,
@@ -119,7 +120,7 @@ function Navbar() {
     <BSNavbar bg="white" expand="lg" expanded={menuOpen} onToggle={setMenuOpen} className="site-navbar sticky-top py-2 navbar-light" aria-label="منوی اصلی">
       <Container>
         <BSNavbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2" translate="no">
-          <span className="brand-mark" aria-hidden="true" />
+          <BrandMark />
           ری‌بوک
         </BSNavbar.Brand>
 

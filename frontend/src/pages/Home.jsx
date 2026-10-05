@@ -3,10 +3,13 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { bookAPI } from '../services/api';
 import BookCard, { BookCardSkeleton } from '../components/BookCard';
+import PlainCover from '../components/PlainCover';
 import { seriesInk } from '../utils/series';
 import { FiArrowLeft, FiPlusCircle } from 'react-icons/fi';
 
-const LATEST_BOOKS_COUNT = 8;
+// پنج جلد تازه روی قفسه‌ی هیرو؛ شبکه‌ی پایین از کتاب ششم ادامه می‌دهد تا هیچ کتابی دوبار دیده نشود
+const SHELF_COUNT = 5;
+const GRID_COUNT = 8;
 
 // مسیر فروشنده، همان‌طور که در محصول رخ می‌دهد؛ بررسی تیم فقط همین‌جا و بی‌سروصدا گفته می‌شود
 const SELL_STEPS = [
@@ -21,6 +24,9 @@ function Home() {
   const [reloadKey, setReloadKey] = useState(0);
   const [shelves, setShelves] = useState([]);
 
+  const shelfBooks = latestBooks.slice(0, SHELF_COUNT);
+  const gridBooks = latestBooks.slice(SHELF_COUNT);
+
   const retry = () => {
     setStatus('loading');
     setReloadKey((k) => k + 1);
@@ -30,11 +36,11 @@ function Home() {
     let ignore = false;
 
     bookAPI
-      .getBooks({ ordering: '-created_at', page_size: LATEST_BOOKS_COUNT })
+      .getBooks({ ordering: '-created_at', page_size: SHELF_COUNT + GRID_COUNT })
       .then((response) => {
         if (ignore) return;
         const books = response.data.results ?? response.data;
-        setLatestBooks(books.slice(0, LATEST_BOOKS_COUNT));
+        setLatestBooks(books.slice(0, SHELF_COUNT + GRID_COUNT));
         setStatus('ready');
       })
       .catch(() => {
@@ -65,8 +71,8 @@ function Home() {
       <section className="home-hero">
         <Container>
           <Row className="gy-4 align-items-end">
-            <Col lg={7}>
-              <h1 className="home-hero-title">کتاب بعدی‌ات را پیدا کن، کتاب‌هایی را که خواندی بفروش.</h1>
+            <Col lg={6}>
+              <h1 className="home-hero-title">کتاب بعدی‌ات را پیدا&nbsp;کن، کتاب‌هایی را که خواندی بفروش.</h1>
               <p className="home-hero-lead">
                 نسخه‌های دست دوم را با عکس جلد، وضعیت ظاهری و قیمت کنار هم ببین.
               </p>
@@ -84,73 +90,115 @@ function Home() {
               </div>
             </Col>
 
-            <Col lg={5}>
-              <nav className="series-index" aria-labelledby="series-index-title">
-                <h2 id="series-index-title" className="series-index-title">
-                  دسته‌ها
-                </h2>
-                <ul className="series-index-list">
-                  {shelves.map((cat) => (
-                    <li key={cat.id}>
-                      <Link
-                        to={`/books?category=${cat.slug}`}
-                        className="series-index-link"
-                        style={{ '--series-ink': seriesInk(cat.id) }}
-                      >
-                        <span className="series-index-mark" aria-hidden="true" />
-                        {cat.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
+            <Col lg={6}>
+              {status !== 'error' && !(status === 'ready' && shelfBooks.length === 0) && (
+                <figure className="hero-shelf" aria-busy={status === 'loading'}>
+                  <ul className="hero-shelf-list">
+                    {status === 'loading'
+                      ? Array.from({ length: SHELF_COUNT }, (_, i) => (
+                          <li key={i} className="shelf-book is-placeholder" aria-hidden="true" />
+                        ))
+                      : shelfBooks.map((book) => (
+                          <li key={book.id}>
+                            <Link
+                              to={`/books/${book.id}`}
+                              className="shelf-book"
+                              style={{ '--card-ink': seriesInk(book.category_root) }}
+                              aria-label={`${book.title}، ${book.author}`}
+                            >
+                              <span className="shelf-cover book-cover-hinge">
+                                {book.cover_image ? (
+                                  <img src={book.cover_image} alt="" />
+                                ) : (
+                                  <PlainCover
+                                    title={book.title}
+                                    author={book.author}
+                                    rootId={book.category_root}
+                                    series={book.category_name}
+                                  />
+                                )}
+                              </span>
+                              <span className="shelf-band" aria-hidden="true" />
+                            </Link>
+                          </li>
+                        ))}
+                  </ul>
+                  <figcaption className="hero-shelf-caption">تازه‌ترین نسخه‌های قفسه</figcaption>
+                </figure>
+              )}
             </Col>
           </Row>
         </Container>
       </section>
 
-      <section className="home-latest" aria-labelledby="latest-title">
-        <Container>
-          <div className="d-flex justify-content-between align-items-baseline gap-3 mb-3">
-            <h2 id="latest-title" className="home-section-title">جدیدترین کتاب‌ها</h2>
-            <Link to="/books" className="home-more-link">
-              همه‌ی کتاب‌ها
-              <FiArrowLeft aria-hidden="true" />
-            </Link>
-          </div>
+      {shelves.length > 0 && (
+        <section className="series-key" aria-labelledby="series-key-title">
+          <Container>
+            <h2 id="series-key-title" className="home-section-title">
+              مجموعه‌ها
+            </h2>
+            <ul className="series-key-list">
+              {shelves.map((cat) => (
+                <li key={cat.id}>
+                  <Link
+                    to={`/books?category=${cat.slug}`}
+                    className="series-key-link"
+                    style={{ '--series-ink': seriesInk(cat.id) }}
+                  >
+                    {cat.name}
+                    <FiArrowLeft aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+      )}
 
-          {status === 'error' ? (
-            <div className="list-state" role="alert">
-              <p>کتاب‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
-              <Button variant="outline-secondary" onClick={retry}>
-                تلاش دوباره
-              </Button>
-            </div>
-          ) : status === 'ready' && latestBooks.length === 0 ? (
-            <div className="list-state">
-              <p>هنوز کتابی در قفسه نیست. اولین کتاب را تو ثبت کن.</p>
-              <Link to="/create-book" className="btn btn-primary">
-                فروش کتاب
+      {(status !== 'ready' || latestBooks.length === 0 || gridBooks.length > 0) && (
+        <section className="home-latest" aria-labelledby="latest-title">
+          <Container>
+            <div className="d-flex justify-content-between align-items-baseline gap-3 mb-3">
+              <h2 id="latest-title" className="home-section-title">در قفسه</h2>
+              <Link to="/books" className="home-more-link">
+                همه‌ی کتاب‌ها
+                <FiArrowLeft aria-hidden="true" />
               </Link>
             </div>
-          ) : (
-            <Row className="g-3 g-md-4" aria-busy={status === 'loading'}>
-              {status === 'loading'
-                ? Array.from({ length: LATEST_BOOKS_COUNT }, (_, i) => (
-                    <Col key={i} xs={6} md={4} lg={3}>
-                      <BookCardSkeleton />
-                    </Col>
-                  ))
-                : latestBooks.map((book) => (
-                    <Col key={book.id} xs={6} md={4} lg={3}>
-                      <BookCard book={book} />
-                    </Col>
-                  ))}
-            </Row>
-          )}
-          {status === 'loading' && <span className="visually-hidden" role="status">در حال بارگذاری کتاب‌ها</span>}
-        </Container>
-      </section>
+
+            {status === 'error' ? (
+              <div className="list-state" role="alert">
+                <p>کتاب‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+                <Button variant="outline-secondary" onClick={retry}>
+                  تلاش دوباره
+                </Button>
+              </div>
+            ) : status === 'ready' && latestBooks.length === 0 ? (
+              <div className="list-state">
+                <p>هنوز کتابی در قفسه نیست. اولین کتاب را تو ثبت کن.</p>
+                <Link to="/create-book" className="btn btn-primary">
+                  فروش کتاب
+                </Link>
+              </div>
+            ) : (
+              <Row className="g-3 g-md-4" aria-busy={status === 'loading'}>
+                {status === 'loading'
+                  ? Array.from({ length: GRID_COUNT }, (_, i) => (
+                      <Col key={i} xs={6} md={4} lg={3}>
+                        <BookCardSkeleton />
+                      </Col>
+                    ))
+                  : gridBooks.map((book) => (
+                      <Col key={book.id} xs={6} md={4} lg={3}>
+                        <BookCard book={book} />
+                      </Col>
+                    ))}
+              </Row>
+            )}
+            {status === 'loading' && <span className="visually-hidden" role="status">در حال بارگذاری کتاب‌ها</span>}
+          </Container>
+        </section>
+      )}
 
       <section className="home-sell" aria-labelledby="sell-title">
         <Container>
