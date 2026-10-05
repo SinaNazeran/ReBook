@@ -566,20 +566,30 @@
   }
 }
 
-/* ورود هیرو: متن و فهرست با فاصله‌ی کوتاه پشت هم می‌آیند تا ترتیب خواندن دیده شود */
+/* ورود هیرو، مثل نمونه‌ی چاپی: تیتر از تاری به وضوح می‌رسد و مرکب‌های مجموعه
+   از کمی ناهم‌ترازی (فرد و زوج در دو جهت) در رجیستر می‌نشینند.
+   fill فقط backwards است تا پس از ورود، hover روی نشانه‌ها آزاد بماند. */
+.series-index-list > li:nth-child(odd) .series-index-mark {
+  --register-dir: -1;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .home-hero-title,
-  .home-hero-lead,
-  .home-hero-actions,
-  .series-index {
-    animation: home-rise 420ms var(--rb-ease-out) both;
+  .home-hero-title {
+    animation: hero-focus 680ms var(--rb-ease-out) backwards;
   }
 
-  .home-hero-lead { animation-delay: 60ms; }
-  .home-hero-actions { animation-delay: 120ms; }
-  .series-index { animation-delay: 180ms; }
+  .home-hero-lead,
+  .home-hero-actions {
+    animation: hero-fade 360ms ease-out 240ms backwards;
+  }
+
+  .series-index-title,
+  .series-index-list {
+    animation: hero-fade 300ms ease-out 120ms backwards;
+  }
 
   .series-index-mark {
+    animation: hero-register 760ms var(--rb-ease-out) 180ms backwards;
     transition: transform var(--rb-duration) var(--rb-ease-out);
   }
 
@@ -588,10 +598,23 @@
   }
 }
 
-@keyframes home-rise {
+@keyframes hero-focus {
+  from {
+    filter: blur(5px);
+    opacity: 0.35;
+  }
+}
+
+@keyframes hero-fade {
   from {
     opacity: 0;
-    transform: translateY(8px);
+  }
+}
+
+@keyframes hero-register {
+  from {
+    transform: translate(calc(var(--register-dir, 1) * 6px), -3px);
+    opacity: 0.55;
   }
 }
 
