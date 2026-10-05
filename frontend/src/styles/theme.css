@@ -53,6 +53,14 @@
        فقط زیرمجموعه‌ی عربی بارگذاری می‌شود، پس رقم و حرف لاتین به وزیرمتن FD برمی‌گردند (رقم فارسی می‌ماند) --- */
     --rb-font-display: "Lalezar", "Vazirmatn FD", Tahoma, sans-serif;
 
+    /* کلید مجموعه‌ها به‌صورت یک نوار: هشت مرکب کنار هم، از سمت شروع (راست) */
+    --rb-series-rule: linear-gradient(270deg,
+        var(--rb-series-1) 0 12.5%, var(--rb-series-2) 12.5% 25%, var(--rb-series-3) 25% 37.5%, var(--rb-series-4) 37.5% 50%,
+        var(--rb-series-5) 50% 62.5%, var(--rb-series-6) 62.5% 75%, var(--rb-series-7) 75% 87.5%, var(--rb-series-8) 87.5% 100%);
+
+    /* نقش نوار تزیینی (خط، لوزی، دو نقطه) برای mask؛ .ornament-rule و تیترها از آن استفاده می‌کنند */
+    --rb-ornament-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 12'%3E%3Cpath d='M0 5.5h32v1H0z'/%3E%3Cpath d='M16 1.5l4.5 4.5-4.5 4.5-4.5-4.5z'/%3E%3Ccircle cx='4.5' cy='6' r='1.6'/%3E%3Ccircle cx='27.5' cy='6' r='1.6'/%3E%3C/svg%3E");
+
     /* --- عمق: کارت‌ها سایه ندارند؛ سایه‌ی نرم و پخش فقط برای لایه‌های واقعاً شناور (منو، مودال، toast) --- */
     --rb-shadow-overlay: 0 12px 32px -12px rgba(26, 25, 24, 0.22), 0 2px 6px rgba(26, 25, 24, 0.06);
     --rb-shadow-raised: 0 6px 16px -8px rgba(26, 25, 24, 0.18);
@@ -545,8 +553,8 @@ main:focus {
     height: 12px;
     color: var(--series, var(--rb-ink));
     background-color: currentColor;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 12'%3E%3Cpath d='M0 5.5h32v1H0z'/%3E%3Cpath d='M16 1.5l4.5 4.5-4.5 4.5-4.5-4.5z'/%3E%3Ccircle cx='4.5' cy='6' r='1.6'/%3E%3Ccircle cx='27.5' cy='6' r='1.6'/%3E%3C/svg%3E") repeat-x center / 32px 12px;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 12'%3E%3Cpath d='M0 5.5h32v1H0z'/%3E%3Cpath d='M16 1.5l4.5 4.5-4.5 4.5-4.5-4.5z'/%3E%3Ccircle cx='4.5' cy='6' r='1.6'/%3E%3Ccircle cx='27.5' cy='6' r='1.6'/%3E%3C/svg%3E") repeat-x center / 32px 12px;
+    -webkit-mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
+    mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
 }
 
 /* برچسب قیمت زعفرانی، مثل برچسبی که کتاب‌فروشی دست‌دوم روی جلد می‌چسباند: سوراخ نخ در سمت شروع */

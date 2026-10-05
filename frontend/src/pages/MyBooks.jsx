@@ -8,6 +8,7 @@ import Loading from '../components/Loading';
 import StatusMark from '../components/StatusMark';
 import CoverThumb from '../components/CoverThumb';
 import EmptyShelf from '../components/EmptyShelf';
+import { seriesInk } from '../utils/series';
 
 // وضعیت آگهی از نگاه فروشنده؛ هر کدام یک جمله‌ی کوتاه درباره‌ی قدم بعد
 const LISTING_STATUS = {
@@ -103,7 +104,7 @@ function MyBooks() {
           {books.map((book) => {
             const status = LISTING_STATUS[book.status] ?? { tone: 'closed', label: book.status_display };
             return (
-              <li key={book.id} className="ledger-row">
+              <li key={book.id} className="ledger-row" style={{ '--card-ink': seriesInk(book.category_root) }}>
                 <CoverThumb book={book} />
                 <div className="ledger-main">
                   <Link to={`/books/${book.id}`} className="ledger-name">
@@ -127,7 +128,7 @@ function MyBooks() {
                     </span>
                   )}
                 </div>
-                <span className="ledger-amount">
+                <span className="ledger-amount price-tag">
                   {Number(book.price).toLocaleString('fa-IR')} <span className="book-card-currency">تومان</span>
                 </span>
                 <span className="ledger-status">

@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
 import PlainCover from '../components/PlainCover';
 
+// کتاب گم‌شده جلد رنگی مجموعه‌ی ۶ (مرکب گل‌سرخی) را دارد؛ کاغذ صفحه هم همان مجموعه است (App.css)
+const LOST_BOOK_SERIES = 5;
+
 /**
  * صفحه‌ی ۴۰۴؛ صفحه‌ی کتاب هم برای کتاب ناموجود همین را با متن خودش نشان می‌دهد.
  * جلدِ ساده‌ی خاکستری یعنی جای خالی یک کتاب در قفسه.
@@ -13,7 +16,7 @@ function NotFound({
     <div className="container not-found">
       <title>{`${title} | ری‌بوک`}</title>
       <div className="not-found-cover" aria-hidden="true">
-        <PlainCover title="۴۰۴" author="ری‌بوک" rootId={null} />
+        <PlainCover title="۴۰۴" rootId={LOST_BOOK_SERIES} />
       </div>
       <div className="not-found-body">
         <h1 className="not-found-title">{title}</h1>

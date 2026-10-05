@@ -9,6 +9,7 @@ import BookCard from '../components/BookCard';
 import ConditionMeasure from '../components/ConditionMeasure';
 import { CONDITION_LABELS, CONDITION_NOTES } from '../utils/condition';
 import { onlyDigits, toLatinDigits } from '../utils/digits';
+import { seriesInk } from '../utils/series';
 
 const INITIAL_FORM = {
   title: '',
@@ -231,285 +232,288 @@ function CreateBook() {
   const error = (name) => fieldErrors[name]?.[0];
 
   return (
-    <Container className="sell-page">
-      <title>فروش کتاب | ری‌بوک</title>
-      <header className="sell-header">
-        <h1 className="sell-title">فروش کتاب</h1>
-        <p className="sell-lead">
-          مشخصات نسخه‌ای را که داری بنویس. پیش از انتشار، تیم ری‌بوک آگهی را بررسی می‌کند و نتیجه را در
-          «کتاب‌های من» می‌بینی.
-        </p>
-      </header>
+    <div className="series-paper" style={{ '--series': previewBook.category_root != null ? seriesInk(previewBook.category_root) : undefined }}>
+      {/* کاغذ صفحه همان مجموعه‌ای است که فروشنده انتخاب می‌کند، هم‌رنگ کارت پیش‌نمایش */}
+      <Container className="sell-page">
+        <title>فروش کتاب | ری‌بوک</title>
+        <header className="sell-header">
+          <h1 className="sell-title">فروش کتاب</h1>
+          <p className="sell-lead">
+            مشخصات نسخه‌ای را که داری بنویس. پیش از انتشار، تیم ری‌بوک آگهی را بررسی می‌کند و نتیجه را در
+            «کتاب‌های من» می‌بینی.
+          </p>
+        </header>
 
-      {generalError && (
-        <Alert variant="danger" role="alert">
-          {generalError}
-        </Alert>
-      )}
+        {generalError && (
+          <Alert variant="danger" role="alert">
+            {generalError}
+          </Alert>
+        )}
 
-      <Row className="g-4 g-lg-5">
-        <Col lg={8}>
-          <Form onSubmit={handleSubmit} noValidate>
-            <fieldset className="sell-section">
-              <legend>کتاب</legend>
+        <Row className="g-4 g-lg-5">
+          <Col lg={8}>
+            <Form onSubmit={handleSubmit} noValidate>
+              <fieldset className="sell-section">
+                <legend>کتاب</legend>
 
-              <Form.Group controlId="title" className="mb-3">
-                <Form.Label>عنوان</Form.Label>
-                <Form.Control
-                  name="title"
-                  autoComplete="off"
-                  value={formData.title}
-                  onChange={handleChange}
-                  maxLength={200}
-                  dir="auto"
-                  required
-                  aria-required="true"
-                  isInvalid={!!error('title')}
-                />
-                <Form.Control.Feedback type="invalid">{error('title')}</Form.Control.Feedback>
-              </Form.Group>
-
-              <Row className="g-3">
-                <Col md={6}>
-                  <Form.Group controlId="author">
-                    <Form.Label>نویسنده</Form.Label>
-                    <Form.Control
-                      name="author"
-                      autoComplete="off"
-                      value={formData.author}
-                      onChange={handleChange}
-                      maxLength={200}
-                      dir="auto"
-                      required
-                      aria-required="true"
-                      isInvalid={!!error('author')}
-                    />
-                    <Form.Control.Feedback type="invalid">{error('author')}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group controlId="publisher">
-                    <Form.Label>
-                      انتشارات <span className="sell-optional">(اختیاری)</span>
-                    </Form.Label>
-                    <Form.Control
-                      name="publisher"
-                      autoComplete="off"
-                      value={formData.publisher}
-                      onChange={handleChange}
-                      maxLength={200}
-                      dir="auto"
-                      isInvalid={!!error('publisher')}
-                    />
-                    <Form.Control.Feedback type="invalid">{error('publisher')}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group controlId="isbn">
-                    <Form.Label>
-                      شابک <span className="sell-optional">(اختیاری)</span>
-                    </Form.Label>
-                    <Form.Control
-                      name="isbn"
-                      value={formData.isbn}
-                      onChange={handleChange}
-                      maxLength={17}
-                      dir="ltr"
-                      inputMode="numeric"
-                      autoComplete="off"
-                      placeholder="978-964-…"
-                      aria-describedby="isbn-help"
-                      isInvalid={!!error('isbn')}
-                    />
-                    <Form.Text id="isbn-help">پشت جلد، بالای بارکد.</Form.Text>
-                    <Form.Control.Feedback type="invalid">{error('isbn')}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group controlId="category">
-                    <Form.Label>
-                      دسته‌بندی <span className="sell-optional">(اختیاری)</span>
-                    </Form.Label>
-                    <Form.Select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      aria-describedby="category-help"
-                      isInvalid={!!error('category')}
-                    >
-                      <option value="">بدون دسته‌بندی</option>
-                      {roots.map((root) => (
-                        <optgroup key={root.id} label={root.name}>
-                          <option value={root.id}>{root.name}</option>
-                          {categories
-                            .filter((cat) => cat.parent === root.id)
-                            .map((cat) => (
-                              <option key={cat.id} value={cat.id}>
-                                {cat.name}
-                              </option>
-                            ))}
-                        </optgroup>
-                      ))}
-                    </Form.Select>
-                    <Form.Text id="category-help">خریداران کتاب را از زبانه‌ی همین دسته پیدا می‌کنند.</Form.Text>
-                    <Form.Control.Feedback type="invalid">{error('category')}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-              </Row>
-            </fieldset>
-
-            <fieldset className="sell-section" aria-describedby={error('condition') ? 'condition-error' : undefined}>
-              <legend>وضعیت این نسخه</legend>
-              <div className="condition-options">
-                {Object.entries(CONDITION_LABELS).map(([value, label]) => (
-                  <label key={value} className="condition-option" htmlFor={`condition-${value}`}>
-                    <input
-                      id={`condition-${value}`}
-                      type="radio"
-                      name="condition"
-                      value={value}
-                      checked={formData.condition === value}
-                      onChange={handleChange}
-                      className="form-check-input"
-                    />
-                    <span className="condition-option-body">
-                      <ConditionMeasure condition={value} label={label} />
-                      <span className="condition-option-note">{CONDITION_NOTES[value]}</span>
-                    </span>
-                  </label>
-                ))}
-              </div>
-              {error('condition') && (
-                <p id="condition-error" className="sell-error">
-                  {error('condition')}
-                </p>
-              )}
-            </fieldset>
-
-            <fieldset className="sell-section">
-              <legend>قیمت</legend>
-              <Form.Group controlId="price" className="sell-price">
-                <Form.Label className="visually-hidden">قیمت به تومان</Form.Label>
-                <InputGroup hasValidation>
+                <Form.Group controlId="title" className="mb-3">
+                  <Form.Label>عنوان</Form.Label>
                   <Form.Control
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    inputMode="numeric"
+                    name="title"
                     autoComplete="off"
+                    value={formData.title}
+                    onChange={handleChange}
+                    maxLength={200}
+                    dir="auto"
                     required
                     aria-required="true"
-                    aria-describedby="price-echo"
-                    isInvalid={!!error('price')}
+                    isInvalid={!!error('title')}
                   />
-                  <InputGroup.Text>تومان</InputGroup.Text>
-                  <Form.Control.Feedback type="invalid">{error('price')}</Form.Control.Feedback>
-                </InputGroup>
-                <Form.Text id="price-echo" aria-live="polite">
-                  {formData.price
-                    ? `${Number(formData.price).toLocaleString('fa-IR')} تومان`
-                    : 'فقط عدد؛ مثلاً ۸۵۰۰۰'}
-                </Form.Text>
-              </Form.Group>
-            </fieldset>
+                  <Form.Control.Feedback type="invalid">{error('title')}</Form.Control.Feedback>
+                </Form.Group>
 
-            <fieldset className="sell-section">
-              <legend>جلد و یادداشت</legend>
-
-              <div className="cover-field mb-4">
-                <p className="form-label" id="cover-label">
-                  عکس جلد <span className="sell-optional">(اختیاری)</span>
-                </p>
-                {imagePreview ? (
-                  <div className="cover-picked">
-                    <img src={imagePreview} alt="پیش‌نمایش جلد" />
-                    <div className="cover-picked-actions">
-                      <label htmlFor="cover_image" className="btn btn-outline-secondary">
-                        تغییر عکس
-                      </label>
-                      <Button
-                        variant="outline-secondary"
-                        onClick={removeImage}
-                        className="d-inline-flex align-items-center gap-2"
+                <Row className="g-3">
+                  <Col md={6}>
+                    <Form.Group controlId="author">
+                      <Form.Label>نویسنده</Form.Label>
+                      <Form.Control
+                        name="author"
+                        autoComplete="off"
+                        value={formData.author}
+                        onChange={handleChange}
+                        maxLength={200}
+                        dir="auto"
+                        required
+                        aria-required="true"
+                        isInvalid={!!error('author')}
+                      />
+                      <Form.Control.Feedback type="invalid">{error('author')}</Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group controlId="publisher">
+                      <Form.Label>
+                        انتشارات <span className="sell-optional">(اختیاری)</span>
+                      </Form.Label>
+                      <Form.Control
+                        name="publisher"
+                        autoComplete="off"
+                        value={formData.publisher}
+                        onChange={handleChange}
+                        maxLength={200}
+                        dir="auto"
+                        isInvalid={!!error('publisher')}
+                      />
+                      <Form.Control.Feedback type="invalid">{error('publisher')}</Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group controlId="isbn">
+                      <Form.Label>
+                        شابک <span className="sell-optional">(اختیاری)</span>
+                      </Form.Label>
+                      <Form.Control
+                        name="isbn"
+                        value={formData.isbn}
+                        onChange={handleChange}
+                        maxLength={17}
+                        dir="ltr"
+                        inputMode="numeric"
+                        autoComplete="off"
+                        placeholder="978-964-…"
+                        aria-describedby="isbn-help"
+                        isInvalid={!!error('isbn')}
+                      />
+                      <Form.Text id="isbn-help">پشت جلد، بالای بارکد.</Form.Text>
+                      <Form.Control.Feedback type="invalid">{error('isbn')}</Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group controlId="category">
+                      <Form.Label>
+                        دسته‌بندی <span className="sell-optional">(اختیاری)</span>
+                      </Form.Label>
+                      <Form.Select
+                        name="category"
+                        value={formData.category}
+                        onChange={handleChange}
+                        aria-describedby="category-help"
+                        isInvalid={!!error('category')}
                       >
-                        <FiTrash2 aria-hidden="true" />
-                        حذف
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <label
-                    htmlFor="cover_image"
-                    className={`cover-dropzone${dragging ? ' is-dragging' : ''}${error('cover_image') ? ' is-invalid' : ''}`}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      setDragging(true);
-                    }}
-                    onDragLeave={() => setDragging(false)}
-                    onDrop={handleDrop}
-                  >
-                    <FiUpload size={28} aria-hidden="true" />
-                    <span>عکس روبه‌روی جلد را اینجا بکش یا برای انتخاب بزن</span>
-                    <span className="cover-dropzone-hint">
-                      JPG، PNG یا WebP، تا {MAX_IMAGE_SIZE_MB.toLocaleString('fa-IR')} مگابایت. بی‌عکس، جلد ساده‌ی
-                      مجموعه نمایش داده می‌شود.
-                    </span>
-                  </label>
-                )}
-                <input
-                  id="cover_image"
-                  type="file"
-                  accept={ACCEPTED_IMAGES}
-                  onChange={handleImageChange}
-                  className="visually-hidden"
-                  aria-labelledby="cover-label"
-                  aria-describedby={error('cover_image') ? 'cover-error' : undefined}
-                />
-                {error('cover_image') && (
-                  <p id="cover-error" className="sell-error" role="alert">
-                    {error('cover_image')}
+                        <option value="">بدون دسته‌بندی</option>
+                        {roots.map((root) => (
+                          <optgroup key={root.id} label={root.name}>
+                            <option value={root.id}>{root.name}</option>
+                            {categories
+                              .filter((cat) => cat.parent === root.id)
+                              .map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                  {cat.name}
+                                </option>
+                              ))}
+                          </optgroup>
+                        ))}
+                      </Form.Select>
+                      <Form.Text id="category-help">خریداران کتاب را از زبانه‌ی همین دسته پیدا می‌کنند.</Form.Text>
+                      <Form.Control.Feedback type="invalid">{error('category')}</Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                </Row>
+              </fieldset>
+
+              <fieldset className="sell-section" aria-describedby={error('condition') ? 'condition-error' : undefined}>
+                <legend>وضعیت این نسخه</legend>
+                <div className="condition-options">
+                  {Object.entries(CONDITION_LABELS).map(([value, label]) => (
+                    <label key={value} className="condition-option" htmlFor={`condition-${value}`}>
+                      <input
+                        id={`condition-${value}`}
+                        type="radio"
+                        name="condition"
+                        value={value}
+                        checked={formData.condition === value}
+                        onChange={handleChange}
+                        className="form-check-input"
+                      />
+                      <span className="condition-option-body">
+                        <ConditionMeasure condition={value} label={label} />
+                        <span className="condition-option-note">{CONDITION_NOTES[value]}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                {error('condition') && (
+                  <p id="condition-error" className="sell-error">
+                    {error('condition')}
                   </p>
                 )}
+              </fieldset>
+
+              <fieldset className="sell-section">
+                <legend>قیمت</legend>
+                <Form.Group controlId="price" className="sell-price">
+                  <Form.Label className="visually-hidden">قیمت به تومان</Form.Label>
+                  <InputGroup hasValidation>
+                    <Form.Control
+                      name="price"
+                      value={formData.price}
+                      onChange={handleChange}
+                      inputMode="numeric"
+                      autoComplete="off"
+                      required
+                      aria-required="true"
+                      aria-describedby="price-echo"
+                      isInvalid={!!error('price')}
+                    />
+                    <InputGroup.Text>تومان</InputGroup.Text>
+                    <Form.Control.Feedback type="invalid">{error('price')}</Form.Control.Feedback>
+                  </InputGroup>
+                  <Form.Text id="price-echo" aria-live="polite">
+                    {formData.price
+                      ? `${Number(formData.price).toLocaleString('fa-IR')} تومان`
+                      : 'فقط عدد؛ مثلاً ۸۵۰۰۰'}
+                  </Form.Text>
+                </Form.Group>
+              </fieldset>
+
+              <fieldset className="sell-section">
+                <legend>جلد و یادداشت</legend>
+
+                <div className="cover-field mb-4">
+                  <p className="form-label" id="cover-label">
+                    عکس جلد <span className="sell-optional">(اختیاری)</span>
+                  </p>
+                  {imagePreview ? (
+                    <div className="cover-picked">
+                      <img src={imagePreview} alt="پیش‌نمایش جلد" />
+                      <div className="cover-picked-actions">
+                        <label htmlFor="cover_image" className="btn btn-outline-secondary">
+                          تغییر عکس
+                        </label>
+                        <Button
+                          variant="outline-secondary"
+                          onClick={removeImage}
+                          className="d-inline-flex align-items-center gap-2"
+                        >
+                          <FiTrash2 aria-hidden="true" />
+                          حذف
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="cover_image"
+                      className={`cover-dropzone${dragging ? ' is-dragging' : ''}${error('cover_image') ? ' is-invalid' : ''}`}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setDragging(true);
+                      }}
+                      onDragLeave={() => setDragging(false)}
+                      onDrop={handleDrop}
+                    >
+                      <FiUpload size={28} aria-hidden="true" />
+                      <span>عکس روبه‌روی جلد را اینجا بکش یا برای انتخاب بزن</span>
+                      <span className="cover-dropzone-hint">
+                        JPG، PNG یا WebP، تا {MAX_IMAGE_SIZE_MB.toLocaleString('fa-IR')} مگابایت. بی‌عکس، جلد ساده‌ی
+                        مجموعه نمایش داده می‌شود.
+                      </span>
+                    </label>
+                  )}
+                  <input
+                    id="cover_image"
+                    type="file"
+                    accept={ACCEPTED_IMAGES}
+                    onChange={handleImageChange}
+                    className="visually-hidden"
+                    aria-labelledby="cover-label"
+                    aria-describedby={error('cover_image') ? 'cover-error' : undefined}
+                  />
+                  {error('cover_image') && (
+                    <p id="cover-error" className="sell-error" role="alert">
+                      {error('cover_image')}
+                    </p>
+                  )}
+                </div>
+
+                <Form.Group controlId="description">
+                  <Form.Label>
+                    یادداشت برای خریدار <span className="sell-optional">(اختیاری)</span>
+                  </Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={5}
+                    name="description"
+                    autoComplete="off"
+                    value={formData.description}
+                    onChange={handleChange}
+                    dir="auto"
+                    placeholder="هر چیزی که خریدار باید بداند: خط‌کشی یا یادداشت، پارگی، نوبت چاپ، ترجمه‌ی چه کسی."
+                    isInvalid={!!error('description')}
+                  />
+                  <Form.Control.Feedback type="invalid">{error('description')}</Form.Control.Feedback>
+                </Form.Group>
+              </fieldset>
+
+              <div className="sell-submit">
+                <Button type="submit" variant="primary" size="lg" disabled={loading}>
+                  {loading ? 'در حال ثبت…' : 'ثبت آگهی برای بررسی'}
+                </Button>
               </div>
+            </Form>
+          </Col>
 
-              <Form.Group controlId="description">
-                <Form.Label>
-                  یادداشت برای خریدار <span className="sell-optional">(اختیاری)</span>
-                </Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={5}
-                  name="description"
-                  autoComplete="off"
-                  value={formData.description}
-                  onChange={handleChange}
-                  dir="auto"
-                  placeholder="هر چیزی که خریدار باید بداند: خط‌کشی یا یادداشت، پارگی، نوبت چاپ، ترجمه‌ی چه کسی."
-                  isInvalid={!!error('description')}
-                />
-                <Form.Control.Feedback type="invalid">{error('description')}</Form.Control.Feedback>
-              </Form.Group>
-            </fieldset>
-
-            <div className="sell-submit">
-              <Button type="submit" variant="primary" size="lg" disabled={loading}>
-                {loading ? 'در حال ثبت…' : 'ثبت آگهی برای بررسی'}
-              </Button>
-            </div>
-          </Form>
-        </Col>
-
-        <Col lg={4} className="d-none d-lg-block">
-          <aside className="sell-preview" aria-label="پیش‌نمایش آگهی">
-            <p className="sell-preview-caption">در فهرست این‌طور دیده می‌شود</p>
-            {/* inert: پیش‌نمایش فقط دیدنی است، لینک و فوکوس ندارد */}
-            <div inert>
-              <BookCard book={previewBook} />
-            </div>
-          </aside>
-        </Col>
-      </Row>
-    </Container>
+          <Col lg={4} className="d-none d-lg-block">
+            <aside className="sell-preview" aria-label="پیش‌نمایش آگهی">
+              <p className="sell-preview-caption">در فهرست این‌طور دیده می‌شود</p>
+              {/* inert: پیش‌نمایش فقط دیدنی است، لینک و فوکوس ندارد */}
+              <div inert>
+                <BookCard book={previewBook} />
+              </div>
+            </aside>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 }
 

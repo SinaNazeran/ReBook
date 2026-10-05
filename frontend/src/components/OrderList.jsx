@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import StatusMark from './StatusMark';
 import CoverThumb from './CoverThumb';
+import { seriesInk } from '../utils/series';
 
 const ORDER_STATUS = {
   pending: { tone: 'waiting', label: 'در انتظار پرداخت' },
@@ -27,7 +28,7 @@ function OrderList({ orders, type, onPay, onCancel, busyId }) {
         const code = order.transaction?.reference_code;
 
         return (
-          <li key={order.id} className="ledger-row">
+          <li key={order.id} className="ledger-row" style={{ '--card-ink': seriesInk(book?.category_root) }}>
             <CoverThumb book={book} />
             <div className="ledger-main">
               {book ? (
@@ -62,7 +63,7 @@ function OrderList({ orders, type, onPay, onCancel, busyId }) {
                 <span className="ledger-note">خریدار هنوز پرداخت نکرده؛ اگر پرداخت نکرد، لغوش کن تا کتاب آزاد شود.</span>
               )}
             </div>
-            <span className="ledger-amount">
+            <span className="ledger-amount price-tag">
               {Number(order.total_price).toLocaleString('fa-IR')} <span className="book-card-currency">تومان</span>
             </span>
             <span className="ledger-status">
