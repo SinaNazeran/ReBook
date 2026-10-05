@@ -4,7 +4,7 @@ import { FiBookOpen, FiHome } from 'react-icons/fi';
 function NotFound() {
   return (
     <div className="container text-center py-5">
-      <FiBookOpen size={56} className="mb-3" style={{ color: 'var(--rb-primary)' }} />
+      <FiBookOpen size={56} className="mb-3" style={{ color: 'var(--rb-ink)' }} />
       <h2 className="mb-2">این صفحه پیدا نشد</h2>
       <p className="text-muted mb-4">
         صفحه‌ای که دنبال آن بودید حذف شده یا هرگز وجود نداشته است.

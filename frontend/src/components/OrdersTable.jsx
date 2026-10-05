@@ -48,12 +48,12 @@ function OrdersTable({ orders, type, onPay, onCancel, busyId, emptyMessage }) {
               <tr key={order.id}>
                 <td>#{order.id}</td>
                 <td>{order.book_detail?.title}</td>
-                {type === 'sale' && <td dir="auto">{order.buyer_detail?.username || '—'}</td>}
+                {type === 'sale' && <td dir="auto" className="latin-id">{order.buyer_detail?.username || '—'}</td>}
                 <td>{Number(order.total_price).toLocaleString('fa-IR')} تومان</td>
                 <td>
                   <Badge bg="" className={status.className}>{status.text}</Badge>
                 </td>
-                <td>{order.transaction?.reference_code || '-'}</td>
+                <td><bdi className="latin-id">{order.transaction?.reference_code || '-'}</bdi></td>
                 <td>{new Date(order.created_at).toLocaleDateString('fa-IR')}</td>
                 <td>
                   {order.status === 'pending' && (

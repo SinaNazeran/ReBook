@@ -5,7 +5,10 @@ import { BrowserRouter } from "react-router-dom";
 // 1. فریم‌ورک پایه استایل
 import "bootstrap/dist/css/bootstrap.rtl.min.css";
 
-// 2. فونت برند
+// 2. فونت برند — نسخه‌ی FD: رقم‌های لاتین (شابک، کد پیگیری، متن‌های API) به شکل فارسی نمایش داده می‌شوند
+//    ولی خودِ متن لاتین می‌ماند. نسخه‌ی عادی فقط برای شناسه‌های لاتین (.latin-id در theme.css) است؛
+//    @font-face تا وقتی استفاده نشود دانلود نمی‌شود
+import "vazirmatn/misc/Farsi-Digits/Vazirmatn-FD-font-face.css";
 import "vazirmatn/Vazirmatn-font-face.css";
 
 // 3. تم اختصاصی

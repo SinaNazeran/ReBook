@@ -6,7 +6,8 @@ import { useAuth } from '../context/useAuth.js';
 import Loading from '../components/Loading';
 import NotFound from './NotFound';
 import { toast } from 'react-toastify';
-import { FiHeart, FiShoppingCart, FiUser, FiBookOpen } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiUser } from 'react-icons/fi';
+import PlainCover from '../components/PlainCover';
 
 const CONDITION_CLASS_MAP = {
   new: 'badge-condition-new',
@@ -150,9 +151,12 @@ function BookDetail() {
             {book.cover_image ? (
               <Card.Img src={book.cover_image} alt={book.title} className="book-detail-img" />
             ) : (
-              <div className="book-detail-placeholder d-flex align-items-center justify-content-center">
-                <FiBookOpen size={80} className="text-muted" />
-              </div>
+              <PlainCover
+                title={book.title}
+                author={book.author}
+                rootId={book.category ? book.category.parent || book.category.id : null}
+                className="book-detail-cover"
+              />
             )}
           </Card>
         </Col>
@@ -213,7 +217,7 @@ function BookDetail() {
                     <FiUser aria-hidden="true" />
                     اطلاعات فروشنده
                   </h3>
-                  <p className="mb-0">نام: {book.seller?.username}</p>
+                  <p className="mb-0">نام: <bdi className="latin-id">{book.seller?.username}</bdi></p>
                 </Card.Body>
               </Card>
 

@@ -15,11 +15,11 @@ import {
 
 // نگاشت نوع اعلان به آیکون و رنگ اختصاصی — جایگزین ایموجی‌های قبلی
 const TYPE_CONFIG = {
-  order: { icon: FiShoppingBag, color: 'var(--rb-navy)' },
-  payment: { icon: FiCreditCard, color: 'var(--rb-secondary)' },
+  order: { icon: FiShoppingBag, color: 'var(--rb-info)' },
+  payment: { icon: FiCreditCard, color: 'var(--rb-ink)' },
   book_approved: { icon: FiCheckSquare, color: 'var(--rb-success)' },
   book_rejected: { icon: FiXCircle, color: 'var(--rb-danger)' },
-  system: { icon: FiInfo, color: 'var(--rb-text-muted)' },
+  system: { icon: FiInfo, color: 'var(--rb-ink-muted)' },
 };
 
 function getTypeConfig(type) {

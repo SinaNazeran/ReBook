@@ -8,67 +8,236 @@
 /* ==========================================================================
    ۱. نوار ناوبری
    ========================================================================== */
+.site-navbar {
+  border-bottom: 1px solid var(--rb-rule);
+}
+
 .navbar-brand {
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 1.375rem;
+  color: var(--rb-ink);
+}
+
+/* نشان برند: برچسب قرمز عطف، مثل نشان ناشر روی کتاب جیبی؛ تنها جای قرمز برند */
+.brand-mark {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.8em;
+  border-radius: 1px;
+  background-color: var(--rb-brand-red);
+}
+
+.site-navbar .nav-link.active {
+  color: var(--rb-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.6em;
 }
 
 /* ==========================================================================
-   ۲. کارت کتاب (BookCard)
+   ۲. کارت کتاب (BookCard) — جلد، نوار مجموعه، و ردیف ثابت واقعیت‌ها.
+   کارت حاشیه و سایه ندارد؛ جلد و نوار مرکب مجموعه خودِ کارت‌اند.
+   داخل کارت فقط یک اندازه‌ی متن؛ رتبه با وزن، رنگ و خط مویی ساخته می‌شود.
    ========================================================================== */
 .book-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: none;
+  --card-ink: var(--rb-ink-muted);
+  border: 0;
   overflow: hidden;
-  background-color: var(--rb-white);
+  background-color: var(--rb-surface);
+  font-size: 0.9375rem;
 }
 
-.book-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(31, 75, 63, 0.15);
-  /* سایه با تینت سبز برند */
+/* کل کارت یک لینک است (stretched-link عنوان)؛ حلقه‌ی فوکوس دور کل کارت */
+.book-card:has(.stretched-link:focus-visible) {
+  outline: 2px solid var(--rb-focus);
+  outline-offset: 2px;
+}
+
+.book-card .stretched-link:focus-visible {
+  outline: none;
 }
 
 .book-card .card-img-top {
+  width: 100%;
   aspect-ratio: 3 / 4;
-  /* نسبت استاندارد جلد کتاب — در همه سایزها ریسپانسیو می‌ماند */
+}
+
+.book-card img.card-img-top {
+  display: block;
   object-fit: cover;
-  background-color: var(--rb-cream-dark);
-  /* رنگ placeholder قبل از لود تصویر */
+  background-color: var(--rb-surface-sunken);
 }
 
-/* جلد کتاب در صفحه‌ی جزئیات؛ بدون این قاعده جای خالیِ کتاب بی‌جلد به نواری ۸۲ پیکسلی جمع می‌شد */
-.book-detail-img,
-.book-detail-placeholder {
-  background-color: var(--rb-cream-dark);
+/* کتاب بی‌عکس (PlainCover): جلد تایپوگرافیک در مرکب مجموعه با قاب خطی داخلی، مثل جلد کتاب جیبی.
+   container تا عنوان با پهنای خودِ جلد اندازه بگیرد (کارت باریک یا ستون صفحه‌ی جزئیات) */
+.plain-cover {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background-color: var(--cover-ink);
+  color: var(--rb-on-ink);
+  box-shadow:
+    inset 0 0 0 0.5rem var(--cover-ink),
+    inset 0 0 0 calc(0.5rem + 1px) color-mix(in srgb, var(--rb-on-ink) 55%, transparent);
 }
 
-.book-detail-placeholder {
+.plain-cover-title {
+  font-size: clamp(1.25rem, 9cqi, 2.25rem);
+  font-weight: 700;
+  line-height: var(--rb-heading-line-height);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.plain-cover-author {
+  font-size: clamp(0.875rem, 5cqi, 1.125rem);
+}
+
+.book-card-band {
+  height: 4px;
+  background-color: var(--card-ink);
+  transform-origin: top;
+}
+
+.book-card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0.875rem 0.875rem;
+}
+
+/* ردیف واقعیت‌ها با margin-top:auto ته کارت هم‌قد می‌نشیند، پس عنوان جای خالی رزرو نمی‌کند */
+.book-card-title {
+  margin: 0 0 0.25rem;
+  font-size: inherit;
+  font-weight: 700;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-card-title a {
+  color: var(--rb-ink);
+  text-decoration: none;
+}
+
+.book-card-meta {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0.75rem;
+  color: var(--rb-ink-muted);
+  line-height: 1.6;
+}
+
+.book-card-meta > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-card-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  margin-top: auto;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--rb-rule);
+}
+
+.condition-measure {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--rb-ink-muted);
+  white-space: nowrap;
+}
+
+.condition-steps {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.condition-steps > span {
+  width: 0.375rem;
+  height: 0.75rem;
+  border-radius: 1px;
+  background-color: var(--rb-rule);
+}
+
+.condition-steps > .is-filled {
+  background-color: var(--rb-ink);
+}
+
+/* قیمت به حاشیه‌ی انتهایی کارت چسبیده و ارقامش هم‌عرض‌اند */
+.book-card-price {
+  margin-inline-start: auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.book-card-currency {
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+/* حرکت امضایی: کارت کمی از قفسه بیرون می‌آید و نوار مجموعه ضخیم‌تر می‌شود */
+@media (hover: hover) {
+  .book-card:hover,
+  .book-card:focus-within {
+    transform: translateY(-3px);
+  }
+
+  .book-card:hover .book-card-band,
+  .book-card:focus-within .book-card-band {
+    transform: scaleY(1.75);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .book-card,
+  .book-card-band {
+    transition: transform var(--rb-duration) var(--rb-ease-out);
+  }
+}
+
+/* جلد کتاب در صفحه‌ی جزئیات؛ کتاب بی‌عکس همان PlainCover کارت را می‌گیرد */
+.book-detail-img {
+  background-color: var(--rb-surface-sunken);
+}
+
+.book-detail-cover {
   aspect-ratio: 3 / 4;
-  /* هم‌شکل جلد در کارت کتاب */
   border-radius: var(--bs-card-inner-border-radius);
 }
 
-/* دکمه‌ی افزودن به علاقه‌مندی روی کارت کتاب */
+/* دکمه‌ی علاقه‌مندی روی جلد: ۳۶px دیداری، ناحیه‌ی لمس ۴۴px با ::before */
 .wishlist-toggle-btn {
   position: absolute;
-  top: 0.6rem;
-  left: 0.6rem;
+  inset-block-start: 0.5rem;
+  inset-inline-end: 0.5rem;
   z-index: 2;
-  width: 36px;
-  height: 36px;
-  border: none;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: transform 0.15s ease;
+  background-color: color-mix(in srgb, var(--rb-surface) 92%, transparent);
+  box-shadow: var(--rb-shadow-raised);
 }
 
-.wishlist-toggle-btn:hover {
-  transform: scale(1.1);
+.wishlist-toggle-btn::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
 }
 
 /* ==========================================================================
@@ -77,29 +246,29 @@
    ========================================================================== */
 .badge-condition-new {
   background-color: var(--rb-success);
-  color: var(--rb-white);
+  color: var(--rb-on-ink);
 }
 
 .badge-condition-like-new {
   background-color: #3f7a69;
   /* سبز روشن‌تر از success؛ کنتراست ۵:۱ با متن سفید (AA) */
-  color: var(--rb-white);
+  color: var(--rb-on-ink);
 }
 
 .badge-condition-good {
-  background-color: var(--rb-navy);
-  color: var(--rb-white);
+  background-color: var(--rb-info);
+  color: var(--rb-on-ink);
 }
 
 .badge-condition-fair {
   background-color: var(--rb-warning);
   /* متن تیره روی زرد گرم (۵٫۵:۱)؛ متن سفید فقط ۲٫۶:۱ بود */
-  color: var(--rb-text-dark);
+  color: var(--rb-ink);
 }
 
 .badge-condition-poor {
-  background-color: var(--rb-text-muted);
-  color: var(--rb-white);
+  background-color: var(--rb-ink-muted);
+  color: var(--rb-on-ink);
 }
 
 /* ==========================================================================
@@ -107,23 +276,23 @@
    ========================================================================== */
 .status-pending {
   background-color: var(--rb-warning);
-  color: #2b2a28;
+  color: var(--rb-ink);
   /* متن تیره روی زرد گرم، کنتراست کافی */
 }
 
 .status-approved {
   background-color: var(--rb-success);
-  color: var(--rb-white);
+  color: var(--rb-on-ink);
 }
 
 .status-rejected {
   background-color: var(--rb-danger);
-  color: var(--rb-white);
+  color: var(--rb-on-ink);
 }
 
 .status-sold {
-  background-color: var(--rb-text-muted);
-  color: var(--rb-white);
+  background-color: var(--rb-ink-muted);
+  color: var(--rb-on-ink);
 }
 
 /* ==========================================================================
@@ -131,27 +300,27 @@
    ========================================================================== */
 .order-status-pending {
   background-color: var(--rb-warning);
-  color: var(--rb-text-dark);
+  color: var(--rb-ink);
 }
 
 .order-status-paid {
   background-color: var(--rb-success);
-  color: var(--rb-white);
+  color: var(--rb-on-ink);
 }
 
 .order-status-shipped {
-  background-color: var(--rb-navy);
-  color: var(--rb-white);
+  background-color: var(--rb-info);
+  color: var(--rb-on-ink);
 }
 
 .order-status-delivered {
-  background-color: var(--rb-secondary);
-  color: var(--rb-white);
+  background-color: var(--rb-ink);
+  color: var(--rb-on-ink);
 }
 
 .order-status-cancelled {
   background-color: var(--rb-danger);
-  color: var(--rb-white);
+  color: var(--rb-on-ink);
 }
 
 /* ==========================================================================
@@ -159,25 +328,25 @@
    ========================================================================== */
 .ticket-status-open {
   background-color: var(--rb-warning);
-  color: var(--rb-text-dark);
+  color: var(--rb-ink);
 }
 
 .ticket-status-in_progress {
-  background-color: var(--rb-navy);
-  color: var(--rb-white);
+  background-color: var(--rb-info);
+  color: var(--rb-on-ink);
 }
 
 .ticket-status-closed {
   background-color: var(--rb-success);
-  color: var(--rb-white);
+  color: var(--rb-on-ink);
 }
 
 /* ==========================================================================
    ۷. صفحه اصلی — بخش Hero
    ========================================================================== */
 .hero-section {
-  background: linear-gradient(135deg, var(--rb-primary) 0%, var(--rb-primary-dark) 100%);
-  color: var(--rb-white);
+  background: var(--rb-ink);
+  color: var(--rb-on-ink);
   padding: 80px 0;
   border-radius: 0 0 2rem 2rem;
   position: relative;
@@ -215,30 +384,24 @@
 /* پس‌زمینه‌ی جایگزین برای بخش‌هایی که نیاز به تمایز ملایم از body دارند
    (مثلاً بخش «جدیدترین کتاب‌ها» در Home.jsx) — جایگزین bg-light عمومی بوت‌استرپ */
 .bg-section-alt {
-  background-color: var(--rb-cream-dark);
+  background-color: var(--rb-surface-sunken);
 }
 
 /* ==========================================================================
-   ۸. فرم‌ها
+   ۸. فرم‌ها (حالت فوکوس در theme.css)
    ========================================================================== */
-.form-control:focus,
-.form-select:focus {
-  border-color: var(--rb-primary);
-  box-shadow: 0 0 0 0.2rem rgba(31, 75, 63, 0.2);
-}
-
 /* ناحیه‌ی آپلود تصویر با drag & drop ظاهری (استفاده در CreateBook.jsx) */
 .image-upload-dropzone {
   cursor: pointer;
-  border: 2px dashed var(--rb-border);
+  border: 2px dashed var(--rb-rule);
   border-radius: var(--bs-border-radius);
   padding: 20px;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .image-upload-dropzone:hover {
-  border-color: var(--rb-primary);
-  background-color: var(--rb-cream);
+  border-color: var(--rb-ink);
+  background-color: var(--rb-surface-sunken);
 }
 
 /* ==========================================================================
@@ -260,11 +423,11 @@
    ۱۰. اعلان‌ها (Notifications)
    ========================================================================== */
 .notification-item.unread {
-  background-color: var(--rb-cream-dark);
+  background-color: var(--rb-surface-sunken);
 }
 
 .notification-item:focus-visible {
-  outline: 2px solid var(--rb-primary);
+  outline: 2px solid var(--rb-ink);
   outline-offset: -2px;
 }
 
@@ -286,11 +449,11 @@
   height: 120px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid var(--rb-cream-dark);
+  border: 3px solid var(--rb-surface-sunken);
   margin: 0 auto;
   cursor: pointer;
   position: relative;
-  background-color: var(--rb-bg);
+  background-color: var(--rb-ground);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -305,8 +468,8 @@
 .avatar-upload-overlay {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  color: var(--rb-white);
+  background-color: color-mix(in srgb, var(--rb-ink) 45%, transparent);
+  color: var(--rb-on-ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -320,8 +483,8 @@
 
 /* جعبه‌ی اطلاعات ثابت پروفایل (نام کاربری، تاریخ عضویت) */
 .profile-meta-box {
-  background-color: var(--rb-cream);
-  border: 1px solid var(--rb-border);
+  background-color: var(--rb-surface-sunken);
+  border: 1px solid var(--rb-rule);
   border-radius: var(--bs-border-radius);
   padding: 1rem 1.25rem;
 }
@@ -330,37 +493,55 @@
    ۱۲. فوتر
    ========================================================================== */
 .site-footer {
-  background-color: var(--rb-navy);
-  color: var(--rb-cream);
+  background-color: var(--rb-ink);
+  color: var(--rb-on-ink-muted);
 }
 
-.site-footer a {
-  color: var(--rb-cream);
+/* دو گروه در یک ردیف (برند | پیوندها) و سطر حقوقی زیر خط مویی؛ در موبایل روی هم */
+.site-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  padding-block: 2.5rem 1.5rem;
+}
+
+.site-footer-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--rb-on-ink);
   text-decoration: none;
-  transition: color 0.15s ease;
 }
 
-.site-footer a:hover {
-  color: var(--rb-white);
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer-links a {
+  display: inline-block;
+  padding-block: 0.625rem;
+  color: var(--rb-on-ink);
+  text-decoration: none;
+}
+
+.site-footer-links a:hover {
   text-decoration: underline;
 }
 
-.site-footer .text-muted-footer {
-  color: rgba(245, 239, 230, 0.65);
-  /* کرم با شفافیت کمتر برای متن‌های ثانویه */
-}
-
-.footer-social-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.1);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.15s ease;
-}
-
-.footer-social-icon:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+.site-footer-legal {
+  flex-basis: 100%;
+  margin: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--rb-on-ink) 15%, transparent);
+  font-size: 0.875rem;
 }

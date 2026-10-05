@@ -52,7 +52,7 @@ function MyOrders() {
     setBusyId(orderId);
     try {
       const response = await orderAPI.payOrder(orderId);
-      toast.success(`پرداخت موفق! کد پیگیری: ${response.data.reference_code}`);
+      toast.success(<>پرداخت موفق! کد پیگیری: <bdi className="latin-id">{response.data.reference_code}</bdi></>);
       await refreshAll();
     } catch (error) {
       toast.error(getErrorMessage(error));

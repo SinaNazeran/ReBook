@@ -57,6 +57,16 @@ class BookListCategoryFilterTests(APITestCase):
     def test_child_category_is_not_widened(self):
         self.assertEqual(self.titles("roman-irani"), ["child"])
 
+    def test_category_root_is_the_top_level_category(self):
+        # رنگ مجموعه در کارت کتاب از دسته‌ی سطح اول می‌آید؛ زیرشاخه رنگ والد را می‌گیرد
+        Book.objects.create(title="none", author="a", price=1000, seller=User.objects.get(), status="approved")
+        roots = {b["title"]: b["category_root"] for b in self.client.get("/api/books/").data["results"]}
+        novel_id = Category.objects.get(slug="roman").id
+        self.assertEqual(roots["parent"], novel_id)
+        self.assertEqual(roots["child"], novel_id)
+        self.assertEqual(roots["other"], Category.objects.get(slug="poetry").id)
+        self.assertIsNone(roots["none"])
+
 
 class CategoryListTests(APITestCase):
     def test_all_categories_are_returned_without_pagination(self):

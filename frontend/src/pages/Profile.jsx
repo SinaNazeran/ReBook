@@ -109,7 +109,7 @@ function Profile() {
               {/* اطلاعات ثابت */}
               <div className="profile-meta-box mb-4 text-center">
                 <div className="mb-1">
-                  <strong>نام کاربری:</strong> {user?.username}
+                  <strong>نام کاربری:</strong> <bdi className="latin-id">{user?.username}</bdi>
                 </div>
                 <div>
                   <strong>تاریخ عضویت:</strong> {joinDate}

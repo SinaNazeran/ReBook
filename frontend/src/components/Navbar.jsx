@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar as BSNavbar, Nav, Container, Badge, NavDropdown, Form } from 'react-bootstrap';
 import { useAuth } from '../context/useAuth.js';
 import { notificationAPI, ADMIN_URL } from '../services/api';
@@ -108,18 +108,26 @@ function Navbar() {
   };
 
   const displayedUnreadCount = isAuthenticated ? unreadCount : 0;
+  // صفحه‌ی کتاب‌ها جستجوی خودش را دارد؛ دو جعبه‌ی جستجو روی هم نمی‌آیند
+  const showSearch = location.pathname !== '/books';
 
   return (
-    <BSNavbar bg="white" expand="lg" className="shadow-sm sticky-top py-2 navbar-light">
+    <BSNavbar bg="white" expand="lg" className="site-navbar sticky-top py-2 navbar-light">
       <Container>
-        <BSNavbar.Brand as={Link} to="/" className="text-primary d-flex align-items-center gap-2">
-          <FiBookOpen size={26} />
-          <span className="fw-bold">ری‌بوک</span>
+        <BSNavbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2">
+          <span className="brand-mark" aria-hidden="true" />
+          ری‌بوک
         </BSNavbar.Brand>
+
+        {/* در موبایل فروش هم‌ارز خرید است، پس پشت منو پنهان نمی‌شود */}
+        <Link to="/create-book" className="btn btn-primary text-nowrap d-lg-none ms-auto me-2">
+          فروش کتاب
+        </Link>
 
         <BSNavbar.Toggle aria-label="باز و بسته کردن منو" className="border-0" />
 
         {/* نوار جستجوی موبایل */}
+        {showSearch && (
         <Form
           className="d-lg-none w-100 mt-3 mb-2"
           onSubmit={handleSearchSubmit}
@@ -139,18 +147,17 @@ function Navbar() {
             />
           </div>
         </Form>
+        )}
 
         <BSNavbar.Collapse className="mt-2 mt-lg-0">
           <Nav className="me-auto flex-column flex-lg-row">
-            <Nav.Link as={Link} to="/" className="py-2 py-lg-1">
-              خانه
-            </Nav.Link>
-            <Nav.Link as={Link} to="/books" className="py-2 py-lg-1">
+            <Nav.Link as={NavLink} to="/books" className="py-2 py-lg-1">
               کتاب‌ها
             </Nav.Link>
           </Nav>
 
           {/* جستجوی دسکتاپ */}
+          {showSearch && (
           <Form
             className="d-none d-lg-flex flex-grow-1 mx-lg-3 my-2 my-lg-0"
             style={{ maxWidth: 380 }}
@@ -171,18 +178,18 @@ function Navbar() {
               />
             </div>
           </Form>
+          )}
 
           {/* اکشن‌ها و منوی کاربر */}
           <Nav className="align-items-lg-center gap-lg-2 mt-3 mt-lg-0 flex-column flex-lg-row">
-            {isAuthenticated && (
-              <Link
-                to="/create-book"
-                className="btn btn-primary btn-sm d-flex align-items-center justify-content-center gap-1 w-100 w-lg-auto mb-2 mb-lg-0"
-              >
-                <FiPlusCircle />
-                ثبت کتاب
-              </Link>
-            )}
+            {/* فروش هم‌ارز خرید است، پس برای همه دیده می‌شود؛ مهمان پس از ورود به همین فرم برمی‌گردد */}
+            <Link
+              to="/create-book"
+              className="btn btn-primary d-none d-lg-flex align-items-center justify-content-center gap-2 text-nowrap"
+            >
+              <FiPlusCircle aria-hidden="true" />
+              فروش کتاب
+            </Link>
 
             {isAuthenticated ? (
               <>
@@ -194,7 +201,7 @@ function Navbar() {
                         className="text-truncate d-inline-block align-middle"
                         style={{ maxWidth: 100 }}
                       >
-                        {user?.first_name || user?.username}
+                        {user?.first_name || <bdi className="latin-id">{user?.username}</bdi>}
                       </span>
                     </span>
                   }
@@ -205,10 +212,10 @@ function Navbar() {
                     <div className="fw-bold text-truncate text-dark">
                       {user?.first_name
                         ? `${user.first_name} ${user.last_name || ''}`
-                        : user?.username}
+                        : <bdi className="latin-id">{user?.username}</bdi>}
                     </div>
                     {user?.email && (
-                      <div className="text-muted text-truncate" style={{ fontSize: '0.8rem' }}>
+                      <div className="text-muted text-truncate latin-id" style={{ fontSize: '0.8rem' }}>
                         {user.email}
                       </div>
                     )}
@@ -273,19 +280,14 @@ function Navbar() {
                 </NavDropdown>
               </>
             ) : (
-              <div className="d-flex gap-2 w-100 w-lg-auto mt-2 mt-lg-0">
-                <Link
-                  to="/login"
-                  // پس از ورود به همین صفحه برمی‌گردد (مگر از خود صفحه‌ی ورود/ثبت‌نام)
-                  state={['/login', '/register'].includes(location.pathname) ? undefined : { from: location }}
-                  className="btn btn-outline-primary btn-sm w-100 w-lg-auto"
-                >
-                  ورود
-                </Link>
-                <Link to="/register" className="btn btn-primary btn-sm w-100 w-lg-auto">
-                  ثبت‌نام
-                </Link>
-              </div>
+              <Link
+                to="/login"
+                // پس از ورود به همین صفحه برمی‌گردد (مگر از خود صفحه‌ی ورود/ثبت‌نام)؛ صفحه‌ی ورود لینک ثبت‌نام دارد
+                state={['/login', '/register'].includes(location.pathname) ? undefined : { from: location }}
+                className="btn btn-outline-primary text-nowrap w-100 w-lg-auto"
+              >
+                ورود / ثبت‌نام
+              </Link>
             )}
           </Nav>
         </BSNavbar.Collapse>

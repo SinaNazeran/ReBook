@@ -27,6 +27,8 @@ class BookListSerializer(serializers.ModelSerializer):
     condition_display = serializers.CharField(
         source="get_condition_display", read_only=True
     )
+    # شناسه‌ی دسته‌بندی سطح اول؛ کارت کتاب رنگ «مجموعه» را از آن می‌گیرد
+    category_root = serializers.SerializerMethodField()
 
     class Meta:
         model = Book
@@ -41,8 +43,15 @@ class BookListSerializer(serializers.ModelSerializer):
             "status",
             "seller_name",
             "category_name",
+            "category_root",
             "created_at",
         )
+
+    def get_category_root(self, obj):
+        # ponytail: فقط دو سطح (والد/زیرشاخه) داریم؛ اگر عمق بیشتر شد باید تا ریشه بالا رفت
+        if obj.category is None:
+            return None
+        return obj.category.parent_id or obj.category_id
 
 
 class BookDetailSerializer(serializers.ModelSerializer):

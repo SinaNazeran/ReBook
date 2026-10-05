@@ -42,7 +42,8 @@ class BookListView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        queryset = Book.objects.filter(status="approved")
+        # سریالایزر لیست برای هر کتاب seller و category را می‌خواند؛ بدون این، هر کارت دو کوئری اضافه دارد
+        queryset = Book.objects.filter(status="approved").select_related("seller", "category")
 
         search = self.request.query_params.get("search", None)
         if search:
@@ -106,7 +107,7 @@ class MyBooksView(generics.ListAPIView):
     pagination_class = None  # فهرست شخصی و کوچک؛ صفحه‌ی MyBooks همه را یکجا نشان می‌دهد
 
     def get_queryset(self):
-        return Book.objects.filter(seller=self.request.user)
+        return Book.objects.filter(seller=self.request.user).select_related("seller", "category")
 
 
 class BookUpdateView(generics.UpdateAPIView):
@@ -145,7 +146,7 @@ class WishlistView(generics.ListAPIView):
     def get_queryset(self):
         return Wishlist.objects.filter(
             user=self.request.user, book__in=visible_books(self.request.user)
-        )
+        ).select_related("book__seller", "book__category")
 
 
 class WishlistToggleView(APIView):
