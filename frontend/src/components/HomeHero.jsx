@@ -42,12 +42,14 @@ const depthSlot = (i, n) => {
     x: Math.cos(a) * (30 + (i % 3) * 6) * k, // vw
     y: Math.sin(a) * (26 + (i % 2) * 6) * k, // vh
     z,
+    a,
     tilt: ((i * 37) % 14) - 7,
   };
 };
 const wrapDepth = (z) => DEPTH_FAR + ((((z - DEPTH_FAR) % DEPTH_LOOP) + DEPTH_LOOP) % DEPTH_LOOP);
-// جلدهای خیلی دور در مه کاغذ محو می‌شوند و جلدی که از کنار دوربین می‌گذرد پیش از رسیدن به آن ناپدید می‌شود
-const depthOpacity = (z) => Math.min(clamp01((z - DEPTH_FAR) / 800), clamp01((300 - z) / 300));
+// جلد فقط در لبه‌ی ته فضا (۴۵۰px آخر) از مه کاغذ پیدا می‌شود تا هنگام برگشتن از ته فضا نپرد، و پیش از رسیدن به دوربین
+// ناپدید می‌شود؛ بقیه‌ی راه کاملاً مات است، چون جلد نیمه‌شفاف کدر و بی‌کیفیت دیده می‌شود
+const depthOpacity = (z) => Math.min(clamp01((z - DEPTH_FAR) / 450), clamp01((300 - z) / 300));
 
 function CoverArt({ book }) {
   return book.cover_image ? (
@@ -131,11 +133,14 @@ function HomeHero({ status, books }) {
         const cam = { x: 0, v: 0 };
         const SPRING = 7; // ω؛ حدود ۰٫۶ ثانیه تا رسیدن
 
-        // تا تیتر پیداست، جلدی که پشت متن می‌افتد کم‌رنگ می‌شود تا متن روی جلد رنگی نیفتد. مرکز دید (perspective-origin)
-        // و قاب متن یک بار و با هر تغییر اندازه اندازه گرفته می‌شوند؛ جای جلد روی صفحه با همان ضرب پرسپکتیو حساب می‌شود
+        // حریم تیتر: تا تیتر پیداست، جلدی که روی صفحه پشت متن می‌افتد کم‌رنگ نمی‌شود (جلد کدر بی‌کیفیت دیده می‌شود)،
+        // بلکه کاملاً مات تا لبه‌ی قاب متن کنار می‌رود و با گذشتن تیتر به مسیر خودش برمی‌گردد. مرکز دید
+        // (perspective-origin)، قاب متن و اندازه‌ی جلد یک بار و با هر تغییر اندازه اندازه گرفته می‌شوند
         const depth = hero.querySelector('.hero-depth');
+        const CLEAR_PAD = 16; // px فاصله‌ی جلد تا متن
         let view = { cx: 0, cy: 0 };
         let text = { cx: 0, cy: 0, hw: 1, hh: 1 };
+        let cover = { hw: 0, hh: 0 };
         const measure = () => {
           const d = depth.getBoundingClientRect();
           const prev = copy.style.transform;
@@ -143,7 +148,8 @@ function HomeHero({ status, books }) {
           const r = copy.getBoundingClientRect();
           copy.style.transform = prev;
           view = { cx: d.left + d.width / 2, cy: d.top + d.height / 2 };
-          text = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, hw: r.width / 2, hh: r.height / 2 };
+          text = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, hw: r.width / 2 + CLEAR_PAD, hh: r.height / 2 + CLEAR_PAD };
+          cover = { hw: items[0].offsetWidth / 2, hh: items[0].offsetHeight / 2 };
         };
         measure();
         window.addEventListener('resize', measure);
@@ -164,13 +170,30 @@ function HomeHero({ status, books }) {
             s.focus += ((s.el === document.activeElement ? 1 : 0) - s.focus) * 0.12;
             const z = flying + (-250 - flying) * s.focus;
             const t = time + s.seed;
-            const x = s.x * vw;
-            const y = s.y * vh + Math.sin(t * 0.7) * 10;
-            const f = DEPTH_PERSPECTIVE / Math.max(1, DEPTH_PERSPECTIVE - z);
-            const dx = Math.abs(view.cx + (x + look.x) * f - text.cx) / text.hw;
-            const dy = Math.abs(view.cy + (y + look.y) * f - text.cy) / text.hh;
-            const behindText = clamp01((1.25 - Math.max(dx, dy)) / 0.35) * (1 - c);
-            const o = depthOpacity(z) * (1 - behindText * 0.85);
+            let x = s.x * vw;
+            let y = s.y * vh + Math.sin(t * 0.7) * 10;
+            // حریم تا وقتی متن خواناست کامل می‌ماند و فقط در آخرین بخش محو شدن تیتر (شفافیت کمتر از ~۰٫۴۵) رها می‌شود؛
+            // حریم هم‌پای بزرگ شدن تیتر بزرگ می‌شود
+            const hold = 1 - gsap.parseEase('power1.inOut')(clamp01((c - 0.75) / 0.25));
+            if (hold > 0) {
+              const grow = 1 + 0.6 * c * c;
+              // جای جلد روی صفحه نسبت به مرکز متن؛ اگر قابِ جلد با حریم متن هم‌پوشانی دارد، در همان راستا تا لبه‌ی حریم
+              // رانده می‌شود. k=۱ یعنی درست روی لبه؛ رانش پیوسته است
+              const f = DEPTH_PERSPECTIVE / Math.max(1, DEPTH_PERSPECTIVE - z);
+              let ox = view.cx + (x + look.x) * f - text.cx;
+              let oy = view.cy + (y + look.y) * f - text.cy;
+              if (Math.hypot(ox, oy) < 1) {
+                ox = Math.cos(s.a);
+                oy = Math.sin(s.a);
+              }
+              const k = Math.max(Math.abs(ox) / (text.hw * grow + cover.hw * f), Math.abs(oy) / (text.hh * grow + cover.hh * f));
+              if (k < 1) {
+                const push = (1 / Math.max(k, 0.02) - 1) * hold;
+                x += (ox * push) / f;
+                y += (oy * push) / f;
+              }
+            }
+            const o = depthOpacity(z);
             s.el.style.opacity = o;
             s.el.style.pointerEvents = o < 0.2 ? 'none' : '';
             s.el.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${Math.sin(t * 0.35) * 12}deg) rotate(${s.tilt}deg)`;
