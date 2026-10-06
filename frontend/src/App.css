@@ -632,7 +632,7 @@
 }
 
 .hero-depth .depth-item {
-  --depth-w: clamp(5.25rem, 13vw, 13rem);
+  --depth-w: clamp(5.25rem, 16vw, 16rem);
   position: absolute;
   inset: 0;
   width: var(--depth-w);

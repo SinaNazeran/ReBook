@@ -30,8 +30,8 @@ const clamp01 = gsap.utils.clamp(0, 1);
 // جلدهای دور پشت تیتر جمع نشوند؛ با جلو رفتن دوربین از نزدیک مرکز می‌آیند و بزرگ‌شده از کنار می‌گذرند
 const DEPTH_PERSPECTIVE = 900; // همان perspective در App.css
 const DEPTH_NEAR = -150;
-const DEPTH_FAR = -3300;
-const DEPTH_LOOP = 3600; // جلدی که از دوربین گذشت به ته فضا برمی‌گردد، پس فضا هیچ‌وقت خالی نمی‌شود
+const DEPTH_FAR = -2600;
+const DEPTH_LOOP = 2900; // جلدی که از دوربین گذشت به ته فضا برمی‌گردد، پس فضا هیچ‌وقت خالی نمی‌شود
 const DEPTH_TRAVEL = 3500; // مسافت دوربین در طول باند اسکرول
 const DEPTH_DRIFT = 40; // px در ثانیه: حتی بی‌اسکرول، قفسه آرام به‌سمت بیننده می‌آید
 const depthSlot = (i, n) => {
@@ -39,8 +39,8 @@ const depthSlot = (i, n) => {
   const z = DEPTH_NEAR - (i * (DEPTH_NEAR - DEPTH_FAR)) / Math.max(1, n - 1);
   const k = 1 + ((DEPTH_PERSPECTIVE - z) / DEPTH_PERSPECTIVE - 1) * 0.35;
   return {
-    x: Math.cos(a) * (37 + (i % 3) * 5) * k, // vw
-    y: Math.sin(a) * (30 + (i % 2) * 7) * k, // vh
+    x: Math.cos(a) * (30 + (i % 3) * 6) * k, // vw
+    y: Math.sin(a) * (26 + (i % 2) * 6) * k, // vh
     z,
     tilt: ((i * 37) % 14) - 7,
   };
@@ -107,8 +107,8 @@ function HomeHero({ status, books }) {
     };
   }, []);
 
-  // پرواز: یک موتور کوچک هر فریم جای همه‌ی جلدها را از پیشرفت اسکرول، ورود، رانش آرام، شناوری و نگاه نشانگر
-  // حساب می‌کند. پیشرفت اسکرول از یک تایم‌لاین اسکراب‌شده می‌آید که صحنه را پین کرده است
+  // پرواز: یک موتور کوچک هر فریم جای همه‌ی جلدها و تیتر را از پیشرفت اسکرول (از راه فنر)، ورود، رانش آرام،
+  // شناوری و نگاه نشانگر حساب می‌کند. پیشرفت خام اسکرول از تایم‌لاینی می‌آید که صحنه را پین کرده است
   useLayoutEffect(() => {
     if (!ready) return undefined;
     let cancelled = false;
@@ -125,25 +125,63 @@ function HomeHero({ status, books }) {
         const items = gsap.utils.toArray('.depth-item', hero);
         const slots = items.map((el) => ({ el, ...depthSlot(Number(el.dataset.i), items.length), seed: Math.random() * 10, focus: 0 }));
         const state = { p: 0, intro: 1 };
-        const look = { rx: 0, ry: 0 };
+        // دوربین با فنرِ میرای بحرانی به پیشرفت اسکرول می‌رسد، نه با scrub عددی: scrub روی هر رویداد اسکرول
+        // یک توئین تازه با ease-out می‌سازد، پس سرعت با هر ضربه‌ی چرخ موس بالا می‌پرد و دوباره می‌افتد (حرکت تپنده).
+        // فنر سرعت پیوسته دارد، پس پرواز روان شتاب می‌گیرد و روان می‌ایستد
+        const cam = { x: 0, v: 0 };
+        const SPRING = 7; // ω؛ حدود ۰٫۶ ثانیه تا رسیدن
+
+        // تا تیتر پیداست، جلدی که پشت متن می‌افتد کم‌رنگ می‌شود تا متن روی جلد رنگی نیفتد. مرکز دید (perspective-origin)
+        // و قاب متن یک بار و با هر تغییر اندازه اندازه گرفته می‌شوند؛ جای جلد روی صفحه با همان ضرب پرسپکتیو حساب می‌شود
+        const depth = hero.querySelector('.hero-depth');
+        let view = { cx: 0, cy: 0 };
+        let text = { cx: 0, cy: 0, hw: 1, hh: 1 };
+        const measure = () => {
+          const d = depth.getBoundingClientRect();
+          const prev = copy.style.transform;
+          copy.style.transform = 'none';
+          const r = copy.getBoundingClientRect();
+          copy.style.transform = prev;
+          view = { cx: d.left + d.width / 2, cy: d.top + d.height / 2 };
+          text = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, hw: r.width / 2, hh: r.height / 2 };
+        };
+        measure();
+        window.addEventListener('resize', measure);
+        const look = { x: 0, y: 0 };
         const cleanups = [];
 
-        const render = (time) => {
+        const render = (time, deltaMs) => {
+          const dt = Math.min(deltaMs, 50) / 1000;
+          cam.v += ((state.p - cam.x) * SPRING * SPRING - cam.v * 2 * SPRING) * dt;
+          cam.x += cam.v * dt;
           const vw = window.innerWidth / 100;
           const vh = window.innerHeight / 100;
-          const travel = state.p * DEPTH_TRAVEL - state.intro * 1800 + time * DEPTH_DRIFT;
+          const c = clamp01(cam.x / 0.3); // ۰: تیتر کامل، ۱: تیتر گذشته
+          const travel = cam.x * DEPTH_TRAVEL - state.intro * 1800 + time * DEPTH_DRIFT;
           slots.forEach((s) => {
             // جلدی که با Tab فوکوس شده آرام جلوی دوربین می‌آید و همان‌جا می‌ماند
             const flying = wrapDepth(s.z + travel);
             s.focus += ((s.el === document.activeElement ? 1 : 0) - s.focus) * 0.12;
             const z = flying + (-250 - flying) * s.focus;
             const t = time + s.seed;
-            const o = depthOpacity(z);
+            const x = s.x * vw;
+            const y = s.y * vh + Math.sin(t * 0.7) * 10;
+            const f = DEPTH_PERSPECTIVE / Math.max(1, DEPTH_PERSPECTIVE - z);
+            const dx = Math.abs(view.cx + (x + look.x) * f - text.cx) / text.hw;
+            const dy = Math.abs(view.cy + (y + look.y) * f - text.cy) / text.hh;
+            const behindText = clamp01((1.25 - Math.max(dx, dy)) / 0.35) * (1 - c);
+            const o = depthOpacity(z) * (1 - behindText * 0.85);
             s.el.style.opacity = o;
             s.el.style.pointerEvents = o < 0.2 ? 'none' : '';
-            s.el.style.transform = `translate3d(${s.x * vw}px, ${s.y * vh + Math.sin(t * 0.7) * 10}px, ${z}px) rotateY(${Math.sin(t * 0.35) * 12}deg) rotate(${s.tilt}deg)`;
+            s.el.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${Math.sin(t * 0.35) * 12}deg) rotate(${s.tilt}deg)`;
           });
-          world.style.transform = `rotateX(${look.rx}deg) rotateY(${look.ry}deg)`;
+          // نگاه به اطراف: دوربین کمی به پهلو می‌رود (جابه‌جایی جهان، نه چرخش): جلد نزدیک بیشتر و جلد دور کمتر
+          // جابه‌جا می‌شود، که عمق را درست نشان می‌دهد. چرخش حول نقطه‌ی جلوی دوربین برعکس بود و جلدهای دور را می‌لغزاند
+          world.style.transform = `translate3d(${look.x}px, ${look.y}px, 0)`;
+          // تیتر با همان فنر از کنار دوربین می‌گذرد: بزرگ و محو، بی‌تاری (تاری حروف فارسی را لک می‌کرد)
+          copy.style.opacity = 1 - c * c;
+          copy.style.transform = `scale(${1 + 0.6 * c * c})`;
+          copy.style.visibility = c >= 1 ? 'hidden' : '';
         };
         // موتور فقط وقتی هیرو در دید است می‌چرخد
         let running = false;
@@ -156,6 +194,7 @@ function HomeHero({ status, books }) {
         run(true);
         ScrollTrigger.create({ trigger: hero, start: 'top bottom', end: 'bottom top', onToggle: (self) => run(self.isActive) });
         cleanups.push(() => run(false));
+        cleanups.push(() => window.removeEventListener('resize', measure));
         cleanups.push(withSafety(gsap.timeline().to(state, { intro: 0, duration: 1.8, ease: 'power3.out' })));
 
         // نسبت «بالاآمدن برگه» به «باند»: پرواز در [0, 1] و بالاآمدن بخش بعد پس از آن
@@ -168,20 +207,19 @@ function HomeHero({ status, books }) {
               end: () => `+=${runway.offsetHeight + stage.offsetHeight}`,
               pin: true,
               pinSpacing: false,
-              scrub: 1,
+              scrub: true,
               invalidateOnRefresh: true,
             },
           })
           .to(state, { p: 1, ease: 'none', duration: 1 }, 0)
-          .to(copy, { scale: 1.7, autoAlpha: 0, filter: 'blur(8px)', ease: 'power1.in', duration: 0.3 }, 0)
           .to(state, { p: 1 + 0.35 * liftRatio, ease: 'none', duration: liftRatio }, 1);
 
-        // نگاه به اطراف: کل فضا آرام به‌سمت نشانگر می‌چرخد
+        // نگاه به اطراف: دوربین آرام دنبال نشانگر می‌رود
         if (context.conditions.finePointer) {
           const onMove = (e) => {
             gsap.to(look, {
-              ry: (e.clientX / window.innerWidth - 0.5) * 10,
-              rx: -(e.clientY / window.innerHeight - 0.5) * 8,
+              x: -(e.clientX / window.innerWidth - 0.5) * 160,
+              y: -(e.clientY / window.innerHeight - 0.5) * 90,
               duration: 1.1,
               ease: 'power3',
               overwrite: true,
