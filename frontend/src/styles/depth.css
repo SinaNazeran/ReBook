@@ -198,7 +198,12 @@
    ========================================================================== */
 .buy-panel,
 .colophon,
-.list-state {
+.list-state,
+.ledger,
+.notice-list,
+.profile-card,
+.support-form,
+.auth-panel {
     border-color: transparent;
     border-radius: var(--bs-border-radius-xl);
     box-shadow: var(--d-panel);
@@ -331,3 +336,11 @@ main > .series-paper {
     animation-duration: 220ms;
 }
 
+
+/* تیکت‌های پشتیبانی: آکاردئون هم قاب روی برگه است */
+.ticket-list {
+    --bs-accordion-border-radius: var(--bs-border-radius-xl);
+    --bs-accordion-inner-border-radius: calc(var(--bs-border-radius-xl) - 1px);
+    border-radius: var(--bs-border-radius-xl);
+    box-shadow: var(--d-panel);
+}

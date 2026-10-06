@@ -44,57 +44,59 @@ function Login() {
   };
 
   return (
-    <Container className="auth-page">
-      <title>ورود | ری‌بوک</title>
-      <div className="auth-panel">
-        <h1 className="auth-title">ورود</h1>
-        {reason && <p className="auth-reason">{reason}</p>}
+    <div className="series-paper" style={{ '--series': 'var(--rb-accent)' }}>
+      <Container className="auth-page">
+        <title>ورود | ری‌بوک</title>
+        <div className="auth-panel">
+          <h1 className="auth-title">ورود</h1>
+          {reason && <p className="auth-reason">{reason}</p>}
 
-        {error && (
-          <Alert variant="danger" role="alert">
-            {error}
-          </Alert>
-        )}
+          {error && (
+            <Alert variant="danger" role="alert">
+              {error}
+            </Alert>
+          )}
 
-        <Form onSubmit={handleSubmit} noValidate>
-          <Form.Group controlId="username" className="mb-3">
-            <Form.Label>نام کاربری</Form.Label>
-            <Form.Control
-              name="username"
-              value={formData.username}
+          <Form onSubmit={handleSubmit} noValidate>
+            <Form.Group controlId="username" className="mb-3">
+              <Form.Label>نام کاربری</Form.Label>
+              <Form.Control
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
+                dir="ltr"
+                required
+              />
+            </Form.Group>
+
+            <PasswordField
+              id="password"
+              label="رمز"
+              name="password"
+              value={formData.password}
               onChange={handleChange}
-              autoComplete="username"
-              autoCapitalize="none"
-              spellCheck={false}
-              dir="ltr"
+              autoComplete="current-password"
               required
             />
-          </Form.Group>
 
-          <PasswordField
-            id="password"
-            label="رمز"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            autoComplete="current-password"
-            required
-          />
+            <Button type="submit" variant="primary" className="w-100 mt-2" disabled={loading}>
+              {loading ? 'در حال ورود…' : 'ورود'}
+            </Button>
+          </Form>
 
-          <Button type="submit" variant="primary" className="w-100 mt-2" disabled={loading}>
-            {loading ? 'در حال ورود…' : 'ورود'}
-          </Button>
-        </Form>
-
-        {/* state هم منتقل می‌شود تا ثبت‌نام هم کاربر را به همان صفحه برگرداند */}
-        <p className="auth-switch">
-          حساب نداری؟{' '}
-          <Link to="/register" state={location.state}>
-            ثبت‌نام کن
-          </Link>
-        </p>
-      </div>
-    </Container>
+          {/* state هم منتقل می‌شود تا ثبت‌نام هم کاربر را به همان صفحه برگرداند */}
+          <p className="auth-switch">
+            حساب نداری؟{' '}
+            <Link to="/register" state={location.state}>
+              ثبت‌نام کن
+            </Link>
+          </p>
+        </div>
+      </Container>
+    </div>
   );
 }
 

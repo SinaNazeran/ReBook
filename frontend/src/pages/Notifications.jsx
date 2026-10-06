@@ -79,69 +79,71 @@ function Notifications() {
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
-    <Container className="ledger-page notifications-page">
-      <title>اعلان‌ها | ری‌بوک</title>
-      <header className="ledger-header">
-        <h1 className="ledger-title">
-          اعلان‌ها
-          {unreadCount > 0 && <span className="list-count">{unreadCount.toLocaleString('fa-IR')} خوانده‌نشده</span>}
-        </h1>
-        {unreadCount > 0 && (
-          <Button variant="outline-secondary" onClick={handleMarkAllRead}>
-            همه خوانده شد
-          </Button>
-        )}
-      </header>
+    <div className="series-paper">
+      <Container className="ledger-page notifications-page">
+        <title>اعلان‌ها | ری‌بوک</title>
+        <header className="ledger-header">
+          <h1 className="ledger-title">
+            اعلان‌ها
+            {unreadCount > 0 && <span className="list-count">{unreadCount.toLocaleString('fa-IR')} خوانده‌نشده</span>}
+          </h1>
+          {unreadCount > 0 && (
+            <Button variant="outline-secondary" onClick={handleMarkAllRead}>
+              همه خوانده شد
+            </Button>
+          )}
+        </header>
 
-      {loadError ? (
-        <div className="list-state" role="alert">
-          <p>اعلان‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
-          <Button variant="outline-secondary" onClick={handleRetry}>
-            تلاش دوباره
-          </Button>
-        </div>
-      ) : notifications.length === 0 ? (
-        <div className="list-state">
-          <EmptyShelf />
-          <p>
-            هنوز اعلانی نداری. وقتی کسی کتابت را سفارش بدهد یا پرداختی انجام شود، همین‌جا خبرت می‌کنیم.
-          </p>
-          <Link to="/create-book" className="btn btn-outline-secondary">
-            فروش کتاب
-          </Link>
-        </div>
-      ) : (
-        <ul className="notice-list">
-          {notifications.map((notification) => {
-            const Icon = TYPE_ICON[notification.notification_type] ?? FiInfo;
-            const unread = !notification.is_read;
-            return (
-              <li key={notification.id}>
-                <button
-                  type="button"
-                  className={`notice${unread ? ' is-unread' : ''}`}
-                  onClick={() => handleMarkRead(notification)}
-                  aria-disabled={!unread}
-                >
-                  <span className="notice-icon" aria-hidden="true">
-                    <Icon />
-                  </span>
-                  <span className="notice-body">
-                    <span className="notice-title">
-                      {notification.title}
-                      {unread && <span className="visually-hidden">، خوانده‌نشده</span>}
+        {loadError ? (
+          <div className="list-state" role="alert">
+            <p>اعلان‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+            <Button variant="outline-secondary" onClick={handleRetry}>
+              تلاش دوباره
+            </Button>
+          </div>
+        ) : notifications.length === 0 ? (
+          <div className="list-state">
+            <EmptyShelf />
+            <p>
+              هنوز اعلانی نداری. وقتی کسی کتابت را سفارش بدهد یا پرداختی انجام شود، همین‌جا خبرت می‌کنیم.
+            </p>
+            <Link to="/create-book" className="btn btn-outline-secondary">
+              فروش کتاب
+            </Link>
+          </div>
+        ) : (
+          <ul className="notice-list">
+            {notifications.map((notification) => {
+              const Icon = TYPE_ICON[notification.notification_type] ?? FiInfo;
+              const unread = !notification.is_read;
+              return (
+                <li key={notification.id}>
+                  <button
+                    type="button"
+                    className={`notice${unread ? ' is-unread' : ''}`}
+                    onClick={() => handleMarkRead(notification)}
+                    aria-disabled={!unread}
+                  >
+                    <span className="notice-icon" aria-hidden="true">
+                      <Icon />
                     </span>
-                    <span className="notice-message">{notification.message}</span>
-                  </span>
-                  <span className="notice-date">{formatDate(notification.created_at)}</span>
-                  {unread && <span className="notice-dot" aria-hidden="true" />}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </Container>
+                    <span className="notice-body">
+                      <span className="notice-title">
+                        {notification.title}
+                        {unread && <span className="visually-hidden">، خوانده‌نشده</span>}
+                      </span>
+                      <span className="notice-message">{notification.message}</span>
+                    </span>
+                    <span className="notice-date">{formatDate(notification.created_at)}</span>
+                    {unread && <span className="notice-dot" aria-hidden="true" />}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </Container>
+    </div>
   );
 }
 

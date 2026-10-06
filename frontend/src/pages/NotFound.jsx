@@ -13,21 +13,23 @@ function NotFound({
   message = 'نشانی‌ای که باز کردی در ری‌بوک وجود ندارد؛ شاید اشتباه نوشته شده یا صفحه حذف شده است.',
 }) {
   return (
-    <div className="container not-found">
-      <title>{`${title} | ری‌بوک`}</title>
-      <div className="not-found-cover" aria-hidden="true">
-        <PlainCover title="۴۰۴" rootId={LOST_BOOK_SERIES} />
-      </div>
-      <div className="not-found-body">
-        <h1 className="not-found-title">{title}</h1>
-        <p className="not-found-text">{message}</p>
-        <div className="d-flex flex-wrap gap-2">
-          <Link to="/books" className="btn btn-primary">
-            مرور کتاب‌ها
-          </Link>
-          <Link to="/" className="btn btn-outline-secondary">
-            صفحه‌ی اصلی
-          </Link>
+    <div className="series-paper" style={{ '--series': 'var(--rb-series-6)' }}>
+      <div className="container not-found">
+        <title>{`${title} | ری‌بوک`}</title>
+        <div className="not-found-cover" aria-hidden="true">
+          <PlainCover title="۴۰۴" rootId={LOST_BOOK_SERIES} />
+        </div>
+        <div className="not-found-body">
+          <h1 className="not-found-title">{title}</h1>
+          <p className="not-found-text">{message}</p>
+          <div className="d-flex flex-wrap gap-2">
+            <Link to="/books" className="btn btn-primary">
+              مرور کتاب‌ها
+            </Link>
+            <Link to="/" className="btn btn-outline-secondary">
+              صفحه‌ی اصلی
+            </Link>
+          </div>
         </div>
       </div>
     </div>

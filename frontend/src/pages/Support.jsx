@@ -91,119 +91,121 @@ function Support() {
   if (loading) return <Loading fullPage />;
 
   return (
-    <Container className="ledger-page">
-      <title>پشتیبانی | ری‌بوک</title>
-      <header className="ledger-header">
-        <div>
-          <h1 className="ledger-title">پشتیبانی</h1>
-          <p className="sell-lead mt-2 mb-0">
-            سؤال درباره‌ی سفارش، پرداخت یا آگهی‌ات را بپرس؛ پاسخ تیم ری‌بوک در همین صفحه می‌آید.
-          </p>
-        </div>
-      </header>
+    <div className="series-paper">
+      <Container className="ledger-page">
+        <title>پشتیبانی | ری‌بوک</title>
+        <header className="ledger-header">
+          <div>
+            <h1 className="ledger-title">پشتیبانی</h1>
+            <p className="sell-lead mt-2 mb-0">
+              سؤال درباره‌ی سفارش، پرداخت یا آگهی‌ات را بپرس؛ پاسخ تیم ری‌بوک در همین صفحه می‌آید.
+            </p>
+          </div>
+        </header>
 
-      <Row className="g-4 g-lg-5">
-        <Col lg={5}>
-          <Form onSubmit={handleSubmit} noValidate className="support-form" aria-labelledby="new-ticket-title">
-            <h2 id="new-ticket-title" className="support-heading">
-              پیام تازه
-            </h2>
-            <Form.Group controlId="subject" className="mb-3">
-              <Form.Label>موضوع</Form.Label>
-              <Form.Control
-                name="subject"
-                autoComplete="off"
-                value={formData.subject}
-                onChange={handleChange}
-                maxLength={200}
-                placeholder="مثلاً: آگهی‌ام تأیید نشد"
-                required
-                aria-required="true"
-                isInvalid={!!fieldErrors.subject}
-              />
-              <Form.Control.Feedback type="invalid">{fieldErrors.subject}</Form.Control.Feedback>
-            </Form.Group>
+        <Row className="g-4 g-lg-5">
+          <Col lg={5}>
+            <Form onSubmit={handleSubmit} noValidate className="support-form" aria-labelledby="new-ticket-title">
+              <h2 id="new-ticket-title" className="support-heading">
+                پیام تازه
+              </h2>
+              <Form.Group controlId="subject" className="mb-3">
+                <Form.Label>موضوع</Form.Label>
+                <Form.Control
+                  name="subject"
+                  autoComplete="off"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  maxLength={200}
+                  placeholder="مثلاً: آگهی‌ام تأیید نشد"
+                  required
+                  aria-required="true"
+                  isInvalid={!!fieldErrors.subject}
+                />
+                <Form.Control.Feedback type="invalid">{fieldErrors.subject}</Form.Control.Feedback>
+              </Form.Group>
 
-            <Form.Group controlId="message" className="mb-3">
-              <Form.Label>پیام</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={6}
-                name="message"
-                autoComplete="off"
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="اگر درباره‌ی سفارش است، شماره‌ی سفارش یا نام کتاب را هم بنویس."
-                required
-                aria-required="true"
-                isInvalid={!!fieldErrors.message}
-              />
-              <Form.Control.Feedback type="invalid">{fieldErrors.message}</Form.Control.Feedback>
-            </Form.Group>
+              <Form.Group controlId="message" className="mb-3">
+                <Form.Label>پیام</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={6}
+                  name="message"
+                  autoComplete="off"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="اگر درباره‌ی سفارش است، شماره‌ی سفارش یا نام کتاب را هم بنویس."
+                  required
+                  aria-required="true"
+                  isInvalid={!!fieldErrors.message}
+                />
+                <Form.Control.Feedback type="invalid">{fieldErrors.message}</Form.Control.Feedback>
+              </Form.Group>
 
-            <Button type="submit" variant="primary" disabled={submitting}>
-              {submitting ? 'در حال ارسال…' : 'ارسال پیام'}
-            </Button>
-          </Form>
-        </Col>
+              <Button type="submit" variant="primary" disabled={submitting}>
+                {submitting ? 'در حال ارسال…' : 'ارسال پیام'}
+              </Button>
+            </Form>
+          </Col>
 
-        <Col lg={7}>
-          <section aria-labelledby="tickets-title">
-            <h2 id="tickets-title" className="support-heading">
-              پیام‌های من
-            </h2>
+          <Col lg={7}>
+            <section aria-labelledby="tickets-title">
+              <h2 id="tickets-title" className="support-heading">
+                پیام‌های من
+              </h2>
 
-            {loadError ? (
-              <div className="list-state" role="alert">
-                <p>پیام‌هایت بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
-                <Button variant="outline-secondary" onClick={handleRetry}>
-                  تلاش دوباره
-                </Button>
-              </div>
-            ) : tickets.length === 0 ? (
-              <div className="list-state">
-                <EmptyShelf />
-                <p>هنوز پیامی نفرستاده‌ای. هر پیامی که بفرستی با وضعیت و پاسخش اینجا می‌ماند.</p>
-              </div>
-            ) : (
-              <Accordion className="ticket-list">
-                {tickets.map((ticket) => {
-                  const status = TICKET_STATUS[ticket.status] ?? { tone: 'closed', label: ticket.status };
-                  return (
-                    <Accordion.Item key={ticket.id} eventKey={String(ticket.id)}>
-                      <Accordion.Header>
-                        <span className="ticket-head">
-                          <span className="ticket-subject">
-                            <bdi>{ticket.subject}</bdi>
-                            <span className="ticket-date">{formatDate(ticket.created_at)}</span>
+              {loadError ? (
+                <div className="list-state" role="alert">
+                  <p>پیام‌هایت بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+                  <Button variant="outline-secondary" onClick={handleRetry}>
+                    تلاش دوباره
+                  </Button>
+                </div>
+              ) : tickets.length === 0 ? (
+                <div className="list-state">
+                  <EmptyShelf />
+                  <p>هنوز پیامی نفرستاده‌ای. هر پیامی که بفرستی با وضعیت و پاسخش اینجا می‌ماند.</p>
+                </div>
+              ) : (
+                <Accordion className="ticket-list">
+                  {tickets.map((ticket) => {
+                    const status = TICKET_STATUS[ticket.status] ?? { tone: 'closed', label: ticket.status };
+                    return (
+                      <Accordion.Item key={ticket.id} eventKey={String(ticket.id)}>
+                        <Accordion.Header>
+                          <span className="ticket-head">
+                            <span className="ticket-subject">
+                              <bdi>{ticket.subject}</bdi>
+                              <span className="ticket-date">{formatDate(ticket.created_at)}</span>
+                            </span>
+                            <StatusMark tone={status.tone}>{status.label}</StatusMark>
                           </span>
-                          <StatusMark tone={status.tone}>{status.label}</StatusMark>
-                        </span>
-                      </Accordion.Header>
-                      <Accordion.Body>
-                        <p className="ticket-message" dir="auto">
-                          {ticket.message}
-                        </p>
-                        {ticket.admin_reply ? (
-                          <div className="ticket-reply">
-                            <p className="ticket-reply-label">پاسخ پشتیبانی</p>
-                            <p className="ticket-message" dir="auto">
-                              {ticket.admin_reply}
-                            </p>
-                          </div>
-                        ) : (
-                          <p className="ledger-note mb-0">هنوز پاسخی نیامده.</p>
-                        )}
-                      </Accordion.Body>
-                    </Accordion.Item>
-                  );
-                })}
-              </Accordion>
-            )}
-          </section>
-        </Col>
-      </Row>
-    </Container>
+                        </Accordion.Header>
+                        <Accordion.Body>
+                          <p className="ticket-message" dir="auto">
+                            {ticket.message}
+                          </p>
+                          {ticket.admin_reply ? (
+                            <div className="ticket-reply">
+                              <p className="ticket-reply-label">پاسخ پشتیبانی</p>
+                              <p className="ticket-message" dir="auto">
+                                {ticket.admin_reply}
+                              </p>
+                            </div>
+                          ) : (
+                            <p className="ledger-note mb-0">هنوز پاسخی نیامده.</p>
+                          )}
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    );
+                  })}
+                </Accordion>
+              )}
+            </section>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 }
 

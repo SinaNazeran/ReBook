@@ -56,47 +56,49 @@ function Wishlist() {
   if (loading) return <Loading fullPage />;
 
   return (
-    <Container className="ledger-page">
-      <title>علاقه‌مندی‌ها | ری‌بوک</title>
-      <header className="ledger-header">
-        <h1 className="ledger-title">
-          علاقه‌مندی‌ها
-          {!loadError && wishlist.length > 0 && (
-            <span className="list-count">{wishlist.length.toLocaleString('fa-IR')} کتاب</span>
-          )}
-        </h1>
-      </header>
+    <div className="series-paper">
+      <Container className="ledger-page">
+        <title>علاقه‌مندی‌ها | ری‌بوک</title>
+        <header className="ledger-header">
+          <h1 className="ledger-title">
+            علاقه‌مندی‌ها
+            {!loadError && wishlist.length > 0 && (
+              <span className="list-count">{wishlist.length.toLocaleString('fa-IR')} کتاب</span>
+            )}
+          </h1>
+        </header>
 
-      {loadError ? (
-        <div className="list-state" role="alert">
-          <p>علاقه‌مندی‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
-          <Button variant="outline-secondary" onClick={handleRetry}>
-            تلاش دوباره
-          </Button>
-        </div>
-      ) : wishlist.length === 0 ? (
-        <div className="list-state">
-          <EmptyShelf />
-          <p>
-            هنوز کتابی را نشان نکرده‌ای. روی قلبِ گوشه‌ی جلد هر کتاب بزن تا اینجا بماند و بعداً سراغش بیایی.
-          </p>
-          <Link to="/books" className="btn btn-primary">
-            مرور کتاب‌ها
-          </Link>
-        </div>
-      ) : (
-        <>
-          <h2 className="visually-hidden">کتاب‌های نشان‌شده</h2>
-          <Row className="g-3 g-md-4">
-            {wishlist.map((item) => (
-              <Col key={item.id} xs={6} md={4} lg={3}>
-                <BookCard book={item.book} isWishlisted onToggleWishlist={handleRemove} />
-              </Col>
-            ))}
-          </Row>
-        </>
-      )}
-    </Container>
+        {loadError ? (
+          <div className="list-state" role="alert">
+            <p>علاقه‌مندی‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+            <Button variant="outline-secondary" onClick={handleRetry}>
+              تلاش دوباره
+            </Button>
+          </div>
+        ) : wishlist.length === 0 ? (
+          <div className="list-state">
+            <EmptyShelf />
+            <p>
+              هنوز کتابی را نشان نکرده‌ای. روی قلبِ گوشه‌ی جلد هر کتاب بزن تا اینجا بماند و بعداً سراغش بیایی.
+            </p>
+            <Link to="/books" className="btn btn-primary">
+              مرور کتاب‌ها
+            </Link>
+          </div>
+        ) : (
+          <>
+            <h2 className="visually-hidden">کتاب‌های نشان‌شده</h2>
+            <Row className="g-3 g-md-4">
+              {wishlist.map((item) => (
+                <Col key={item.id} xs={6} md={4} lg={3}>
+                  <BookCard book={item.book} isWishlisted onToggleWishlist={handleRemove} />
+                </Col>
+              ))}
+            </Row>
+          </>
+        )}
+      </Container>
+    </div>
   );
 }
 

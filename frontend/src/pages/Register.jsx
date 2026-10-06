@@ -91,149 +91,151 @@ function Register() {
   const error = (name) => fieldErrors[name]?.[0];
 
   return (
-    <Container className="auth-page">
-      <title>ساخت حساب | ری‌بوک</title>
-      <div className="auth-panel is-wide">
-        <h1 className="auth-title">ساخت حساب</h1>
-        <p className="auth-reason">
-          {reason ?? 'با یک حساب هم کتاب می‌خری و هم کتاب‌هایی را که خوانده‌ای می‌فروشی.'}
-        </p>
+    <div className="series-paper" style={{ '--series': 'var(--rb-accent)' }}>
+      <Container className="auth-page">
+        <title>ساخت حساب | ری‌بوک</title>
+        <div className="auth-panel is-wide">
+          <h1 className="auth-title">ساخت حساب</h1>
+          <p className="auth-reason">
+            {reason ?? 'با یک حساب هم کتاب می‌خری و هم کتاب‌هایی را که خوانده‌ای می‌فروشی.'}
+          </p>
 
-        {generalError && (
-          <Alert variant="danger" role="alert">
-            {generalError}
-          </Alert>
-        )}
+          {generalError && (
+            <Alert variant="danger" role="alert">
+              {generalError}
+            </Alert>
+          )}
 
-        <Form onSubmit={handleSubmit} noValidate>
-          <Form.Group controlId="username" className="mb-3">
-            <Form.Label>نام کاربری</Form.Label>
-            <Form.Control
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              autoComplete="username"
-              autoCapitalize="none"
-              spellCheck={false}
-              dir="ltr"
-              aria-describedby="username-help"
-              isInvalid={!!error('username')}
-              required
-            />
-            <Form.Text id="username-help">به خریداران و فروشنده‌ها نشان داده می‌شود.</Form.Text>
-            <Form.Control.Feedback type="invalid">{error('username')}</Form.Control.Feedback>
-          </Form.Group>
-
-          <Form.Group controlId="email" className="mb-3">
-            <Form.Label>ایمیل</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              autoComplete="email"
-              spellCheck={false}
-              dir="ltr"
-              isInvalid={!!error('email')}
-              required
-            />
-            <Form.Control.Feedback type="invalid">{error('email')}</Form.Control.Feedback>
-          </Form.Group>
-
-          <Row className="g-3">
-            <Col md={6}>
-              <PasswordField
-                id="password"
-                label="رمز"
-                name="password"
-                value={formData.password}
+          <Form onSubmit={handleSubmit} noValidate>
+            <Form.Group controlId="username" className="mb-3">
+              <Form.Label>نام کاربری</Form.Label>
+              <Form.Control
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
-                autoComplete="new-password"
-                error={error('password')}
-                help="دست‌کم ۸ نویسه، نه فقط عدد و نه شبیه نام کاربری."
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
+                dir="ltr"
+                aria-describedby="username-help"
+                isInvalid={!!error('username')}
                 required
               />
-            </Col>
-            <Col md={6}>
-              <PasswordField
-                id="password_confirm"
-                label="تکرار رمز"
-                name="password_confirm"
-                value={formData.password_confirm}
+              <Form.Text id="username-help">به خریداران و فروشنده‌ها نشان داده می‌شود.</Form.Text>
+              <Form.Control.Feedback type="invalid">{error('username')}</Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group controlId="email" className="mb-3">
+              <Form.Label>ایمیل</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                autoComplete="new-password"
-                error={error('password_confirm')}
+                autoComplete="email"
+                spellCheck={false}
+                dir="ltr"
+                isInvalid={!!error('email')}
                 required
               />
-            </Col>
-          </Row>
+              <Form.Control.Feedback type="invalid">{error('email')}</Form.Control.Feedback>
+            </Form.Group>
 
-          <fieldset className="auth-optional">
-            <legend>
-              اختیاری <span className="sell-optional">(بعداً هم از «پروفایل» می‌شود کامل کرد)</span>
-            </legend>
             <Row className="g-3">
               <Col md={6}>
-                <Form.Group controlId="first_name">
-                  <Form.Label>نام</Form.Label>
-                  <Form.Control
-                    name="first_name"
-                    value={formData.first_name}
-                    onChange={handleChange}
-                    autoComplete="given-name"
-                    dir="auto"
-                    isInvalid={!!error('first_name')}
-                  />
-                  <Form.Control.Feedback type="invalid">{error('first_name')}</Form.Control.Feedback>
-                </Form.Group>
+                <PasswordField
+                  id="password"
+                  label="رمز"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  error={error('password')}
+                  help="دست‌کم ۸ نویسه، نه فقط عدد و نه شبیه نام کاربری."
+                  required
+                />
               </Col>
               <Col md={6}>
-                <Form.Group controlId="last_name">
-                  <Form.Label>نام خانوادگی</Form.Label>
-                  <Form.Control
-                    name="last_name"
-                    value={formData.last_name}
-                    onChange={handleChange}
-                    autoComplete="family-name"
-                    dir="auto"
-                    isInvalid={!!error('last_name')}
-                  />
-                  <Form.Control.Feedback type="invalid">{error('last_name')}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="phone">
-                  <Form.Label>موبایل</Form.Label>
-                  <Form.Control
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    autoComplete="tel"
-                    inputMode="numeric"
-                    dir="ltr"
-                    placeholder="09123456789"
-                    isInvalid={!!error('phone')}
-                  />
-                  <Form.Control.Feedback type="invalid">{error('phone')}</Form.Control.Feedback>
-                </Form.Group>
+                <PasswordField
+                  id="password_confirm"
+                  label="تکرار رمز"
+                  name="password_confirm"
+                  value={formData.password_confirm}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  error={error('password_confirm')}
+                  required
+                />
               </Col>
             </Row>
-          </fieldset>
 
-          <Button type="submit" variant="primary" className="w-100 mt-4" disabled={loading}>
-            {loading ? 'در حال ساخت حساب…' : 'ساخت حساب'}
-          </Button>
-        </Form>
+            <fieldset className="auth-optional">
+              <legend>
+                اختیاری <span className="sell-optional">(بعداً هم از «پروفایل» می‌شود کامل کرد)</span>
+              </legend>
+              <Row className="g-3">
+                <Col md={6}>
+                  <Form.Group controlId="first_name">
+                    <Form.Label>نام</Form.Label>
+                    <Form.Control
+                      name="first_name"
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      autoComplete="given-name"
+                      dir="auto"
+                      isInvalid={!!error('first_name')}
+                    />
+                    <Form.Control.Feedback type="invalid">{error('first_name')}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group controlId="last_name">
+                    <Form.Label>نام خانوادگی</Form.Label>
+                    <Form.Control
+                      name="last_name"
+                      value={formData.last_name}
+                      onChange={handleChange}
+                      autoComplete="family-name"
+                      dir="auto"
+                      isInvalid={!!error('last_name')}
+                    />
+                    <Form.Control.Feedback type="invalid">{error('last_name')}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group controlId="phone">
+                    <Form.Label>موبایل</Form.Label>
+                    <Form.Control
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      autoComplete="tel"
+                      inputMode="numeric"
+                      dir="ltr"
+                      placeholder="09123456789"
+                      isInvalid={!!error('phone')}
+                    />
+                    <Form.Control.Feedback type="invalid">{error('phone')}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              </Row>
+            </fieldset>
 
-        <p className="auth-switch">
-          حساب داری؟{' '}
-          <Link to="/login" state={location.state}>
-            وارد شو
-          </Link>
-        </p>
-      </div>
-    </Container>
+            <Button type="submit" variant="primary" className="w-100 mt-4" disabled={loading}>
+              {loading ? 'در حال ساخت حساب…' : 'ساخت حساب'}
+            </Button>
+          </Form>
+
+          <p className="auth-switch">
+            حساب داری؟{' '}
+            <Link to="/login" state={location.state}>
+              وارد شو
+            </Link>
+          </p>
+        </div>
+      </Container>
+    </div>
   );
 }
 

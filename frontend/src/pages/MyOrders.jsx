@@ -91,70 +91,72 @@ function MyOrders() {
   const tabTitle = (label, list) => (list.length ? `${label} (${list.length.toLocaleString('fa-IR')})` : label);
 
   return (
-    <Container className="ledger-page">
-      <title>معاملات من | ری‌بوک</title>
-      <header className="ledger-header">
-        <h1 className="ledger-title">معاملات من</h1>
-      </header>
+    <div className="series-paper">
+      <Container className="ledger-page">
+        <title>معاملات من | ری‌بوک</title>
+        <header className="ledger-header">
+          <h1 className="ledger-title">معاملات من</h1>
+        </header>
 
-      {loadError ? (
-        <div className="list-state" role="alert">
-          <p>سفارش‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
-          <Button variant="outline-secondary" onClick={handleRetry}>
-            تلاش دوباره
-          </Button>
-        </div>
-      ) : (
-        <Tabs activeKey={activeTab} onSelect={handleTabSelect} variant="underline" className="ledger-tabs">
-          <Tab eventKey="purchases" title={tabTitle('خریدهای من', purchases)}>
-            {purchases.length ? (
-              <OrderList
-                orders={purchases}
-                type="purchase"
-                onPay={setPayingOrder}
-                onCancel={handleCancel}
-                busyId={busyId}
-              />
-            ) : (
-              <div className="list-state">
-                <EmptyShelf />
-                <p>هنوز کتابی نخریده‌ای.</p>
-                <Link to="/books" className="btn btn-primary">
-                  مرور کتاب‌ها
-                </Link>
-              </div>
-            )}
-          </Tab>
+        {loadError ? (
+          <div className="list-state" role="alert">
+            <p>سفارش‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+            <Button variant="outline-secondary" onClick={handleRetry}>
+              تلاش دوباره
+            </Button>
+          </div>
+        ) : (
+          <Tabs activeKey={activeTab} onSelect={handleTabSelect} variant="underline" className="ledger-tabs">
+            <Tab eventKey="purchases" title={tabTitle('خریدهای من', purchases)}>
+              {purchases.length ? (
+                <OrderList
+                  orders={purchases}
+                  type="purchase"
+                  onPay={setPayingOrder}
+                  onCancel={handleCancel}
+                  busyId={busyId}
+                />
+              ) : (
+                <div className="list-state">
+                  <EmptyShelf />
+                  <p>هنوز کتابی نخریده‌ای.</p>
+                  <Link to="/books" className="btn btn-primary">
+                    مرور کتاب‌ها
+                  </Link>
+                </div>
+              )}
+            </Tab>
 
-          <Tab eventKey="sales" title={tabTitle('فروش‌های من', sales)}>
-            {sales.length ? (
-              <OrderList orders={sales} type="sale" onCancel={handleCancel} busyId={busyId} />
-            ) : (
-              <div className="list-state">
-                <EmptyShelf />
-                <p>هنوز کسی از تو کتابی نخریده. آگهی‌هایت در «کتاب‌های من» است.</p>
-                <Link to="/my-books" className="btn btn-outline-secondary">
-                  کتاب‌های من
-                </Link>
-              </div>
-            )}
-          </Tab>
-        </Tabs>
-      )}
+            <Tab eventKey="sales" title={tabTitle('فروش‌های من', sales)}>
+              {sales.length ? (
+                <OrderList orders={sales} type="sale" onCancel={handleCancel} busyId={busyId} />
+              ) : (
+                <div className="list-state">
+                  <EmptyShelf />
+                  <p>هنوز کسی از تو کتابی نخریده. آگهی‌هایت در «کتاب‌های من» است.</p>
+                  <Link to="/my-books" className="btn btn-outline-secondary">
+                    کتاب‌های من
+                  </Link>
+                </div>
+              )}
+            </Tab>
+          </Tabs>
+        )}
 
-      {payingOrder && (
-        <PurchaseModal
-          show
-          onHide={() => {
-            setPayingOrder(null);
-            refreshAll();
-          }}
-          book={{ ...payingOrder.book_detail, price: payingOrder.total_price }}
-          existingOrderId={payingOrder.id}
-          onStale={refreshAll}
-        />
-      )}
-    </Container>
+        {payingOrder && (
+          <PurchaseModal
+            show
+            onHide={() => {
+              setPayingOrder(null);
+              refreshAll();
+            }}
+            book={{ ...payingOrder.book_detail, price: payingOrder.total_price }}
+            existingOrderId={payingOrder.id}
+            onStale={refreshAll}
+          />
+        )}
+      </Container>
+    </div>
   );
 }
 

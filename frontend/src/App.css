@@ -2403,16 +2403,6 @@ body:has(main > .series-paper) .site-footer {
   font-size: 1.375rem;
 }
 
-/* ورود و ثبت‌نام: در ورودی، روی همان کاغذ زعفرانی هیرو */
-body:has(.auth-page) main {
-  background-color: var(--rb-accent-paper);
-}
-
-body:has(.auth-page) .site-footer,
-body:has(.not-found) .site-footer {
-  margin-top: 0 !important;
-}
-
 .auth-title {
   font-size: 2.25rem;
   margin-bottom: 1.25rem;
@@ -2431,16 +2421,17 @@ body:has(.not-found) .site-footer {
   mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
 }
 
+/* ورود و ثبت‌نام روی برگه‌ی زعفرانی‌اند (--series زعفرانی روشن)؛ نقش زیر عنوان زعفرانی تیره می‌ماند */
+.auth-title::after {
+  background-color: var(--rb-accent-deep);
+}
+
 .sell-header::after {
   width: 12rem;
   margin-top: 1.25rem;
 }
 
-/* ۴۰۴: کتابِ گم‌شده با جلد رنگی، روی کاغذ مجموعه‌ی خودش (مجموعه‌ی ۶) */
-body:has(.not-found) main {
-  background-color: color-mix(in oklab, var(--rb-series-6) var(--rb-paper-tint), var(--rb-ground));
-}
-
+/* ۴۰۴: کتابِ گم‌شده با جلد رنگی؛ برگه‌اش کاغذ مجموعه‌ی ۶ است (NotFound.jsx) */
 .not-found-cover {
   width: 12rem;
 }
