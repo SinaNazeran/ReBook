@@ -574,8 +574,109 @@
    ========================================================================== */
 /* هیرو روی کاغذ زعفرانی: تنها جای صفحه‌ی اصلی که کاغذ رنگ دوم را می‌گیرد */
 .home-hero {
-  padding-block: 3rem 3.5rem;
   background-color: var(--rb-accent-paper);
+}
+
+/* هیروی تمام‌صفحه: ارتفاع پنجره منهای نوار ناوبری چسبان (--rb-nav-h را HomeHero.jsx اندازه می‌گیرد).
+   صحنه همان عنصری است که GSAP پین می‌کند، پس زمینه‌ی خودش را دارد. «باند» زیرش طول اسکرولِ صحنه است */
+.hero-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100svh - var(--rb-nav-h, 4.625rem));
+  padding-block: 2rem;
+  overflow: clip;
+  background-color: var(--rb-accent-paper);
+}
+
+.hero-runway {
+  height: 170svh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-runway {
+    display: none;
+  }
+}
+
+/* بخش بعد مثل برگه روی هیروی پین‌شده بالا می‌آید: زمینه‌ی مات، لایه‌ی بالاتر، لبه‌ی گرد و سایه‌ی رو به بالا */
+.home-hero ~ section {
+  position: relative;
+  z-index: 1;
+  background-color: var(--rb-ground);
+}
+
+.home-hero + section {
+  border-start-start-radius: 1.5rem;
+  border-start-end-radius: 1.5rem;
+  box-shadow: 0 -18px 40px rgb(26 25 24 / 0.1);
+}
+
+.hero-inner {
+  position: relative;
+}
+
+/* پرواز در قفسه: جلدها در فضای سه‌بعدی معلق‌اند؛ جای ایستا از متغیرهای خود جلد می‌آید و با حرکت، موتور JS هر فریم آن را می‌نویسد */
+.hero-depth {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  perspective: 900px;
+}
+
+.depth-world {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.hero-depth .depth-item {
+  --depth-w: clamp(5.25rem, 13vw, 13rem);
+  position: absolute;
+  inset: 0;
+  width: var(--depth-w);
+  height: calc(var(--depth-w) * 4 / 3 + 6px);
+  margin: auto;
+  opacity: var(--o);
+  transform: translate3d(calc(var(--x) * 1vw), calc(var(--y) * 1vh), calc(var(--z) * 1px)) rotate(var(--tilt));
+  box-shadow: 0 24px 40px -20px rgb(26 25 24 / 0.4);
+  transition: none;
+}
+
+.home-hero .hero-inner {
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* تیتر روی مه کاغذ می‌نشیند تا جلدهای دور پشتش خوانایی را نشکنند */
+.depth-copy {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 48rem;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.depth-copy::before {
+  content: "";
+  position: absolute;
+  inset: -6% -4%;
+  z-index: -1;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--rb-accent-paper) 85%, transparent) 45%, transparent);
+}
+
+.depth-copy .home-hero-title {
+  font-size: clamp(2.25rem, 1rem + 4.5vw, 4.75rem);
+}
+
+.depth-copy .home-hero-lead {
+  margin-inline: auto;
 }
 
 /* تیتر به لاله‌زار، اندازه‌ی پوستری */
@@ -591,44 +692,6 @@
   margin-bottom: 2rem;
   font-size: 1.125rem;
   color: var(--rb-ink-muted);
-}
-
-/* قفسه: پنج جلد تازه، ایستاده روی یک خط مرکب، کمی روی هم؛ لبه‌ی کاغذی (outline هم‌رنگ زمینه)
-   جلدهای روی هم را از هم جدا می‌کند، نه سایه. هر جلد نوار مجموعه‌ی خودش را دارد. */
-.hero-shelf {
-  margin: 0;
-}
-
-.hero-shelf-list {
-  display: flex;
-  align-items: flex-end;
-  margin: 0;
-  padding: 0 0 0.75rem;
-  list-style: none;
-  border-bottom: 3px solid var(--rb-ink);
-}
-
-/* ۵ جلد به پهنای ۳۰٪ با گام ۱۷٫۵٪ دقیقاً کل عرض را پر می‌کنند */
-.hero-shelf-list > li {
-  position: relative;
-  flex: 0 0 30%;
-  min-width: 0;
-}
-
-.hero-shelf-list > li:nth-child(1) { z-index: 5; }
-.hero-shelf-list > li:nth-child(2) { z-index: 4; }
-.hero-shelf-list > li:nth-child(3) { z-index: 3; }
-.hero-shelf-list > li:nth-child(4) { z-index: 2; }
-.hero-shelf-list > li:nth-child(5) { z-index: 1; }
-
-/* جلد زیر نشانگر یا فوکوس بالای همه می‌آید تا کامل دیده شود */
-.hero-shelf-list > li:hover,
-.hero-shelf-list > li:focus-within {
-  z-index: 6;
-}
-
-.hero-shelf-list > li + li {
-  margin-inline-start: -12.5%;
 }
 
 .shelf-book {
@@ -662,17 +725,6 @@
   display: block;
   height: 6px;
   background-color: var(--card-ink);
-}
-
-.shelf-book.is-placeholder {
-  aspect-ratio: 3 / 4.15;
-  background-color: var(--rb-surface-sunken);
-}
-
-.hero-shelf-caption {
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--rb-ink-muted);
 }
 
 /* مجموعه‌ها مثل عطف کتاب‌ها روی قفسه: هر دسته یک عطف تمام‌رنگ، نام عمودی به لاله‌زار،
@@ -766,13 +818,6 @@
 @media (hover: hover) {
   .spine:hover {
     transform: translateY(-10px);
-  }
-
-  /* جلد از قفسه بیرون کشیده می‌شود، به‌سمت خواننده: بالا می‌آید، کمی بزرگ می‌شود و سایه‌ی شناور می‌گیرد */
-  .shelf-book:hover,
-  .shelf-book:focus-visible {
-    transform: translateY(-16px) scale(1.05);
-    box-shadow: var(--rb-shadow-raised);
   }
 }
 
@@ -919,7 +964,7 @@
   }
 }
 
-/* ورود هیرو با GSAP در Home.jsx است (تیتر کلمه‌به‌کلمه، جلدها روی قفسه می‌افتند)؛ اینجا فقط hover و حالت‌ها */
+/* حرکت هیرو با GSAP در HomeHero.jsx است (تیتر کلمه‌به‌کلمه، پرواز در قفسه) */
 .series-index-mark {
   flex: none;
   width: 4px;
@@ -928,16 +973,11 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .shelf-book {
-    transition: transform 260ms var(--rb-ease-out), box-shadow 260ms var(--rb-ease-out);
-  }
-
   .spine {
     transition: transform var(--rb-duration) var(--rb-ease-out);
   }
 
-  .book-card-skeleton > span,
-  .shelf-book.is-placeholder {
+  .book-card-skeleton > span {
     animation: skeleton-pulse 1.4s ease-in-out infinite alternate;
   }
 }
