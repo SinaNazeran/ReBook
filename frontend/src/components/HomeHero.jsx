@@ -133,13 +133,19 @@ function HomeHero({ status, books }) {
         const cam = { x: 0, v: 0 };
         const SPRING = 7; // ω؛ حدود ۰٫۶ ثانیه تا رسیدن
 
-        // حریم تیتر: تا تیتر پیداست، جلدی که روی صفحه پشت متن می‌افتد کم‌رنگ نمی‌شود (جلد کدر بی‌کیفیت دیده می‌شود)،
-        // بلکه کاملاً مات تا لبه‌ی قاب متن کنار می‌رود و با گذشتن تیتر به مسیر خودش برمی‌گردد. مرکز دید
-        // (perspective-origin)، قاب متن و اندازه‌ی جلد یک بار و با هر تغییر اندازه اندازه گرفته می‌شوند
+        // هسته‌ی تونل: فاصله‌ی هر جلد از نقطه‌ی گریز (مرکز دید) روی صفحه همیشه به اندازه‌ی فاصله‌ی تا لبه‌ی قاب تیتر در
+        // همان راستا بیشتر می‌شود (به‌علاوه‌ی نیم‌قد خود جلد). پس پرواز تونلی است با هسته‌ی خالی که تیتر در آن می‌نشیند:
+        // هیچ جلدی پشت متن نمی‌افتد، هیچ جلدی کم‌رنگ نمی‌شود، و چون این جابه‌جایی همیشه و یکسان است (نه فقط تا تیتر
+        // پیداست)، هر جلد با همان سرعت طبیعی پرواز فقط رو به بیرون می‌رود. حریم قبلی فقط تا محو شدن تیتر کار می‌کرد:
+        // جلدها لب متن می‌ایستادند و بعد به داخل برمی‌گشتند، و پرواز دو تکه حس می‌شد.
+        // مرکز دید (perspective-origin)، قاب متن و اندازه‌ی جلد یک بار و با هر تغییر اندازه اندازه گرفته می‌شوند
         const depth = hero.querySelector('.hero-depth');
         const CLEAR_PAD = 16; // px فاصله‌ی جلد تا متن
+        // هسته به اندازه‌ی تیتر در تمام مدتی که خواناست (تا ~۱٫۲۵ برابر بزرگ می‌شود)؛ ثابت است و هرگز متحرک نمی‌شود،
+        // چون هر تغییر هسته در طول اسکرول دوباره پرواز را دو مرحله‌ای می‌کرد
+        const CORE_SCALE = 1.25;
         let view = { cx: 0, cy: 0 };
-        let text = { cx: 0, cy: 0, hw: 1, hh: 1 };
+        let text = { hw: 1, hh: 1 };
         let cover = { hw: 0, hh: 0 };
         const measure = () => {
           const d = depth.getBoundingClientRect();
@@ -148,7 +154,11 @@ function HomeHero({ status, books }) {
           const r = copy.getBoundingClientRect();
           copy.style.transform = prev;
           view = { cx: d.left + d.width / 2, cy: d.top + d.height / 2 };
-          text = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, hw: r.width / 2 + CLEAR_PAD, hh: r.height / 2 + CLEAR_PAD };
+          // نیم‌پهنا و نیم‌قد هسته از نقطه‌ی گریز (تیتر تقریباً وسط است، ولی با بیشترین فاصله‌ی لبه‌ها حساب می‌شود)
+          text = {
+            hw: Math.max(view.cx - r.left, r.right - view.cx) * CORE_SCALE + CLEAR_PAD,
+            hh: Math.max(view.cy - r.top, r.bottom - view.cy) * CORE_SCALE + CLEAR_PAD,
+          };
           cover = { hw: items[0].offsetWidth / 2, hh: items[0].offsetHeight / 2 };
         };
         measure();
@@ -162,7 +172,7 @@ function HomeHero({ status, books }) {
           cam.x += cam.v * dt;
           const vw = window.innerWidth / 100;
           const vh = window.innerHeight / 100;
-          const c = clamp01(cam.x / 0.3); // ۰: تیتر کامل، ۱: تیتر گذشته
+          const c = clamp01(cam.x / 0.3); // ۰: تیتر کامل، ۱: تیتر گذشته (فقط برای محو شدن خود تیتر)
           const travel = cam.x * DEPTH_TRAVEL - state.intro * 1800 + time * DEPTH_DRIFT;
           slots.forEach((s) => {
             // جلدی که با Tab فوکوس شده آرام جلوی دوربین می‌آید و همان‌جا می‌ماند
@@ -170,29 +180,23 @@ function HomeHero({ status, books }) {
             s.focus += ((s.el === document.activeElement ? 1 : 0) - s.focus) * 0.12;
             const z = flying + (-250 - flying) * s.focus;
             const t = time + s.seed;
-            let x = s.x * vw;
-            let y = s.y * vh + Math.sin(t * 0.7) * 10;
-            // حریم تا وقتی متن خواناست کامل می‌ماند و فقط در آخرین بخش محو شدن تیتر (شفافیت کمتر از ~۰٫۴۵) رها می‌شود؛
-            // حریم هم‌پای بزرگ شدن تیتر بزرگ می‌شود
-            const hold = 1 - gsap.parseEase('power1.inOut')(clamp01((c - 0.75) / 0.25));
-            if (hold > 0) {
-              const grow = 1 + 0.6 * c * c;
-              // جای جلد روی صفحه نسبت به مرکز متن؛ اگر قابِ جلد با حریم متن هم‌پوشانی دارد، در همان راستا تا لبه‌ی حریم
-              // رانده می‌شود. k=۱ یعنی درست روی لبه؛ رانش پیوسته است
-              const f = DEPTH_PERSPECTIVE / Math.max(1, DEPTH_PERSPECTIVE - z);
-              let ox = view.cx + (x + look.x) * f - text.cx;
-              let oy = view.cy + (y + look.y) * f - text.cy;
-              if (Math.hypot(ox, oy) < 1) {
-                ox = Math.cos(s.a);
-                oy = Math.sin(s.a);
-              }
-              const k = Math.max(Math.abs(ox) / (text.hw * grow + cover.hw * f), Math.abs(oy) / (text.hh * grow + cover.hh * f));
-              if (k < 1) {
-                const push = (1 / Math.max(k, 0.02) - 1) * hold;
-                x += (ox * push) / f;
-                y += (oy * push) / f;
-              }
-            }
+            // جای طبیعی جلد نسبت به نقطه‌ی گریز (با نگاه به اطراف) و راستایش؛ جلدی که درست روی محور است راستای جای
+            // خودش در بیضی را می‌گیرد
+            const f = DEPTH_PERSPECTIVE / Math.max(1, DEPTH_PERSPECTIVE - z);
+            const wx = s.x * vw + look.x;
+            const wy = s.y * vh + Math.sin(t * 0.7) * 10 + look.y;
+            const len = Math.hypot(wx, wy);
+            const ux = len > 0.01 ? wx / len : Math.cos(s.a);
+            const uy = len > 0.01 ? wy / len : Math.sin(s.a);
+            // e = فاصله تا لبه‌ی قاب تیتر در این راستا + نیم‌قد جلد در همین راستا. فاصله‌ی روی صفحه √(r² + e²) است: هیچ‌وقت
+            // کمتر از e نیست (جلد پشت متن نمی‌افتد)، با r و با نزدیک شدن جلد (e بزرگ‌تر) فقط زیاد می‌شود (حرکت همیشه رو به
+            // بیرون)، و برای جلدهای دور از مرکز تقریباً همان r طبیعی است (از صفحه بیرون رانده نمی‌شوند)
+            const e =
+              Math.min(text.hw / Math.max(Math.abs(ux), 1e-3), text.hh / Math.max(Math.abs(uy), 1e-3)) +
+              (cover.hw * Math.abs(ux) + cover.hh * Math.abs(uy)) * f;
+            const r = Math.hypot(len * f, e);
+            const x = (ux * r) / f - look.x;
+            const y = (uy * r) / f - look.y;
             const o = depthOpacity(z);
             s.el.style.opacity = o;
             s.el.style.pointerEvents = o < 0.2 ? 'none' : '';
