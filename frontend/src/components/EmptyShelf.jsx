@@ -26,7 +26,7 @@ function EmptyShelf({ className = '' }) {
       <g fill="var(--rb-ink)" fillOpacity=".45" filter={`url(#${blur})`}>
         <ellipse cx="117" cy="77" rx="15" ry="1.8" />
         <ellipse cx="92" cy="77" rx="13" ry="1.8" />
-        <ellipse cx="52" cy="77" rx="22" ry="2" />
+        <ellipse cx="50" cy="77" rx="11" ry="1.8" />
       </g>
 
       <g>
@@ -39,9 +39,7 @@ function EmptyShelf({ className = '' }) {
         <rect x="83" y="27" width="16" height="46" fill="none" stroke="#fff" strokeOpacity=".55" />
         <rect x="80" y="32" width="22" height="2" fill="#fff" fillOpacity=".7" />
       </g>
-      {/* جلد کج سایه‌ی خودش را روی جلد کناری می‌اندازد */}
-      <polygon points="58,24 80,30 80,76 62,76" fill="var(--rb-ink)" fillOpacity=".18" filter={`url(#${blur})`} />
-      <g transform="rotate(24 34 76)">
+      <g transform="rotate(24 56 76)">
         <rect x="34" y="20" width="22" height="56" rx="1.5" fill="var(--rb-series-3)" />
         <rect x="37" y="23" width="16" height="50" fill="none" stroke="#fff" strokeOpacity=".55" />
         <rect x="34" y="28" width="22" height="2" fill="#fff" fillOpacity=".7" />
