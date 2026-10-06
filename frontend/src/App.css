@@ -1591,10 +1591,7 @@
   border: 2px solid var(--series);
   border-radius: 2px;
   background-color: color-mix(in oklab, var(--series) 8%, var(--rb-surface));
-  box-shadow:
-    inset 0 0 0 4px color-mix(in oklab, var(--series) 8%, var(--rb-surface)),
-    inset 0 0 0 5px var(--series);
-  text-align: center;
+  text-align: center; /* قاب دوخطی درونی و سایه در depth.css */
 }
 
 .bookplate-title {
@@ -1654,7 +1651,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .purchase-receipt .receipt-code-value {
-    animation: hero-focus 560ms var(--rb-ease-out) 140ms backwards;
+    animation: hero-focus 560ms var(--rb-ease-out) 420ms backwards; /* بعد از نشستن برچسب (depth.css) */
   }
 }
 
@@ -2168,16 +2165,6 @@
   padding-block: 4rem;
 }
 
-.not-found-cover {
-  flex: none;
-  width: 9rem;
-}
-
-.not-found-cover .plain-cover {
-  aspect-ratio: 3 / 4;
-  border-radius: var(--bs-border-radius);
-}
-
 .not-found-body {
   flex: 0 1 28rem;
 }
@@ -2432,10 +2419,6 @@ body:has(main > .series-paper) .site-footer {
 }
 
 /* ۴۰۴: کتابِ گم‌شده با جلد رنگی؛ برگه‌اش کاغذ مجموعه‌ی ۶ است (NotFound.jsx) */
-.not-found-cover {
-  width: 12rem;
-}
-
 .not-found-title {
   font-size: clamp(2rem, 1.4rem + 2vw, 2.75rem);
 }
