@@ -54,7 +54,7 @@
    ========================================================================== */
 .site-navbar {
     border-bottom-color: transparent;
-    background-color: color-mix(in srgb, var(--rb-surface) 72%, transparent) !important;
+    background-color: color-mix(in srgb, var(--rb-surface) 86%, transparent) !important; /* ۸۶٪: متن کم‌رنگ ناوبری روی جلد تیره‌ی زیرش هم ۴٫۵:۱ می‌ماند */
     -webkit-backdrop-filter: blur(16px) saturate(170%);
     backdrop-filter: blur(16px) saturate(170%);
     box-shadow:
