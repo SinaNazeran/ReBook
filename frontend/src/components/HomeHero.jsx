@@ -42,14 +42,12 @@ const depthSlot = (i, n) => {
     x: Math.cos(a) * (30 + (i % 3) * 6) * k, // vw
     y: Math.sin(a) * (26 + (i % 2) * 6) * k, // vh
     z,
-    a,
     tilt: ((i * 37) % 14) - 7,
   };
 };
 const wrapDepth = (z) => DEPTH_FAR + ((((z - DEPTH_FAR) % DEPTH_LOOP) + DEPTH_LOOP) % DEPTH_LOOP);
-// جلد فقط در لبه‌ی ته فضا (۴۵۰px آخر) از مه کاغذ پیدا می‌شود تا هنگام برگشتن از ته فضا نپرد، و پیش از رسیدن به دوربین
-// ناپدید می‌شود؛ بقیه‌ی راه کاملاً مات است، چون جلد نیمه‌شفاف کدر و بی‌کیفیت دیده می‌شود
-const depthOpacity = (z) => Math.min(clamp01((z - DEPTH_FAR) / 450), clamp01((300 - z) / 300));
+// جلدهای خیلی دور در مه کاغذ محو می‌شوند و جلدی که از کنار دوربین می‌گذرد پیش از رسیدن به آن ناپدید می‌شود
+const depthOpacity = (z) => Math.min(clamp01((z - DEPTH_FAR) / 800), clamp01((300 - z) / 300));
 
 function CoverArt({ book }) {
   return book.cover_image ? (
@@ -133,20 +131,11 @@ function HomeHero({ status, books }) {
         const cam = { x: 0, v: 0 };
         const SPRING = 7; // ω؛ حدود ۰٫۶ ثانیه تا رسیدن
 
-        // هسته‌ی تونل: فاصله‌ی هر جلد از نقطه‌ی گریز (مرکز دید) روی صفحه همیشه به اندازه‌ی فاصله‌ی تا لبه‌ی قاب تیتر در
-        // همان راستا بیشتر می‌شود (به‌علاوه‌ی نیم‌قد خود جلد). پس پرواز تونلی است با هسته‌ی خالی که تیتر در آن می‌نشیند:
-        // هیچ جلدی پشت متن نمی‌افتد، هیچ جلدی کم‌رنگ نمی‌شود، و چون این جابه‌جایی همیشه و یکسان است (نه فقط تا تیتر
-        // پیداست)، هر جلد با همان سرعت طبیعی پرواز فقط رو به بیرون می‌رود. حریم قبلی فقط تا محو شدن تیتر کار می‌کرد:
-        // جلدها لب متن می‌ایستادند و بعد به داخل برمی‌گشتند، و پرواز دو تکه حس می‌شد.
-        // مرکز دید (perspective-origin)، قاب متن و اندازه‌ی جلد یک بار و با هر تغییر اندازه اندازه گرفته می‌شوند
+        // تا تیتر پیداست، جلدی که پشت متن می‌افتد کم‌رنگ می‌شود تا متن روی جلد رنگی نیفتد. مرکز دید (perspective-origin)
+        // و قاب متن یک بار و با هر تغییر اندازه اندازه گرفته می‌شوند؛ جای جلد روی صفحه با همان ضرب پرسپکتیو حساب می‌شود
         const depth = hero.querySelector('.hero-depth');
-        const CLEAR_PAD = 16; // px فاصله‌ی جلد تا متن
-        // هسته به اندازه‌ی تیتر در تمام مدتی که خواناست (تا ~۱٫۲۵ برابر بزرگ می‌شود)؛ ثابت است و هرگز متحرک نمی‌شود،
-        // چون هر تغییر هسته در طول اسکرول دوباره پرواز را دو مرحله‌ای می‌کرد
-        const CORE_SCALE = 1.25;
         let view = { cx: 0, cy: 0 };
-        let text = { hw: 1, hh: 1 };
-        let cover = { hw: 0, hh: 0 };
+        let text = { cx: 0, cy: 0, hw: 1, hh: 1 };
         const measure = () => {
           const d = depth.getBoundingClientRect();
           const prev = copy.style.transform;
@@ -154,12 +143,7 @@ function HomeHero({ status, books }) {
           const r = copy.getBoundingClientRect();
           copy.style.transform = prev;
           view = { cx: d.left + d.width / 2, cy: d.top + d.height / 2 };
-          // نیم‌پهنا و نیم‌قد هسته از نقطه‌ی گریز (تیتر تقریباً وسط است، ولی با بیشترین فاصله‌ی لبه‌ها حساب می‌شود)
-          text = {
-            hw: Math.max(view.cx - r.left, r.right - view.cx) * CORE_SCALE + CLEAR_PAD,
-            hh: Math.max(view.cy - r.top, r.bottom - view.cy) * CORE_SCALE + CLEAR_PAD,
-          };
-          cover = { hw: items[0].offsetWidth / 2, hh: items[0].offsetHeight / 2 };
+          text = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, hw: r.width / 2, hh: r.height / 2 };
         };
         measure();
         window.addEventListener('resize', measure);
@@ -172,7 +156,7 @@ function HomeHero({ status, books }) {
           cam.x += cam.v * dt;
           const vw = window.innerWidth / 100;
           const vh = window.innerHeight / 100;
-          const c = clamp01(cam.x / 0.3); // ۰: تیتر کامل، ۱: تیتر گذشته (فقط برای محو شدن خود تیتر)
+          const c = clamp01(cam.x / 0.3); // ۰: تیتر کامل، ۱: تیتر گذشته
           const travel = cam.x * DEPTH_TRAVEL - state.intro * 1800 + time * DEPTH_DRIFT;
           slots.forEach((s) => {
             // جلدی که با Tab فوکوس شده آرام جلوی دوربین می‌آید و همان‌جا می‌ماند
@@ -180,24 +164,13 @@ function HomeHero({ status, books }) {
             s.focus += ((s.el === document.activeElement ? 1 : 0) - s.focus) * 0.12;
             const z = flying + (-250 - flying) * s.focus;
             const t = time + s.seed;
-            // جای طبیعی جلد نسبت به نقطه‌ی گریز (با نگاه به اطراف) و راستایش؛ جلدی که درست روی محور است راستای جای
-            // خودش در بیضی را می‌گیرد
+            const x = s.x * vw;
+            const y = s.y * vh + Math.sin(t * 0.7) * 10;
             const f = DEPTH_PERSPECTIVE / Math.max(1, DEPTH_PERSPECTIVE - z);
-            const wx = s.x * vw + look.x;
-            const wy = s.y * vh + Math.sin(t * 0.7) * 10 + look.y;
-            const len = Math.hypot(wx, wy);
-            const ux = len > 0.01 ? wx / len : Math.cos(s.a);
-            const uy = len > 0.01 ? wy / len : Math.sin(s.a);
-            // e = فاصله تا لبه‌ی قاب تیتر در این راستا + نیم‌قد جلد در همین راستا. فاصله‌ی روی صفحه √(r² + e²) است: هیچ‌وقت
-            // کمتر از e نیست (جلد پشت متن نمی‌افتد)، با r و با نزدیک شدن جلد (e بزرگ‌تر) فقط زیاد می‌شود (حرکت همیشه رو به
-            // بیرون)، و برای جلدهای دور از مرکز تقریباً همان r طبیعی است (از صفحه بیرون رانده نمی‌شوند)
-            const e =
-              Math.min(text.hw / Math.max(Math.abs(ux), 1e-3), text.hh / Math.max(Math.abs(uy), 1e-3)) +
-              (cover.hw * Math.abs(ux) + cover.hh * Math.abs(uy)) * f;
-            const r = Math.hypot(len * f, e);
-            const x = (ux * r) / f - look.x;
-            const y = (uy * r) / f - look.y;
-            const o = depthOpacity(z);
+            const dx = Math.abs(view.cx + (x + look.x) * f - text.cx) / text.hw;
+            const dy = Math.abs(view.cy + (y + look.y) * f - text.cy) / text.hh;
+            const behindText = clamp01((1.25 - Math.max(dx, dy)) / 0.35) * (1 - c);
+            const o = depthOpacity(z) * (1 - behindText * 0.85);
             s.el.style.opacity = o;
             s.el.style.pointerEvents = o < 0.2 ? 'none' : '';
             s.el.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${Math.sin(t * 0.35) * 12}deg) rotate(${s.tilt}deg)`;
