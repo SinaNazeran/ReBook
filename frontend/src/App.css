@@ -298,15 +298,6 @@
   color: var(--rb-ink-muted);
 }
 
-/* حرکت امضایی: کارت کمی از قفسه بیرون می‌آید و نوار مجموعه ضخیم‌تر می‌شود */
-@media (hover: hover) {
-  .book-card:hover,
-  .book-card:focus-within {
-    transform: translateY(-3px);
-  }
-
-}
-
 /* کارت تازه (جای اسکلت، یا ردیف «نمایش بیشتر») کوتاه محو می‌آید تا جای نتایج تازه دیده شود؛ فقط opacity، پس در حرکت کم هم می‌ماند */
 .book-card {
   transition: opacity var(--rb-duration) var(--rb-ease-out);

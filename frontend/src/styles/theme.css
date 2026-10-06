@@ -61,7 +61,7 @@
     /* نقش نوار تزیینی (خط، لوزی، دو نقطه) برای mask؛ .ornament-rule و تیترها از آن استفاده می‌کنند */
     --rb-ornament-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 12'%3E%3Cpath d='M0 5.5h32v1H0z'/%3E%3Cpath d='M16 1.5l4.5 4.5-4.5 4.5-4.5-4.5z'/%3E%3Ccircle cx='4.5' cy='6' r='1.6'/%3E%3Ccircle cx='27.5' cy='6' r='1.6'/%3E%3C/svg%3E");
 
-    /* --- عمق: کارت‌ها سایه ندارند؛ سایه‌ی نرم و پخش فقط برای لایه‌های واقعاً شناور (منو، مودال، toast) --- */
+    /* --- لایه‌های شناور (منو، مودال، toast)؛ عمق صفحه (میز، برگه، کارت، کلید) در depth.css است --- */
     --rb-shadow-overlay: 0 12px 32px -12px rgba(26, 25, 24, 0.22), 0 2px 6px rgba(26, 25, 24, 0.06);
     --rb-shadow-raised: 0 6px 16px -8px rgba(26, 25, 24, 0.18);
 
@@ -130,7 +130,7 @@
     --bs-border-radius-xl: 0.5rem;
 
     --bs-box-shadow: var(--rb-shadow-overlay);
-    --bs-box-shadow-sm: none;      /* shadow-sm روی کارت‌ها: کارت‌ها تخت‌اند */
+    --bs-box-shadow-sm: none;      /* سایه‌ی کارت‌ها از توکن‌های depth.css می‌آید، نه shadow-sm */
     --bs-box-shadow-lg: var(--rb-shadow-overlay);
 
     /* --- تایپوگرافی ---

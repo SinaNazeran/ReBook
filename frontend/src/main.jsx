@@ -18,11 +18,15 @@ import "./styles/theme.css";
 
 // 4. استایل‌های سطح اپلیکیشن
 import "./App.css";
+import "./styles/depth.css";
 
 // 5. استایل کتابخانه‌های ثالث
 import "react-toastify/dist/ReactToastify.css";
 
 import App from "./App.jsx";
+import { watchPushBack } from "./utils/pushBack.js";
+
+watchPushBack();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

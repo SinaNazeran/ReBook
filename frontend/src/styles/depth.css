@@ -1,0 +1,333 @@
+/* ==========================================================================
+   عمق «صحنه» (انتخاب صاحب پروژه، ۲۰۲۶-۱۰-۰۷): هر صفحه برگه‌ای شناور روی میزی به رنگ مجموعه،
+   با لبه‌ی دو برگه‌ی زیرین؛ کارت‌ها و قاب‌ها روی برگه سایه می‌اندازند، دکمه‌ها مثل کلید چاپ فرو می‌روند.
+   نور از بالاست: همه‌ی سایه‌ها رو به پایین می‌افتند و رنگ مرکب خودِ شیء را می‌گیرند.
+   ========================================================================== */
+
+/* --- توکن‌ها: سایه با رنگ مرکب خودِ شیء (--shade) ته‌رنگ می‌گیرد، نه خاکستری خنثی --- */
+:root {
+    --d-lift: -10px;
+    --d-key: 3px;
+    --d-card:
+        0 1px 1px color-mix(in srgb, var(--shade) 12%, transparent),
+        0 4px 8px -2px color-mix(in srgb, var(--shade) 16%, transparent),
+        0 16px 28px -12px color-mix(in srgb, var(--shade) 34%, transparent);
+    --d-card-hover:
+        0 2px 4px color-mix(in srgb, var(--shade) 12%, transparent),
+        0 12px 20px -8px color-mix(in srgb, var(--shade) 22%, transparent),
+        0 36px 56px -20px color-mix(in srgb, var(--shade) 50%, transparent);
+    --d-panel:
+        0 1px 2px color-mix(in srgb, var(--shade) 10%, transparent),
+        0 18px 40px -18px color-mix(in srgb, var(--shade) 40%, transparent);
+    --d-cover:
+        0 3px 4px color-mix(in srgb, var(--shade) 24%, transparent),
+        0 18px 30px -10px color-mix(in srgb, var(--shade) 36%, transparent),
+        0 50px 80px -30px color-mix(in srgb, var(--shade) 60%, transparent);
+    --d-tab: 0 -4px 14px -6px color-mix(in srgb, var(--shade) 34%, transparent);
+    /* لبه‌های برگه‌های زیرین: دو برگه کمی پایین‌تر، مثل دسته‌ی کاغذ */
+    --d-sheet:
+        0 1px 2px color-mix(in srgb, var(--shade) 12%, transparent),
+        0 6px 0 -3px color-mix(in oklab, var(--sheet-paper) 94%, var(--rb-ink)),
+        0 6px 2px -2px color-mix(in srgb, var(--shade) 14%, transparent),
+        0 12px 0 -6px color-mix(in oklab, var(--sheet-paper) 88%, var(--rb-ink)),
+        0 12px 3px -5px color-mix(in srgb, var(--shade) 14%, transparent),
+        0 30px 50px -24px color-mix(in srgb, var(--shade) 45%, transparent);
+}
+
+:root {
+    --shade: var(--rb-ink);
+    --sheet-paper: var(--rb-ground);
+}
+
+/* هر شیء رنگی سایه‌اش را از مرکب خودش می‌گیرد */
+.book-card,
+.detail-cover {
+    --shade: color-mix(in oklab, var(--card-ink) 40%, var(--rb-ink));
+}
+
+.series-paper {
+    --shade: color-mix(in oklab, var(--series, var(--rb-ink)) 35%, var(--rb-ink));
+}
+
+/* ==========================================================================
+   ۱. نوار ناوبری شیشه‌ای: صفحه زیرش رد می‌شود، لبه با سایه نه خط مویی
+   ========================================================================== */
+.site-navbar {
+    border-bottom-color: transparent;
+    background-color: color-mix(in srgb, var(--rb-surface) 72%, transparent) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    backdrop-filter: blur(16px) saturate(170%);
+    box-shadow:
+        0 1px 0 color-mix(in srgb, var(--rb-ink) 6%, transparent),
+        0 8px 24px -16px color-mix(in srgb, var(--rb-ink) 30%, transparent);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .site-navbar {
+        background-color: var(--rb-surface) !important;
+        backdrop-filter: none;
+    }
+}
+
+/* ==========================================================================
+   ۲. کارت کتاب: روی صفحه نشسته، با hover از قفسه بلند می‌شود
+   ========================================================================== */
+.book-card,
+.book-card-skeleton {
+    --bs-card-border-radius: var(--bs-border-radius-lg);
+    border-radius: var(--bs-border-radius-lg);
+    box-shadow: var(--d-card);
+}
+
+@media (hover: hover) {
+    .book-card:hover,
+    .book-card:focus-within {
+        transform: translateY(var(--d-lift)) scale(1.02);
+        box-shadow: var(--d-card-hover);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .book-card {
+        transition:
+            opacity var(--rb-duration) var(--rb-ease-out),
+            transform 260ms var(--rb-ease-out),
+            box-shadow 260ms var(--rb-ease-out);
+    }
+}
+
+/* ==========================================================================
+   ۳. دکمه‌ها مثل کلید چاپ: لبه‌ی زیرین پیداست، با فشار پایین می‌رود و لبه ناپدید می‌شود
+   ========================================================================== */
+.btn-primary { --key-edge: #000; }
+.btn-danger { --key-edge: #5E120E; }
+.btn-secondary { --key-edge: var(--rb-field-border); }
+.btn-outline-primary { --key-edge: var(--rb-ink); }
+.btn-outline-secondary { --key-edge: var(--rb-field-border); }
+.btn-outline-danger { --key-edge: var(--rb-danger); }
+
+.btn[class*="btn-"]:not(.btn-link):not(.btn-close):not(.input-group > .btn) {
+    --key-shadow:
+        0 var(--d-key) 0 var(--key-edge, transparent),
+        0 calc(var(--d-key) + 3px) 8px -3px color-mix(in srgb, var(--rb-ink) 35%, transparent);
+    box-shadow: var(--key-shadow);
+}
+
+.btn[class*="btn-"]:not(.btn-link):not(.btn-close):not(.input-group > .btn):focus-visible {
+    box-shadow: var(--key-shadow), var(--bs-btn-focus-box-shadow);
+}
+
+.btn[class*="btn-"]:not(.btn-link):not(.btn-close):not(.input-group > .btn):active {
+    transform: none;
+    translate: 0 var(--d-key);
+    box-shadow: 0 0 0 var(--key-edge, transparent);
+}
+
+.btn:disabled,
+.btn.disabled {
+    box-shadow: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .btn {
+        transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease,
+            box-shadow 120ms var(--rb-ease-out), translate 120ms var(--rb-ease-out);
+    }
+}
+
+/* ==========================================================================
+   ۴. فیلدها در کاغذ فرو رفته‌اند
+   ========================================================================== */
+.form-control,
+.form-select {
+    box-shadow: inset 0 2px 3px color-mix(in srgb, var(--rb-ink) 9%, transparent);
+}
+
+.form-control:focus,
+.form-select:focus {
+    box-shadow:
+        inset 0 2px 3px color-mix(in srgb, var(--rb-ink) 9%, transparent),
+        0 0 0 3px var(--bs-focus-ring-color);
+}
+
+/* ==========================================================================
+   ۵. زبانه‌های مجموعه مثل زبانه‌ی کاغذی پوشه: هر زبانه لبه‌ی مرکبی دارد، زبانه‌ی فعال بالاتر می‌آید
+   ========================================================================== */
+.series-tabs {
+    padding: 0.75rem 0.5rem 0;
+    border-bottom: 0;
+    box-shadow: inset 0 -1px 0 var(--rb-rule);
+}
+
+.series-tabs-list {
+    align-items: flex-end;
+    gap: 0.375rem;
+}
+
+.series-tab {
+    padding: 0.375rem 0.875rem 0.25rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    background-color: color-mix(in oklab, var(--series-ink) 6%, var(--rb-surface));
+    box-shadow: inset 0 3px 0 var(--series-ink), var(--d-tab);
+}
+
+.series-tab[aria-current="page"] {
+    padding-block: 0.625rem 0.375rem;
+    background-color: var(--rb-surface);
+    box-shadow: inset 0 5px 0 var(--series-ink), var(--d-tab);
+}
+
+.series-tab[aria-current="page"]::after {
+    display: none;
+}
+
+@media (hover: hover) {
+    .series-tab:not([aria-current="page"]):hover {
+        translate: 0 -3px;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .series-tab {
+        transition: translate 180ms var(--rb-ease-out), color 150ms ease;
+    }
+}
+
+/* ==========================================================================
+   ۶. قاب‌ها و جلد: قاب خرید، شناسنامه، نوار ابزار، حالت‌های خالی و خطا بالای صفحه؛ جلد مثل کتاب روی میز
+   ========================================================================== */
+.buy-panel,
+.colophon,
+.list-state {
+    border-color: transparent;
+    border-radius: var(--bs-border-radius-xl);
+    box-shadow: var(--d-panel);
+}
+
+/* شناسنامه قاب دوخطی درونی‌اش را نگه می‌دارد */
+.colophon {
+    box-shadow:
+        inset 0 0 0 5px var(--rb-surface),
+        inset 0 0 0 6px var(--rb-rule),
+        var(--d-panel);
+}
+
+.detail-cover {
+    overflow: visible;
+    box-shadow: var(--d-cover);
+}
+
+.detail-cover > :first-child {
+    border-start-start-radius: var(--bs-border-radius);
+    border-start-end-radius: var(--bs-border-radius);
+    overflow: hidden;
+}
+
+/* عطف‌های صفحه‌ی اصلی روی قفسه می‌ایستند و سایه می‌اندازند */
+.spine {
+    box-shadow:
+        inset -3px 0 0 color-mix(in srgb, #000 18%, transparent),
+        inset 3px 0 0 color-mix(in srgb, #fff 14%, transparent),
+        0 10px 18px -10px color-mix(in srgb, var(--rb-ink) 60%, transparent);
+}
+
+/* ==========================================================================
+   ۷. میز رنگی، صفحه برگه‌ای شناور با لبه‌ی برگه‌های زیرین
+   ========================================================================== */
+main {
+    overflow: clip; /* میز برگه (سایه‌ی پهن زیر) از main بیرون نزند؛ clip ظرف اسکرول نمی‌سازد، پس sticky کار می‌کند */
+    background-color: color-mix(in oklab, var(--rb-ink) 10%, var(--rb-ground));
+}
+
+/* --series روی خود برگه است و main آن را نمی‌بیند؛ پس میز رنگ مجموعه را برگه با آخرین لایه‌ی سایه‌اش می‌کشد */
+main > .series-paper {
+    --sheet-paper: color-mix(in oklab, var(--series, var(--rb-ground)) var(--rb-paper-tint), var(--rb-ground));
+    width: calc(100% - 1rem);
+    margin: 0.5rem auto 1.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--d-sheet),
+        0 0 0 100vmax color-mix(in oklab, var(--series, var(--rb-ink)) 24%, var(--rb-ground));
+}
+
+@media (min-width: 768px) {
+    main > .series-paper {
+        width: calc(100% - 3rem);
+        margin-block: 1.5rem 2.5rem;
+    }
+}
+
+/* صفحه‌ی اصلی: بخش‌های بعد از هیرو هر کدام برگه‌ای جدا روی میز */
+.home-hero ~ section {
+    --sheet-paper: var(--rb-ground);
+    width: calc(100% - 1rem);
+    margin: 0 auto 1rem;
+    border-radius: 1rem;
+    box-shadow: var(--d-sheet);
+}
+
+.home-hero + section {
+    box-shadow: 0 -18px 40px rgb(26 25 24 / 0.14), var(--d-sheet);
+}
+
+@media (min-width: 768px) {
+    .home-hero ~ section {
+        width: calc(100% - 3rem);
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* نوار ابزار فهرست: نوار شناور روی برگه */
+.list-toolbar {
+    padding: 1rem 1.25rem;
+    border-top: 0;
+    border-radius: var(--bs-border-radius-xl);
+    background-color: var(--rb-surface);
+    box-shadow: var(--d-panel);
+}
+
+/* قاب خرید: برگه‌ی جدا با لبه‌ی برگه‌ی زیرین */
+.buy-panel {
+    --sheet-paper: var(--rb-surface);
+    box-shadow: var(--d-sheet);
+}
+
+/* ==========================================================================
+   ۸. لایه‌ی روی صفحه: مودال و برگه‌ی فیلتر صفحه را کمی عقب می‌برند (فقط با حرکت مجاز)
+   --push-y را utils/pushBack.js هنگام باز شدن می‌نویسد تا صفحه دور مرکز پنجره کوچک شود، نه مرکز کل سند
+   ========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+    #main {
+        transform-origin: 50% var(--push-y, 50vh);
+        transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1), filter 320ms ease;
+    }
+
+    body:has(.modal-backdrop, .offcanvas-backdrop) #main {
+        transform: scale(0.92);
+        filter: blur(2px);
+    }
+}
+
+/* ==========================================================================
+   ۹. پرواز جلد: جلد کارت با View Transition به جای جلد صفحه‌ی کتاب می‌رود (utils/coverFlight.js)
+   ========================================================================== */
+::view-transition-group(book-cover) {
+    animation-duration: 460ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+::view-transition-image-pair(book-cover) {
+    overflow: clip;
+}
+
+::view-transition-old(book-cover),
+::view-transition-new(book-cover) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 220ms;
+}
+

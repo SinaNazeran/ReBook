@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Card } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiHeart } from 'react-icons/fi';
 import PlainCover from './PlainCover';
 import ConditionMeasure from './ConditionMeasure';
 import { seriesInk } from '../utils/series';
+import { flyToBook } from '../utils/coverFlight';
 
 // «تازه»: کتابی که در هفت روز گذشته ثبت شده
 const NEW_FOR_MS = 7 * 24 * 60 * 60 * 1000;
@@ -25,6 +26,10 @@ function formatPrice(price) {
  *   دکمه‌ی قلب روی کارت نمایش داده می‌شود.
  */
 function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
+  const coverRef = useRef(null);
+  const navigate = useNavigate();
+  const href = `/books/${book.id}`;
+
   const handleWishlistClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -51,7 +56,7 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
       )}
 
       {/* کل کارت با stretched-link عنوان کلیک‌پذیر است؛ جلد لینک جداگانه ندارد */}
-      <div className="book-card-cover book-cover-hinge">
+      <div className="book-card-cover book-cover-hinge" ref={coverRef}>
         {isNewListing(book.created_at) && <span className="new-mark book-card-new">تازه</span>}
         {book.cover_image ? (
           <Card.Img
@@ -78,7 +83,12 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
 
       <Card.Body className="book-card-body">
         <Card.Title as="h3" className="book-card-title">
-          <Link to={`/books/${book.id}`} className="stretched-link" dir="auto">
+          <Link
+            to={href}
+            className="stretched-link"
+            dir="auto"
+            onClick={(e) => flyToBook(e, coverRef.current, navigate, href)}
+          >
             {book.title}
           </Link>
         </Card.Title>
