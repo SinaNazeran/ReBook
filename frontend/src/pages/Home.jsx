@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { bookAPI } from '../services/api';
@@ -7,6 +7,24 @@ import PlainCover from '../components/PlainCover';
 import EmptyShelf from '../components/EmptyShelf';
 import { seriesInk } from '../utils/series';
 import { FiArrowLeft, FiPlusCircle } from 'react-icons/fi';
+import { gsap } from 'gsap';
+import { SplitText } from 'gsap/SplitText';
+
+gsap.registerPlugin(SplitText);
+
+// حرکت فقط برای کسی که حرکت کم نخواسته؛ با حرکت کم، هیرو بی‌انیمیشن و فوراً کامل است
+const MOTION_OK = '(prefers-reduced-motion: no-preference)';
+// کج‌شدن هر جلد هنگام فرود، که با فنر صاف می‌شود
+const LANDING_TILT = [-8, 6, -5, 7, -6];
+
+// محتوای هیرو پنهان شروع می‌شود و با ساعت GSAP (requestAnimationFrame) پیدا می‌شود. جایی که rAF نمی‌چرخد
+// (تب پس‌زمینه، ابزار اسکرین‌شات، خزنده) تایمر انیمیشن را به آخرش می‌برد تا هیچ‌چیز پنهان نماند
+const SAFETY_MS = 3000;
+const withSafety = (tl) => {
+  const timer = setTimeout(() => tl.progress(1), SAFETY_MS);
+  tl.eventCallback('onInterrupt', () => clearTimeout(timer));
+  return () => clearTimeout(timer);
+};
 
 // پنج جلد تازه روی قفسه‌ی هیرو؛ شبکه‌ی پایین از کتاب ششم ادامه می‌دهد تا هیچ کتابی دوبار دیده نشود
 const SHELF_COUNT = 5;
@@ -27,6 +45,65 @@ function Home() {
 
   const shelfBooks = latestBooks.slice(0, SHELF_COUNT);
   const gridBooks = latestBooks.slice(SHELF_COUNT);
+  const heroRef = useRef(null);
+
+  // تیتر کلمه‌به‌کلمه پیدا می‌شود. فقط کلمه، هرگز حرف: حروف فارسی به هم چسبیده‌اند و تکه‌کردنشان اتصال را می‌شکند.
+  // پیش از نقاشی پنهان می‌شود و پس از بارگذاری لاله‌زار تکه می‌شود (اندازه‌ی کلمه‌ها به فونت بسته است)
+  useLayoutEffect(() => {
+    // اگر افکت پیش از آماده‌شدن فونت پاک شد (جابه‌جایی صفحه، اجرای دوباره‌ی StrictMode)، کال‌بک دیر رسیده کاری نمی‌کند؛
+    // وگرنه یک SplitText بی‌صاحب می‌ماند که هرگز برنمی‌گردد
+    let cancelled = false;
+    const mm = gsap.matchMedia();
+    mm.add(
+      MOTION_OK,
+      (context) => {
+        gsap.set(['.home-hero-title', '.home-hero-lead', '.home-hero-actions'], { autoAlpha: 0 });
+        document.fonts.ready.then(() => {
+          if (cancelled) return;
+          // انیمیشن‌های بعد از await با context.add در همان زمینه ثبت می‌شوند تا با بازگشت پاک شوند
+          context.add(() => {
+            const split = SplitText.create('.home-hero-title', { type: 'words' });
+            // پس از پایان، تکه‌ها به متن ساده برمی‌گردند (همان کلمه‌ها و همان پهنا، پس پرشی نیست)
+            const tl = gsap
+              .timeline({ defaults: { ease: 'power3.out' }, onComplete: () => split.revert() })
+              .set('.home-hero-title', { autoAlpha: 1 })
+              .from(split.words, { yPercent: 60, autoAlpha: 0, filter: 'blur(4px)', duration: 0.6, stagger: 0.07 })
+              .to(['.home-hero-lead', '.home-hero-actions'], { autoAlpha: 1, duration: 0.4, stagger: 0.08 }, '-=0.25')
+              .from(['.home-hero-lead', '.home-hero-actions'], { y: 10, duration: 0.4, stagger: 0.08, clearProps: 'transform' }, '<');
+            return withSafety(tl);
+          });
+        });
+      },
+      heroRef,
+    );
+    return () => {
+      cancelled = true;
+      mm.revert();
+    };
+  }, []);
+
+  // جلدها یکی‌یکی روی قفسه می‌افتند، کمی برمی‌جهند و از کجی صاف می‌شوند. پس از فرود ویژگی‌ها پاک می‌شوند
+  // تا hover (بیرون‌کشیدن جلد در CSS) آزاد باشد؛ در طول فرود transition خاموش است تا با GSAP نجنگد
+  const shelfReady = status === 'ready' && shelfBooks.length > 0;
+  useLayoutEffect(() => {
+    if (!shelfReady) return undefined;
+    const mm = gsap.matchMedia();
+    mm.add(
+      MOTION_OK,
+      () => {
+        const books = gsap.utils.toArray('.shelf-book');
+        const tl = gsap
+          .timeline({ onComplete: () => gsap.set(books, { clearProps: 'transform,opacity,visibility,transition' }) })
+          .set(books, { transition: 'none' })
+          .from(books, { y: -150, autoAlpha: 0, duration: 0.75, ease: 'bounce.out', stagger: 0.09 }, 0.15)
+          .from(books, { rotation: (i) => LANDING_TILT[i % LANDING_TILT.length], duration: 1.1, ease: 'elastic.out(1, 0.45)', stagger: 0.09 }, 0.15)
+          .from('.hero-shelf-caption', { autoAlpha: 0, duration: 0.4 }, '-=0.5');
+        return withSafety(tl);
+      },
+      heroRef,
+    );
+    return () => mm.revert();
+  }, [shelfReady]);
 
   const retry = () => {
     setStatus('loading');
@@ -69,7 +146,7 @@ function Home() {
 
   return (
     <>
-      <section className="home-hero">
+      <section className="home-hero" ref={heroRef}>
         <Container>
           <Row className="gy-4 align-items-end">
             <Col lg={6}>

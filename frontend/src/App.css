@@ -768,9 +768,11 @@
     transform: translateY(-10px);
   }
 
+  /* جلد از قفسه بیرون کشیده می‌شود، به‌سمت خواننده: بالا می‌آید، کمی بزرگ می‌شود و سایه‌ی شناور می‌گیرد */
   .shelf-book:hover,
   .shelf-book:focus-visible {
-    transform: translateY(-10px);
+    transform: translateY(-16px) scale(1.05);
+    box-shadow: var(--rb-shadow-raised);
   }
 }
 
@@ -917,8 +919,7 @@
   }
 }
 
-/* ورود هیرو، مثل نمونه‌ی چاپی: تیتر از تاری به وضوح می‌رسد و جلدها یکی‌یکی روی قفسه گذاشته می‌شوند.
-   fill فقط backwards است تا پس از ورود، hover آزاد بماند. */
+/* ورود هیرو با GSAP در Home.jsx است (تیتر کلمه‌به‌کلمه، جلدها روی قفسه می‌افتند)؛ اینجا فقط hover و حالت‌ها */
 .series-index-mark {
   flex: none;
   width: 4px;
@@ -927,24 +928,9 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .home-hero-title {
-    animation: hero-focus 680ms var(--rb-ease-out) backwards;
-  }
-
-  .home-hero-lead,
-  .home-hero-actions {
-    animation: hero-fade 360ms ease-out 240ms backwards;
-  }
-
   .shelf-book {
-    animation: shelf-place 520ms var(--rb-ease-out) backwards;
-    transition: transform var(--rb-duration) var(--rb-ease-out);
+    transition: transform 260ms var(--rb-ease-out), box-shadow 260ms var(--rb-ease-out);
   }
-
-  .hero-shelf-list > li:nth-child(2) .shelf-book { animation-delay: 70ms; }
-  .hero-shelf-list > li:nth-child(3) .shelf-book { animation-delay: 140ms; }
-  .hero-shelf-list > li:nth-child(4) .shelf-book { animation-delay: 210ms; }
-  .hero-shelf-list > li:nth-child(5) .shelf-book { animation-delay: 280ms; }
 
   .spine {
     transition: transform var(--rb-duration) var(--rb-ease-out);
@@ -953,13 +939,6 @@
   .book-card-skeleton > span,
   .shelf-book.is-placeholder {
     animation: skeleton-pulse 1.4s ease-in-out infinite alternate;
-  }
-}
-
-@keyframes shelf-place {
-  from {
-    transform: translateY(18px);
-    opacity: 0;
   }
 }
 
