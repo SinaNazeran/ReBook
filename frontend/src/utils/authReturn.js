@@ -8,7 +8,8 @@ export const returnPath = (location) => {
 export const returnReason = (location) => {
   const path = location.state?.from?.pathname ?? '';
   if (path === '/create-book') return 'برای ثبت آگهی فروش وارد شو.';
-  if (path.startsWith('/books/')) return 'برای خرید یا نشان کردن این کتاب وارد شو؛ بعد به همان صفحه برمی‌گردی.';
+  if (path === '/cart') return 'برای پرداخت سبد خرید وارد شو؛ بعد به سبدت برمی‌گردی.';
+  if (path.startsWith('/books/')) return 'برای نشان کردن این کتاب وارد شو؛ بعد به همان صفحه برمی‌گردی.';
   if (path && path !== '/') return 'برای دیدن این صفحه وارد شو؛ بعد به همان‌جا برمی‌گردی.';
   return null;
 };

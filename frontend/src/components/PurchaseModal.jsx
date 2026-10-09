@@ -2,27 +2,21 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal, Button, Alert } from 'react-bootstrap';
 import Form from './Form';
-import { FiCopy, FiCheck } from 'react-icons/fi';
+import Receipt from './Receipt';
 import { orderAPI, getErrorMessage } from '../services/api';
-import { seriesInk } from '../utils/series';
 
 /**
- * خرید یک‌مرحله‌ای: خلاصه → آدرس → ثبت سفارش و پرداخت آزمایشی → رسید با کد پیگیری.
+ * پرداخت آزمایشی سفارشی که در انتظار پرداخت مانده (صفحه‌ی کتاب و «معاملات من»). سفارش تازه از راه سبد خرید ثبت می‌شود.
  * پرداخت شبیه‌سازی است (FakePaymentView) و متن دکمه و یادداشت همین را صریح می‌گویند.
  *
- * @param {object} book - کتاب صفحه‌ی جزئیات
- * @param {number|null} existingOrderId - سفارش باز خود کاربر؛ اگر باشد فقط پرداخت می‌شود
- * @param {string} defaultAddress - آدرس پروفایل برای پیش‌پر کردن
+ * @param {object} book - کتاب سفارش
+ * @param {number} existingOrderId - سفارش باز خود کاربر
  * @param {() => void} onPaid - پس از پرداخت موفق (صفحه کتاب را فروخته‌شده نشان می‌دهد)
- * @param {() => void} onStale - وقتی وضعیت سفارش روی سرور با صفحه فرق کرده و باید تازه شود
  */
-function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddress = '', onPaid, onStale }) {
-  const [address, setAddress] = useState(defaultAddress);
-  const [addressError, setAddressError] = useState('');
+function PurchaseModal({ show, onHide, book, existingOrderId, onPaid }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [trackingCode, setTrackingCode] = useState('');
-  const [copied, setCopied] = useState(false);
   // جزئیات کتاب دسته را شیء می‌دهد، فهرست سفارش‌ها category_root را
   const seriesRoot = book.category_root ?? (book.category ? book.category.parent || book.category.id : null);
 
@@ -30,55 +24,16 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!existingOrderId && !address.trim()) {
-      setAddressError('آدرس ارسال را بنویس تا فروشنده بداند کتاب را کجا بفرستد.');
-      return;
-    }
-
     setBusy(true);
     setError('');
-
-    let orderId = existingOrderId;
-    if (!orderId) {
-      try {
-        const response = await orderAPI.createOrder({ book: book.id, shipping_address: address.trim() });
-        orderId = response.data.id;
-      } catch (err) {
-        setError(getErrorMessage(err));
-        setBusy(false);
-        onStale?.();
-        return;
-      }
-    }
-
     try {
-      const response = await orderAPI.payOrder(orderId);
+      const response = await orderAPI.payOrder(existingOrderId);
       setTrackingCode(response.data.reference_code);
       onPaid?.();
     } catch (err) {
-      if (existingOrderId) {
-        setError(getErrorMessage(err));
-      } else {
-        // سفارشی که همین حالا ساخته شد و پرداخت نشد نباید نسخه را برای دیگران قفل کند
-        try {
-          await orderAPI.cancelOrder(orderId);
-          setError(`پرداخت انجام نشد و سفارش لغو شد؛ می‌توانی دوباره امتحان کنی. (${getErrorMessage(err)})`);
-        } catch {
-          setError('پرداخت انجام نشد. سفارش در «معاملات من» در انتظار پرداخت مانده است.');
-          onStale?.();
-        }
-      }
+      setError(getErrorMessage(err));
     } finally {
       setBusy(false);
-    }
-  };
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(trackingCode);
-      setCopied(true);
-    } catch {
-      // کلیپ‌بورد در دسترس نیست (مثلاً http بدون localhost)؛ کد روی صفحه انتخاب‌شدنی است
     }
   };
 
@@ -97,37 +52,11 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {/* رسید به شکل برچسب «اکس‌لیبریس» که داخل جلد کتاب می‌چسبانند، در مرکب مجموعه‌ی همین کتاب */}
-            <div className="bookplate" style={{ '--series': seriesInk(seriesRoot) }}>
-              <p className="bookplate-title display-type">از کتابخانه‌ی تو</p>
-              <span className="ornament-rule" aria-hidden="true" />
-              <p className="bookplate-book display-type">
-                <bdi>{book.title}</bdi>
-              </p>
-              {book.author && (
-                <p className="bookplate-author">
-                  <bdi>{book.author}</bdi>
-                </p>
-              )}
-            </div>
-            <p className="bookplate-note">
-              به نام تو ثبت شد و فروشنده خبردار شد. وضعیت ارسال را در «معاملات من» دنبال کن.
-            </p>
-            <div className="receipt-code">
-              <span className="receipt-code-label">کد پیگیری</span>
-              <bdi translate="no" className="receipt-code-value latin-id" dir="ltr">
-                {trackingCode}
-              </bdi>
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                className="d-inline-flex align-items-center gap-1"
-                onClick={handleCopy}
-              >
-                {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
-                {copied ? 'کپی شد' : 'کپی'}
-              </Button>
-            </div>
+            <Receipt
+              books={[{ ...book, category_root: seriesRoot }]}
+              trackingCode={trackingCode}
+              note="به نام تو ثبت شد و فروشنده خبردار شد. وضعیت ارسال را در «معاملات من» دنبال کن."
+            />
           </Modal.Body>
           <Modal.Footer>
             <Link to="/my-orders" className="btn btn-outline-secondary">
@@ -142,7 +71,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
         <Form onSubmit={handleSubmit} noValidate>
           <Modal.Header closeButton={!busy} closeLabel="بستن">
             <Modal.Title id="purchase-title" as="h2" className="h5">
-              {existingOrderId ? 'پرداخت سفارش' : 'خرید کتاب'}
+              پرداخت سفارش
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -156,28 +85,6 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
                 {price} <span className="book-card-currency">تومان</span>
               </dd>
             </dl>
-
-            {!existingOrderId && (
-              <Form.Group controlId="shipping-address" className="mb-3">
-                <Form.Label>آدرس ارسال</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  name="shipping_address"
-                  autoComplete="street-address"
-                  rows={3}
-                  value={address}
-                  isInvalid={Boolean(addressError)}
-                  onChange={(e) => {
-                    setAddress(e.target.value);
-                    setAddressError('');
-                  }}
-                  placeholder="استان، شهر، خیابان، پلاک، کد پستی"
-                  required
-                  disabled={busy}
-                />
-                <Form.Control.Feedback type="invalid">{addressError}</Form.Control.Feedback>
-              </Form.Group>
-            )}
 
             <p className="purchase-note">
               پرداخت در ری‌بوک فعلاً آزمایشی است: هیچ پولی جابه‌جا نمی‌شود و فقط روند خرید شبیه‌سازی می‌شود.
@@ -194,11 +101,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId = null, defaultAddr
               انصراف
             </Button>
             <Button variant="primary" type="submit" disabled={busy}>
-              {busy
-                ? 'در حال پرداخت آزمایشی…'
-                : existingOrderId
-                  ? 'پرداخت آزمایشی'
-                  : 'ثبت سفارش و پرداخت آزمایشی'}
+              {busy ? 'در حال پرداخت آزمایشی…' : 'پرداخت آزمایشی'}
             </Button>
           </Modal.Footer>
         </Form>

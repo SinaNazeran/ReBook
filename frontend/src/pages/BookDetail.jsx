@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { FiHeart, FiShoppingCart } from 'react-icons/fi';
 import { bookAPI, orderAPI, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/useAuth.js';
+import { useCart } from '../context/useCart.js';
 import Loading from '../components/Loading';
 import PlainCover from '../components/PlainCover';
 import ConditionMeasure from '../components/ConditionMeasure';
@@ -35,6 +36,19 @@ function BookDetail() {
   const [boughtByMe, setBoughtByMe] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
+  const { inCart, add: addToCart, remove: removeFromCart } = useCart();
+  const [cartBusy, setCartBusy] = useState(false);
+  // پیام صفحه‌خوان پس از افزودن/حذف (ناحیه‌ی role="status" همیشه در صفحه است)
+  const [cartMessage, setCartMessage] = useState('');
+  const focusCartLink = useRef(false);
+  const isInCart = book ? inCart(book.id) : false;
+
+  // دکمه‌ی «افزودن» جایش را به پیوند «مشاهده‌ی سبد» می‌دهد؛ فوکوس روی همان می‌آید تا گم نشود
+  useEffect(() => {
+    if (!isInCart || !focusCartLink.current) return;
+    focusCartLink.current = false;
+    [...document.querySelectorAll('.buy-cart-link')].find((el) => el.offsetParent !== null)?.focus();
+  }, [isInCart]);
 
   useEffect(() => {
     let ignore = false;
@@ -99,12 +113,31 @@ function BookDetail() {
     }
   };
 
-  const handleBuy = () => {
-    if (!isAuthenticated) {
-      goToLogin();
-      return;
+  // مهمان هم به سبد اضافه می‌کند؛ ورود فقط برای پرداخت لازم است
+  const handleAddToCart = async () => {
+    setCartBusy(true);
+    try {
+      await addToCart(book.id);
+      focusCartLink.current = true;
+      setCartMessage('به سبد اضافه شد.');
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      refreshBook();
+    } finally {
+      setCartBusy(false);
     }
-    setShowPurchase(true);
+  };
+
+  const handleRemoveFromCart = async () => {
+    setCartBusy(true);
+    try {
+      await removeFromCart(book.id);
+      setCartMessage('از سبد برداشته شد.');
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setCartBusy(false);
+    }
   };
 
   const handlePaid = () => {
@@ -210,10 +243,17 @@ function BookDetail() {
   }
 
   const primaryAction = canBuy ? (
-    <Button variant="primary" onClick={handleBuy} className="d-inline-flex align-items-center gap-2">
-      <FiShoppingCart aria-hidden="true" />
-      خرید
-    </Button>
+    isInCart ? (
+      <Link to="/cart" className="btn btn-primary buy-cart-link d-inline-flex align-items-center gap-2">
+        <FiShoppingCart aria-hidden="true" />
+        در سبد است · مشاهده‌ی سبد
+      </Link>
+    ) : (
+      <Button variant="primary" onClick={handleAddToCart} disabled={cartBusy} className="d-inline-flex align-items-center gap-2">
+        <FiShoppingCart aria-hidden="true" />
+        {cartBusy ? 'در حال افزودن…' : 'افزودن به سبد'}
+      </Button>
+    )
   ) : canPay ? (
     <Button variant="primary" onClick={() => setShowPurchase(true)}>
       پرداخت آزمایشی
@@ -336,6 +376,11 @@ function BookDetail() {
                     {cancelling ? 'در حال لغو…' : 'لغو سفارش'}
                   </Button>
                 )}
+                {isInCart && (
+                  <Button variant="link" className="buy-cart-remove" onClick={handleRemoveFromCart} disabled={cartBusy}>
+                    حذف از سبد
+                  </Button>
+                )}
                 {!isOwner && book.status === 'approved' && (
                   <Button
                     variant="outline-secondary"
@@ -348,6 +393,9 @@ function BookDetail() {
                   </Button>
                 )}
               </div>
+              <p className="visually-hidden" role="status">
+                {cartMessage}
+              </p>
 
               {(book.status === 'approved' || book.status === 'sold') && (
                 <p className="buy-review">این آگهی پیش از انتشار توسط تیم ری‌بوک بررسی شده است.</p>
@@ -414,8 +462,7 @@ function BookDetail() {
             show
             onHide={() => setShowPurchase(false)}
             book={book}
-            existingOrderId={canPay ? openOrder.id : null}
-            defaultAddress={user?.address || ''}
+            existingOrderId={openOrder.id}
             onPaid={handlePaid}
             onStale={refreshBook}
           />
