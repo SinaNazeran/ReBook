@@ -76,7 +76,7 @@ function Home() {
             <h2 id="series-key-title" className="home-section-title display-type">
               مجموعه‌ها
             </h2>
-            {/* مجموعه‌ها مثل عطف کتاب‌ها روی قفسه: هر دسته یک عطف تمام‌رنگ با نامش */}
+            {/* مجموعه‌ها مثل کتاب‌های کلاسیک روی قفسه: هر دسته یک عطف چرمی به رنگ مجموعه با برچسب طلاکوب */}
             <ul className="series-spines">
               {shelves.map((cat) => (
                 <li key={cat.id}>
@@ -85,7 +85,9 @@ function Home() {
                     className="spine"
                     style={{ '--series-ink': seriesInk(cat.id) }}
                   >
-                    <span className="spine-title display-type">{cat.name}</span>
+                    <span className="spine-label">
+                      <span className="spine-title display-type">{cat.name}</span>
+                    </span>
                   </Link>
                 </li>
               ))}

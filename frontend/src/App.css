@@ -798,41 +798,45 @@
   border-bottom: 3px solid var(--rb-brand);
 }
 
-/* عطف‌ها باریک‌اند، مثل کتاب واقعی؛ باقی قفسه جای خالی است */
+/* عطف‌ها کتاب‌های کلاسیک صحافی‌شده‌اند: چرم به رنگ مجموعه با سر گرد، برآمدگی‌های عرضی با خط طلا،
+   برچسب چرمی تیره با قاب دوخطی و عنوان طلاکوب. پهناها کمی فرق دارند، مثل قفسه‌ی واقعی؛ باقی قفسه جای خالی است */
 .series-spines > li {
   flex: 0 0 clamp(5rem, 7vw, 6.5rem);
   min-width: 0;
 }
 
+.series-spines > li:nth-child(4n + 2) { flex-basis: clamp(5.5rem, 7.8vw, 7.25rem); }
+.series-spines > li:nth-child(4n + 3) { flex-basis: clamp(4.5rem, 6.3vw, 5.75rem); }
+
 .spine {
+  --spine-label: color-mix(in oklab, var(--series-ink) 45%, #000);
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   height: 15rem;
-  border-radius: 3px 3px 0 0;
+  border-radius: 7px 7px 2px 2px;
   background-color: var(--series-ink);
-  color: var(--rb-on-ink);
+  color: var(--rb-gilt);
   text-decoration: none;
 }
 
 .series-spines > li:nth-child(3n + 1) .spine { height: 14rem; }
 .series-spines > li:nth-child(3n + 2) .spine { height: 15.5rem; }
 
+/* دو خط طلا نزدیک سر و ته عطف */
 .spine::before,
 .spine::after {
   content: "";
   position: absolute;
-  inset-inline: 0;
-  height: 3px;
-  background-color: color-mix(in srgb, var(--rb-on-ink) 75%, transparent);
+  inset-inline: 9%;
+  height: 5px;
+  border-block: 1px solid var(--rb-gilt);
 }
 
-.spine::before { top: 1.125rem; }
-.spine::after { bottom: 1.125rem; }
+.spine::before { top: 5%; }
+.spine::after { bottom: 5%; }
 
 .spine:hover {
-  color: var(--rb-on-ink);
+  color: var(--rb-gilt);
 }
 
 .spine:focus-visible {
@@ -840,12 +844,33 @@
   outline-offset: 2px;
 }
 
+/* برچسب عنوان: چرم تیره‌تر، قاب دوخطی طلا (فاصله‌ی ۳px هم‌رنگ برچسب)، کمی برجسته */
+.spine-label {
+  position: absolute;
+  top: 19%;
+  bottom: 24%;
+  inset-inline: 13%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 0.5rem;
+  border-radius: 2px;
+  background-color: var(--spine-label);
+  box-shadow:
+    inset 0 0 0 1px var(--rb-gilt),
+    inset 0 0 0 3px var(--spine-label),
+    inset 0 0 0 4px var(--rb-gilt),
+    0 1px 0 color-mix(in srgb, #FFFFFF 14%, transparent),
+    0 -1px 0 color-mix(in srgb, #000 30%, transparent);
+}
+
 .spine-title {
-  max-height: calc(100% - 4rem);
+  max-height: 100%;
   overflow: hidden;
-  font-size: clamp(1.125rem, 0.9rem + 0.6vw, 1.5rem);
-  line-height: 1.2;
-  white-space: nowrap;
+  font-size: clamp(1rem, 0.85rem + 0.45vw, 1.3rem);
+  line-height: 1.15;
+  text-align: center;
+  text-wrap: balance; /* نام بلند دو سطر متوازن روی برچسب می‌شود، مثل عنوان دوسطری عطف */
   writing-mode: vertical-rl;
 }
 
@@ -855,9 +880,13 @@
     scrollbar-width: thin;
   }
 
-  .series-spines > li {
+  .series-spines > li,
+  .series-spines > li:nth-child(n) {
     flex: 0 0 4.25rem;
   }
+
+  .series-spines > li:nth-child(4n + 2) { flex-basis: 4.75rem; }
+  .series-spines > li:nth-child(4n + 3) { flex-basis: 3.875rem; }
 
   .spine,
   .series-spines > li:nth-child(n) .spine {
