@@ -8,16 +8,65 @@
 /* ==========================================================================
    ۱. نوار ناوبری
    ========================================================================== */
+/* سربرگ تیره: میدان شرابی عمیق، متن سفید، نوار هشت‌رنگ مجموعه‌ها لبه‌ی پایین (قرینه‌ی فوتر).
+   theme.css رنگ پیوند را روی خودِ .nav-link می‌گذارد، پس متغیر navbar به پیوندها نمی‌رسد و جدا تنظیم می‌شود */
 .site-navbar {
-  border-bottom: 1px solid var(--rb-rule);
+  --bs-navbar-color: #FFFFFF;
+  --bs-navbar-hover-color: #FFFFFF;
+  --bs-navbar-active-color: #FFFFFF;
+  --bs-navbar-brand-color: #FFFFFF;
+  --bs-navbar-brand-hover-color: #FFFFFF;
+  --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  background-color: var(--rb-header-bar);
+}
+
+.site-navbar::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 4px;
+  background: var(--rb-series-rule);
+}
+
+.site-navbar .nav-link {
+  --bs-nav-link-color: #FFFFFF;
+  --bs-nav-link-hover-color: #FFFFFF;
+}
+
+.site-navbar :focus-visible {
+  outline-color: #FFFFFF;
+}
+
+/* دکمه‌ی اصلی سربرگ سبز روشن‌تر از دکمه‌های صفحه است تا روی میدان شرابی دیده شود (۳٫۴۸:۱) */
+.site-navbar .btn-primary {
+  --bs-btn-bg: var(--rb-header-btn);
+  --bs-btn-border-color: var(--rb-header-btn);
+  --bs-btn-hover-bg: color-mix(in oklab, var(--rb-header-btn) 85%, #FFFFFF);
+  --bs-btn-hover-border-color: color-mix(in oklab, var(--rb-header-btn) 85%, #FFFFFF);
+  --bs-btn-active-bg: var(--rb-header-btn);
+  --bs-btn-active-border-color: var(--rb-header-btn);
+  --key-edge: color-mix(in oklab, var(--rb-header-btn) 55%, #000);
+}
+
+.site-navbar .btn-outline-primary {
+  --bs-btn-color: #FFFFFF;
+  --bs-btn-border-color: color-mix(in srgb, #FFFFFF 70%, transparent);
+  --bs-btn-hover-color: var(--rb-ink);
+  --bs-btn-hover-bg: #FFFFFF;
+  --bs-btn-hover-border-color: #FFFFFF;
+  --bs-btn-active-color: var(--rb-ink);
+  --bs-btn-active-bg: #FFFFFF;
+  --bs-btn-active-border-color: #FFFFFF;
+  --key-edge: color-mix(in srgb, #FFFFFF 45%, transparent);
 }
 
 .navbar-brand {
   font-size: 1.625rem;
-  color: var(--rb-ink);
+  color: #FFFFFF;
 }
 
-/* نشان برند (BrandMark.jsx): برچسب قرمز عطف با دو نوار کاغذی، مثل نشان ناشر روی کتاب جیبی؛ تنها جای قرمز برند */
+/* نشان برند (BrandMark.jsx): برچسب شرابی عطف با دو نوار کاغذی، مثل نشان ناشر روی کتاب جیبی */
 .brand-mark {
   flex: none;
   width: 0.55em;
@@ -30,6 +79,20 @@
 
 .brand-mark-band {
   fill: var(--rb-surface);
+}
+
+/* روی میدان‌های شرابی (سربرگ، فوتر) عطف شرابی گم می‌شد: عطف گلی، نوارها هم‌رنگ میدان */
+.site-navbar .brand-mark-spine,
+.site-footer .brand-mark-spine {
+  fill: var(--rb-accent);
+}
+
+.site-navbar .brand-mark-band {
+  fill: var(--rb-header-bar);
+}
+
+.site-footer .brand-mark-band {
+  fill: var(--rb-footer);
 }
 
 .brand-mark.is-mono .brand-mark-spine {
@@ -61,14 +124,15 @@
   height: 24px;
   border-radius: 50%;
   object-fit: cover;
-  background-color: var(--rb-ink);
-  color: var(--rb-on-ink);
+  background-color: var(--rb-accent);
+  color: var(--rb-ink);
   font-size: 0.75rem;
   font-weight: 700;
 }
 
 .site-navbar .nav-link.active {
-  color: var(--rb-ink);
+  color: #FFFFFF;
+  text-decoration-color: var(--rb-accent);
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 0.6em;
@@ -169,7 +233,7 @@
   margin-top: 0.5rem;
   padding-top: 0.5rem;
   border-top: 1px solid color-mix(in srgb, var(--rb-on-ink) 45%, transparent);
-  color: color-mix(in srgb, var(--rb-on-ink) 85%, transparent);
+  color: var(--rb-on-ink); /* سفید کامل: مرکب‌های مجموعه با سفید ۴٫۶ تا ۴٫۸:۱ دارند، سفید ۸۵٪ به ۴٫۱ می‌رسید */
   font-size: clamp(0.6875rem, 4cqi, 0.8125rem);
   font-weight: var(--rb-font-weight-ui);
   line-height: 1.5;
@@ -731,7 +795,7 @@
   margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
-  border-bottom: 3px solid var(--rb-ink);
+  border-bottom: 3px solid var(--rb-brand);
 }
 
 /* عطف‌ها باریک‌اند، مثل کتاب واقعی؛ باقی قفسه جای خالی است */
@@ -1086,8 +1150,8 @@
 }
 
 .sub-tab[aria-current="page"] {
-  border-color: var(--rb-ink);
-  color: var(--rb-ink);
+  border-color: var(--rb-primary);
+  color: var(--rb-primary);
   font-weight: var(--rb-font-weight-ui);
 }
 
@@ -1170,8 +1234,8 @@
   min-width: 1.25rem;
   height: 1.25rem;
   border-radius: 2px;
-  background-color: var(--rb-ink);
-  color: var(--rb-on-ink);
+  background-color: var(--rb-primary);
+  color: var(--rb-on-primary);
   font-size: 0.75rem;
 }
 
@@ -1792,7 +1856,7 @@
 
 .cover-dropzone:hover,
 .cover-dropzone.is-dragging {
-  border-color: var(--rb-ink);
+  border-color: var(--rb-primary);
   background-color: var(--rb-surface-sunken);
 }
 
@@ -2084,8 +2148,8 @@
   height: 2rem;
   border: 2px solid var(--rb-surface);
   border-radius: 50%;
-  background-color: var(--rb-ink);
-  color: var(--rb-on-ink);
+  background-color: var(--rb-primary);
+  color: var(--rb-on-primary);
 }
 
 .profile-avatar-field:has(input:focus-visible) .profile-avatar {
@@ -2212,8 +2276,8 @@
    ۱۳. فوتر
    ========================================================================== */
 .site-footer {
-  background-color: var(--rb-ink);
-  color: var(--rb-on-ink-muted);
+  background-color: var(--rb-footer);
+  color: var(--rb-on-footer-muted);
 }
 
 /* کاغذ رنگی صفحه تا فوتر می‌رسد: main ستونی می‌شود و کاغذ جای باقی‌مانده را پر می‌کند، بی فاصله‌ی خنثی بالای فوتر */
@@ -2449,4 +2513,21 @@ body:has(main > .series-paper) .site-footer {
 
 .condition-option:has(:checked) {
   background-color: color-mix(in oklab, var(--rb-accent) 22%, var(--rb-surface));
+}
+
+/* ==========================================================================
+   ۱۵. رنگ برند در تیترهای نمایشی؛ متن بدنه مرکب می‌ماند. پیش‌فرض --rb-brand همان مرکب است
+   ========================================================================== */
+.home-hero-title,
+.home-section-title,
+.list-title,
+.detail-title,
+.ledger-title,
+.sell-title,
+.auth-title,
+.not-found-title,
+.colophon-title,
+.support-heading,
+.profile-username {
+  color: var(--rb-brand);
 }

@@ -13,14 +13,27 @@
     --rb-surface-sunken: #ECEBE6;  /* جای خالی جلد، اعلان خوانده‌نشده، بخش متمایز */
     --rb-ink: #1A1918;             /* متن و اقدام اصلی؛ سیاه خالص نیست */
     --rb-ink-hover: #3A3835;
+
+    /* پالت «سبز و شرابی» (انتخاب صاحب پروژه، ۲۰۲۶-۱۰-۰۹). شرابی تیره (L۰٫۳۶) و سبز میانه (L۰٫۴۹) با روشنایی هم جدا شده‌اند،
+       وگرنه برای کوررنگی قرمز-سبز یک رنگ دیده می‌شدند (ΔE ۳ → ۱۲). متن بدنه مرکب می‌ماند */
+    --rb-primary: #326E51;                    /* سبز بطری: اقدام اصلی (دکمه، کنترل تیک‌خورده، زبانه‌ی فعال، پیوند)؛ متن سفید ۶٫۰:۱ */
+    --rb-primary-hover: #226043;
+    --rb-on-primary: #FFFFFF;
+    --rb-brand: #6E172C;                      /* شرابی: تیتر نمایشی، نام برند، خط قفسه، فوتر؛ متن سفید ۱۱٫۵:۱ */
+    --rb-link: var(--rb-primary);
+    --rb-footer: var(--rb-brand);
+    --rb-on-footer-muted: #E7C4C7;            /* متن ثانویه روی فوتر شرابی، ۷٫۲:۱ */
+    /* سربرگ: میدان شرابی عمیق‌تر از فوتر تا دکمه‌ی سبز روشن‌تر رویش ≥ ۳:۱ جدا بماند (۳٫۴۸:۱) */
+    --rb-header-bar: #480217;
+    --rb-header-btn: #448061;                 /* متن سفید ۴٫۶۶:۱ */
     --rb-ink-muted: #5C5B57;       /* متن ثانویه؛ ۶٫۲:۱ روی زمینه */
     --rb-on-ink: #FFFFFF;
     --rb-on-ink-muted: #B9B8B1;    /* متن ثانویه روی سطح مرکبی (فوتر) */
     --rb-rule: #DEDDD6;            /* خط مویی جداکننده */
     --rb-field-border: #8E8D86;    /* مرز فیلد فرم؛ ۳٫۳:۱ برای تشخیص کنترل */
     --rb-placeholder: #6E6D68;
-    --rb-brand-red: #D7261E;       /* فقط نشان برند؛ اقدام اصلی با مرکب است تا با «دیوار» و قرمز خطر یکی نشود */
-    --rb-focus: #0A63D6;          /* آبی رابط، جدا از مرکب چاپی مجموعه‌ی ۱ */
+    --rb-brand-red: var(--rb-brand); /* عطف نشان برند؛ روی میدان‌های شرابی (سربرگ، فوتر) عطف به رنگ تأکید می‌رود */
+    --rb-focus: var(--rb-primary); /* حلقه‌ی فوکوس سبز (۵٫۵:۱ روی زمینه)؛ روی سربرگ تیره سفید */
 
     /* --- معنایی --- */
     --rb-success: #2E7A4F;
@@ -30,23 +43,23 @@
 
     /* --- مرکب مجموعه‌ها: یکی برای هر دسته‌بندی سطح اول (بر اساس شناسه، در BookCard)، زیرشاخه‌ها مرکب والد را می‌گیرند.
        نوار و خط چاپی، جلد ساده، و «کاغذ رنگی»: کاغذ صفحه و کارت با ته‌رنگ مرکب مجموعه‌ی خودش (--series) --- */
-    --rb-series-1: #2846A8;
-    --rb-series-2: #1F6F6B;
-    --rb-series-3: #8C6508;
-    --rb-series-4: #9A4A2A;
-    --rb-series-5: #4F6B2E;
-    --rb-series-6: #AD3B6C;
-    --rb-series-7: #5E3F9E;
-    --rb-series-8: #5A6B7B;
+    --rb-series-1: #8B2C3A;
+    --rb-series-2: #018569;
+    --rb-series-3: #936909;
+    --rb-series-4: #0D7DA0;
+    --rb-series-5: #A45951;
+    --rb-series-6: #435C10;
+    --rb-series-7: #924476;
+    --rb-series-8: #2D5EA8;
 
     /* کاغذ رنگی: درصد مرکب مجموعه در کاغذ. متن مرکب و مرکب کم‌رنگ روی هر دو بالای ۵:۱ می‌ماند */
     --rb-paper-tint: 12%;       /* کاغذ صفحه (مخلوط با زمینه) */
     --rb-card-tint: 7%;         /* کاغذ کارت (مخلوط با سفید) */
 
-    /* --- زعفرانی: رنگ دوم و گرم. فقط برچسب قیمت، نشان «تازه» و کاغذ هیرو؛ همیشه با متن مرکبی (۹٫۶:۱).
-       نه اقدام اصلی (مرکب است) و نه هشدار --- */
-    --rb-accent: #F2B33D;
-    --rb-accent-deep: #9C6A10;  /* خط دور برچسب، ۳:۱ روی کاغذ */
+    /* --- گلی: رنگ تأکید روشن. برچسب قیمت، نشان «تازه»، کاغذ هیرو و عطف نشان برند روی میدان شرابی؛ همیشه با متن مرکبی (۱۱٫۲:۱).
+       نه اقدام اصلی (سبز است) و نه هشدار --- */
+    --rb-accent: #F6C2C6;
+    --rb-accent-deep: var(--rb-brand);  /* خط دور برچسب */
     --rb-accent-paper: color-mix(in oklab, var(--rb-accent) 24%, var(--rb-surface));
 
     /* --- حروف نمایشی: لاله‌زار (پوستر و جلد چاپی ایرانی) فقط برای تیترهای بزرگ، نام برند و جلد ساده؛
@@ -71,9 +84,9 @@
     --rb-duration: 200ms;
 
     /* --- بازتعریف بوت‌استرپ 5.3 --- */
-    --bs-primary: var(--rb-ink);
-    --bs-primary-rgb: 26, 25, 24;
-    --bs-primary-text-emphasis: var(--rb-ink);
+    --bs-primary: var(--rb-primary);
+    --bs-primary-rgb: 50, 110, 81;
+    --bs-primary-text-emphasis: var(--rb-primary);
     --bs-primary-bg-subtle: var(--rb-surface-sunken);
     --bs-primary-border-subtle: var(--rb-rule);
 
@@ -115,13 +128,13 @@
     --bs-border-color: var(--rb-rule);
     --bs-heading-color: inherit;
 
-    --bs-link-color: var(--rb-ink);
-    --bs-link-color-rgb: 26, 25, 24;
-    --bs-link-hover-color: var(--rb-focus);
-    --bs-link-hover-color-rgb: 10, 99, 214;
+    --bs-link-color: var(--rb-link);
+    --bs-link-color-rgb: 50, 110, 81;
+    --bs-link-hover-color: var(--rb-primary-hover);
+    --bs-link-hover-color-rgb: 34, 96, 67;
     --bs-link-decoration: underline;
 
-    --bs-focus-ring-color: rgba(10, 99, 214, 0.35);
+    --bs-focus-ring-color: color-mix(in srgb, var(--rb-focus) 35%, transparent);
 
     /* گوشه‌های کوچک و تقریباً چهارگوش، مثل کتاب جیبی؛ شعاع داخلی کارت از --bs-card-inner-border-radius هم‌مرکز می‌ماند */
     --bs-border-radius: 0.25rem;
@@ -142,7 +155,7 @@
     --rb-heading-line-height: 1.35;
     --rb-font-weight-ui: 500;
 
-    accent-color: var(--rb-ink);
+    accent-color: var(--rb-primary);
     caret-color: var(--rb-focus);
 }
 
@@ -150,7 +163,7 @@
    سطوح مرورگر: انتخاب متن، اسکرول‌بار، زیرخط، فوکوس
    ========================================================================== */
 ::selection {
-    background-color: rgba(10, 99, 214, 0.18);
+    background-color: color-mix(in srgb, var(--rb-focus) 18%, transparent);
     color: var(--rb-ink);
 }
 
@@ -231,29 +244,29 @@ input[autocomplete="username"] {
 }
 
 .btn-primary {
-    --bs-btn-color: var(--rb-on-ink);
-    --bs-btn-bg: var(--rb-ink);
-    --bs-btn-border-color: var(--rb-ink);
-    --bs-btn-hover-color: var(--rb-on-ink);
-    --bs-btn-hover-bg: var(--rb-ink-hover);
-    --bs-btn-hover-border-color: var(--rb-ink-hover);
-    --bs-btn-active-color: var(--rb-on-ink);
-    --bs-btn-active-bg: var(--rb-ink);
-    --bs-btn-active-border-color: var(--rb-ink);
+    --bs-btn-color: var(--rb-on-primary);
+    --bs-btn-bg: var(--rb-primary);
+    --bs-btn-border-color: var(--rb-primary);
+    --bs-btn-hover-color: var(--rb-on-primary);
+    --bs-btn-hover-bg: var(--rb-primary-hover);
+    --bs-btn-hover-border-color: var(--rb-primary-hover);
+    --bs-btn-active-color: var(--rb-on-primary);
+    --bs-btn-active-bg: var(--rb-primary);
+    --bs-btn-active-border-color: var(--rb-primary);
     --bs-btn-disabled-color: var(--rb-on-ink);
     --bs-btn-disabled-bg: var(--rb-ink-muted);
     --bs-btn-disabled-border-color: var(--rb-ink-muted);
 }
 
 .btn-outline-primary {
-    --bs-btn-color: var(--rb-ink);
-    --bs-btn-border-color: var(--rb-ink);
-    --bs-btn-hover-color: var(--rb-on-ink);
-    --bs-btn-hover-bg: var(--rb-ink);
-    --bs-btn-hover-border-color: var(--rb-ink);
-    --bs-btn-active-color: var(--rb-on-ink);
-    --bs-btn-active-bg: var(--rb-ink);
-    --bs-btn-active-border-color: var(--rb-ink);
+    --bs-btn-color: var(--rb-primary);
+    --bs-btn-border-color: var(--rb-primary);
+    --bs-btn-hover-color: var(--rb-on-primary);
+    --bs-btn-hover-bg: var(--rb-primary);
+    --bs-btn-hover-border-color: var(--rb-primary);
+    --bs-btn-active-color: var(--rb-on-primary);
+    --bs-btn-active-bg: var(--rb-primary);
+    --bs-btn-active-border-color: var(--rb-primary);
     --bs-btn-disabled-color: var(--rb-ink-muted);
     --bs-btn-disabled-border-color: var(--rb-rule);
 }
@@ -339,7 +352,7 @@ input[autocomplete="username"] {
 
 .form-control:focus,
 .form-select:focus {
-    border-color: var(--rb-ink);
+    border-color: var(--rb-primary);
     box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
 }
 
@@ -352,7 +365,7 @@ input[autocomplete="username"] {
 
 .input-group:focus-within > .form-control,
 .input-group:focus-within > .input-group-text {
-    border-color: var(--rb-ink);
+    border-color: var(--rb-primary);
     box-shadow: none;
 }
 
@@ -361,12 +374,12 @@ textarea.form-control {
 }
 
 .form-check-input:checked {
-    background-color: var(--rb-ink);
-    border-color: var(--rb-ink);
+    background-color: var(--rb-primary);
+    border-color: var(--rb-primary);
 }
 
 .form-check-input:focus {
-    border-color: var(--rb-ink);
+    border-color: var(--rb-primary);
     box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
 }
 
@@ -390,7 +403,7 @@ textarea.form-control {
 .dropdown-menu {
     --bs-dropdown-border-color: var(--rb-rule);
     --bs-dropdown-box-shadow: var(--rb-shadow-overlay);
-    --bs-dropdown-link-active-bg: var(--rb-ink);
+    --bs-dropdown-link-active-bg: var(--rb-primary);
     --bs-dropdown-link-hover-bg: var(--rb-surface-sunken);
     box-shadow: var(--bs-dropdown-box-shadow);
 }

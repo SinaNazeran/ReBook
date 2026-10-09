@@ -50,23 +50,12 @@
 }
 
 /* ==========================================================================
-   ۱. نوار ناوبری شیشه‌ای: صفحه زیرش رد می‌شود، لبه با سایه نه خط مویی
+   ۱. سربرگ: میدان شرابی مات که رو به پایین کمی عمیق‌تر می‌شود (نور از بالا)، سایه‌اش به رنگ خودش.
+   شیشه نیست: میدان روشن‌تر از امروز حاشیه‌ی کنتراست ندارد و شفافیت متن سفید را زیر ۴٫۵ می‌برد
    ========================================================================== */
 .site-navbar {
-    border-bottom-color: transparent;
-    background-color: color-mix(in srgb, var(--rb-surface) 86%, transparent) !important; /* ۸۶٪: متن کم‌رنگ ناوبری روی جلد تیره‌ی زیرش هم ۴٫۵:۱ می‌ماند */
-    -webkit-backdrop-filter: blur(16px) saturate(170%);
-    backdrop-filter: blur(16px) saturate(170%);
-    box-shadow:
-        0 1px 0 color-mix(in srgb, var(--rb-ink) 6%, transparent),
-        0 8px 24px -16px color-mix(in srgb, var(--rb-ink) 30%, transparent);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-    .site-navbar {
-        background-color: var(--rb-surface) !important;
-        backdrop-filter: none;
-    }
+    background-image: linear-gradient(transparent, color-mix(in srgb, #000 var(--g-header), transparent));
+    box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--rb-header-bar) 70%, transparent);
 }
 
 /* ==========================================================================
@@ -99,10 +88,10 @@
 /* ==========================================================================
    ۳. دکمه‌ها مثل کلید چاپ: لبه‌ی زیرین پیداست، با فشار پایین می‌رود و لبه ناپدید می‌شود
    ========================================================================== */
-.btn-primary { --key-edge: #000; }
+.btn-primary { --key-edge: color-mix(in oklab, var(--rb-primary) 55%, #000); }
 .btn-danger { --key-edge: #5E120E; }
 .btn-secondary { --key-edge: var(--rb-field-border); }
-.btn-outline-primary { --key-edge: var(--rb-ink); }
+.btn-outline-primary { --key-edge: var(--rb-primary); }
 .btn-outline-secondary { --key-edge: var(--rb-field-border); }
 .btn-outline-danger { --key-edge: var(--rb-danger); }
 
@@ -228,30 +217,33 @@
     overflow: hidden;
 }
 
-/* عطف‌های صفحه‌ی اصلی روی قفسه می‌ایستند و سایه می‌اندازند */
+/* عطف‌های صفحه‌ی اصلی روی قفسه می‌ایستند و سایه می‌اندازند؛ استوانه‌اند: لبه‌ها در سایه، میانه همان رنگ مجموعه (زیر متن سفید) */
 .spine {
-    box-shadow:
-        inset -3px 0 0 color-mix(in srgb, #000 18%, transparent),
-        inset 3px 0 0 color-mix(in srgb, #fff 14%, transparent),
-        0 10px 18px -10px color-mix(in srgb, var(--rb-ink) 60%, transparent);
+    background-image: linear-gradient(to right, color-mix(in srgb, #000 var(--g-spine), transparent), transparent 30% 70%, color-mix(in srgb, #000 var(--g-spine), transparent));
+    box-shadow: 0 10px 18px -10px color-mix(in srgb, var(--rb-ink) 60%, transparent);
 }
 
 /* ==========================================================================
    ۷. میز رنگی، صفحه برگه‌ای شناور با لبه‌ی برگه‌های زیرین
    ========================================================================== */
+/* میز زیر چراغ: حوضچه‌ی نور بالای وسط و رو به پایین کمی تیره‌تر */
 main {
     overflow: clip; /* میز برگه (سایه‌ی پهن زیر) از main بیرون نزند؛ clip ظرف اسکرول نمی‌سازد، پس sticky کار می‌کند */
-    background-color: color-mix(in oklab, var(--rb-ink) 10%, var(--rb-ground));
+    background-color: var(--rb-ground);
+    background-image:
+        radial-gradient(120vw 85vh at 50% 0, color-mix(in srgb, #FFFFFF var(--g-lamp), transparent), transparent 75%),
+        linear-gradient(color-mix(in srgb, var(--rb-ink) var(--g-desk-top), transparent), color-mix(in srgb, var(--rb-ink) var(--g-desk-bottom), transparent));
 }
 
-/* --series روی خود برگه است و main آن را نمی‌بیند؛ پس میز رنگ مجموعه را برگه با آخرین لایه‌ی سایه‌اش می‌کشد */
+/* --series روی خود برگه است و main آن را نمی‌بیند؛ پس ته‌رنگ مجموعه‌ی میز را برگه با آخرین لایه‌ی سایه‌اش می‌کشد.
+   نیمه‌شفاف است تا نور میز (main) زیرش پیدا بماند */
 main > .series-paper {
     --sheet-paper: color-mix(in oklab, var(--series, var(--rb-ground)) var(--rb-paper-tint), var(--rb-ground));
     width: calc(100% - 1rem);
     margin: 0.5rem auto 1.5rem;
     border-radius: 1rem;
     box-shadow: var(--d-sheet),
-        0 0 0 100vmax color-mix(in oklab, var(--series, var(--rb-ink)) 24%, var(--rb-ground));
+        0 0 0 100vmax color-mix(in srgb, var(--series, var(--rb-ink)) 22%, transparent);
 }
 
 @media (min-width: 768px) {
@@ -512,5 +504,69 @@ main > .series-paper {
     100% {
         transform: none;
         box-shadow: var(--plate-frame), 0 1px 2px color-mix(in srgb, var(--shade) 18%, transparent);
+    }
+}
+
+/* ==========================================================================
+   ۱۱. نور: گرادیان فقط نورِ همان یک چراغ بالا را نشان می‌دهد؛ یک رنگ، روشن بالا (انتخاب صاحب پروژه، «پررنگ»).
+   رنگ توکن روشن‌ترین نقطه‌ی هر گرادیانی است که متن سفید دارد (فقط رو به پایین تیره می‌شود)، پس کنتراست از توکن کمتر نمی‌شود.
+   رنگ‌های معنادار (مجموعه، وضعیت، برچسب قیمت) و جلدهای عکس‌دار تخت می‌مانند. میز، عطف و سربرگ بالاتر در همین فایل‌اند
+   ========================================================================== */
+:root {
+    --g-lamp: 100%;
+    --g-desk-top: 2%;
+    --g-desk-bottom: 22%;
+    --g-hero-edge: 12%;   /* متن کم‌رنگ هیرو در لبه ۴٫۸:۱ */
+    --g-header: 26%;
+    --g-footer: 32%;
+    --g-spine: 40%;
+    --g-cover-spine: 36%;
+    --g-cover-bottom: 28%;
+}
+
+/* هیرو: همان چراغ روی کاغذ گلی؛ وسط بالا روشن، گوشه‌ها کمی در سایه */
+.hero-stage {
+    background-image:
+        radial-gradient(ellipse 75% 65% at 50% 0, color-mix(in srgb, #FFFFFF 55%, transparent), transparent 70%),
+        radial-gradient(ellipse 110% 90% at 50% 35%, transparent 60%, color-mix(in srgb, var(--rb-ink) var(--g-hero-edge), transparent));
+}
+
+/* کلید اصلی: لبه‌ی بالای روشن (نور به آن می‌خورد) و پایین تیره‌تر؛ با فشار، کلید از نور بیرون می‌رود.
+   شدتش ثابت است: پایین تیره‌تر کنتراست دکمه‌های متن‌تیره را پایین می‌آورد */
+.btn-primary {
+    background-image:
+        linear-gradient(color-mix(in srgb, #FFFFFF 24%, transparent), color-mix(in srgb, #FFFFFF 24%, transparent)),
+        linear-gradient(transparent, color-mix(in srgb, #000 12%, transparent));
+    background-size: 100% 1px, 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.btn-primary:active,
+.btn-primary:disabled {
+    background-image: none;
+}
+
+.site-footer {
+    background-image: linear-gradient(transparent, color-mix(in srgb, #000 var(--g-footer), transparent));
+}
+
+/* جلد ساده یک جلد چاپی است: عطف (سمت راست کتاب فارسی) در سایه و پایین جلد کمی دورتر از نور */
+.plain-cover {
+    background-image:
+        linear-gradient(to left, color-mix(in srgb, #000 var(--g-cover-spine), transparent), transparent 9%),
+        linear-gradient(transparent 35%, color-mix(in srgb, #000 var(--g-cover-bottom), transparent));
+}
+
+/* کنتراست بیشتر: همه‌چیز به رنگ تخت توکن برمی‌گردد. «شفافیت کمتر» شامل نمی‌شود: این گرادیان‌ها نورند، نه سطح نیمه‌شفاف
+   (ویندوز با Transparency effects خاموش و Chrome بی‌سر هم reduce گزارش می‌کنند) */
+@media (prefers-contrast: more) {
+    main,
+    .hero-stage,
+    .btn-primary,
+    .site-navbar,
+    .site-footer,
+    .spine,
+    .plain-cover {
+        background-image: none;
     }
 }

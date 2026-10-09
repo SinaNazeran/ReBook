@@ -117,7 +117,7 @@ function Navbar() {
   const showSearch = location.pathname !== '/books';
 
   return (
-    <BSNavbar bg="white" expand="lg" expanded={menuOpen} onToggle={setMenuOpen} className="site-navbar sticky-top py-2 navbar-light" aria-label="منوی اصلی">
+    <BSNavbar expand="lg" expanded={menuOpen} onToggle={setMenuOpen} className="site-navbar sticky-top py-2" aria-label="منوی اصلی">
       <Container>
         <BSNavbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2" translate="no">
           <BrandMark />

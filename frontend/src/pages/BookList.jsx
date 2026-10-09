@@ -286,7 +286,7 @@ function BookList() {
 
   // اگر دسته‌ها نیامده باشند یا slug ناشناخته باشد، عنوان نباید «همه» بگوید
   const title = activeCategory?.name ?? (activeSlug ? 'کتاب‌ها' : 'همه‌ی کتاب‌ها');
-  const titleInk = activeRoot ? seriesInk(activeRoot.id) : 'var(--rb-ink)';
+  const titleInk = activeRoot ? seriesInk(activeRoot.id) : 'var(--rb-brand)';
 
   return (
     <div className="series-paper" style={{ '--series': activeRoot ? seriesInk(activeRoot.id) : undefined }}>
@@ -300,7 +300,7 @@ function BookList() {
                   to={categoryHref('')}
                   className="series-tab"
                   aria-current={!activeSlug ? 'page' : undefined}
-                  style={{ '--series-ink': 'var(--rb-ink)' }}
+                  style={{ '--series-ink': 'var(--rb-brand)' }}
                 >
                   همه
                 </Link>
