@@ -1,6 +1,6 @@
 # Cart, About and Contact: design
 
-Date: 2026-10-10 · Branch: `redesign` · Status: approved in conversation, awaiting spec review
+Date: 2026-10-10 · Branch: `redesign` · Status: implemented (see plan docs/superpowers/plans/2026-10-10-cart-about-contact.md); About dressing awaits the owner's pick
 
 ## Goal
 
