@@ -4,13 +4,18 @@ import string
 from django.db import IntegrityError, models
 from django.db import transaction as db_transaction
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 from rest_framework import generics, permissions, serializers, status
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from books.models import Book
+from books.views import visible_books
 from notifications.models import Notification
 
+from . import cart
 from .models import Order, Transaction
 from .serializers import OrderSerializer
 
@@ -185,3 +190,51 @@ class OrderCancelView(APIView):
         )
 
         return Response({"message": "سفارش لغو شد."})
+
+
+# DRF برای مهمان CSRF را بررسی نمی‌کند و سبد مهمان در session است؛ مثل LoginView صریح محافظت می‌شود
+@method_decorator(csrf_protect, name="dispatch")
+class CartView(APIView):
+    """سبد خرید؛ برای مهمان هم کار می‌کند"""
+
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "cart"
+
+    def get(self, request):
+        return Response(cart.cart_payload(request))
+
+    def post(self, request):
+        try:
+            book = visible_books(request.user).get(pk=request.data.get("book"))
+        except (Book.DoesNotExist, ValueError, TypeError):
+            return Response({"detail": "کتاب یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+
+        ids = cart.get_ids(request)
+        if book.pk not in ids:
+            reason = cart.unavailable_reason(book, request.user, cart.pending_buyers([book.pk]))
+            if reason:
+                return Response(
+                    {"detail": f"این کتاب را نمی‌شود به سبد اضافه کرد: {reason}."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if len(ids) >= cart.MAX_ITEMS:
+                return Response(
+                    {"detail": "سبد پر است؛ اول چند کتاب را بخر یا از سبد بردار."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            cart.add(request, book)
+        return Response(cart.cart_payload(request))
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class CartItemView(APIView):
+    """برداشتن یک نسخه از سبد"""
+
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "cart"
+
+    def delete(self, request, book_id):
+        cart.remove(request, [book_id])
+        return Response(cart.cart_payload(request))

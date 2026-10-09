@@ -101,3 +101,29 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"تراکنش #{self.pk} - {self.get_status_display()}"
+
+
+class CartItem(models.Model):
+    """یک نسخه در سبد خرید کاربر واردشده؛ سبد مهمان در session است (orders/cart.py)"""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="cart_items",
+        verbose_name="کاربر",
+    )
+
+    book = models.ForeignKey(
+        Book, on_delete=models.CASCADE, related_name="cart_items", verbose_name="کتاب"
+    )
+
+    added_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ افزودن")
+
+    class Meta:
+        verbose_name = "قلم سبد خرید"
+        verbose_name_plural = "اقلام سبد خرید"
+        ordering = ["-added_at"]
+        unique_together = ("user", "book")
+
+    def __str__(self):
+        return f"{self.user.username} - {self.book.title}"

@@ -1,11 +1,13 @@
+from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import User
 from books.models import Book
 from notifications.models import Notification
 
-from .models import Order, Transaction
+from . import cart
+from .models import CartItem, Order, Transaction
 
 
 class FakePaymentTests(APITestCase):
@@ -176,3 +178,91 @@ class PersonalOrderListsTests(APITestCase):
         self.client.force_authenticate(seller)
         sale = self.client.get("/api/orders/my-sales/").data[0]
         self.assertEqual(sale["buyer_detail"], {"id": buyer.pk, "username": "buyer"})
+
+
+class CartTests(APITestCase):
+    def setUp(self):
+        cache.clear()  # شمارنده‌ی throttle در LocMem میان تست‌ها می‌ماند
+        self.seller = User.objects.create_user(username="seller", password="pass")
+        self.buyer = User.objects.create_user(username="buyer", password="pass")
+
+    def book(self, status="approved", price=100, seller=None):
+        return Book.objects.create(
+            title="b", author="a", price=price, seller=seller or self.seller, status=status
+        )
+
+    def add(self, book_or_id):
+        value = getattr(book_or_id, "pk", book_or_id)
+        return self.client.post("/api/orders/cart/", {"book": value})
+
+    def test_guest_adds_and_removes(self):
+        book = self.book()
+        response = self.add(book)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual((response.data["count"], response.data["total"]), (1, 100))
+        self.assertEqual(self.client.get("/api/orders/cart/").data["count"], 1)
+        self.assertEqual(self.client.delete(f"/api/orders/cart/{book.pk}/").data["count"], 0)
+
+    def test_guest_cart_belongs_to_its_session(self):
+        self.add(self.book())
+        self.assertEqual(APIClient().get("/api/orders/cart/").data["count"], 0)
+
+    def test_adding_twice_keeps_one(self):
+        book = self.book()
+        self.client.force_authenticate(self.buyer)
+        self.add(book)
+        self.assertEqual(self.add(book).data["count"], 1)
+        self.assertEqual(CartItem.objects.count(), 1)
+
+    def test_cannot_add_own_sold_or_reserved_book(self):
+        reserved = self.book()
+        other = User.objects.create_user(username="other", password="pass")
+        Order.objects.create(buyer=other, book=reserved, total_price=100, shipping_address="x")
+        self.client.force_authenticate(self.buyer)
+        for book in (self.book(seller=self.buyer), self.book(status="sold"), reserved):
+            with self.subTest(book=book.pk):
+                response = self.add(book)
+                self.assertEqual(response.status_code, 400)
+                self.assertIn("detail", response.data)
+        self.assertFalse(CartItem.objects.exists())
+
+    def test_unreviewed_or_unknown_book_is_404(self):
+        self.client.force_authenticate(self.buyer)
+        for value in (self.book(status="pending").pk, 99999, "abc"):
+            with self.subTest(value=value):
+                self.assertEqual(self.add(value).status_code, 404)
+
+    def test_book_sold_after_adding_shows_reason_and_leaves_total(self):
+        sold, kept = self.book(), self.book(price=250)
+        self.client.force_authenticate(self.buyer)
+        self.add(sold)
+        self.add(kept)
+        Book.objects.filter(pk=sold.pk).update(status="sold")
+        data = self.client.get("/api/orders/cart/").data
+        item = next(i for i in data["items"] if i["book"]["id"] == sold.pk)
+        self.assertEqual((item["available"], item["reason"]), (False, "فروخته شد"))
+        self.assertEqual((data["count"], data["total"]), (2, 250))
+
+    def test_book_back_in_review_is_hidden_but_kept(self):
+        book = self.book()
+        self.client.force_authenticate(self.buyer)
+        self.add(book)
+        Book.objects.filter(pk=book.pk).update(status="pending", title="unreviewed")
+        self.assertEqual(self.client.get("/api/orders/cart/").data["count"], 0)
+        Book.objects.filter(pk=book.pk).update(status="approved")
+        self.assertEqual(self.client.get("/api/orders/cart/").data["count"], 1)
+
+    def test_deleted_book_drops_out_of_guest_cart(self):
+        book = self.book()
+        self.add(book)
+        book.delete()
+        response = self.client.get("/api/orders/cart/")
+        self.assertEqual((response.status_code, response.data["count"]), (200, 0))
+
+    def test_cart_is_capped(self):
+        self.client.force_authenticate(self.buyer)
+        CartItem.objects.bulk_create(
+            CartItem(user=self.buyer, book=self.book()) for _ in range(cart.MAX_ITEMS)
+        )
+        self.assertEqual(self.add(self.book()).status_code, 400)
+
