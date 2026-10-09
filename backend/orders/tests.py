@@ -266,3 +266,54 @@ class CartTests(APITestCase):
         )
         self.assertEqual(self.add(self.book()).status_code, 400)
 
+
+
+class CartMergeTests(APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.seller = User.objects.create_user(username="seller", password="pass")
+        self.buyer = User.objects.create_user(username="buyer", password="Kt7-reader-pass")
+
+    def book(self, seller=None):
+        return Book.objects.create(
+            title="b", author="a", price=100, seller=seller or self.seller, status="approved"
+        )
+
+    def account_cart(self, user):
+        return set(CartItem.objects.filter(user=user).values_list("book_id", flat=True))
+
+    def test_login_moves_guest_cart_into_account(self):
+        already, new, own = self.book(), self.book(), self.book(seller=self.buyer)
+        CartItem.objects.create(user=self.buyer, book=already)
+        for book in (already, new, own):  # مهمان نمی‌داند کدام آگهی مال خودش است
+            self.client.post("/api/orders/cart/", {"book": book.pk})
+
+        response = self.client.post(
+            "/api/accounts/login/", {"username": "buyer", "password": "Kt7-reader-pass"}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.account_cart(self.buyer), {already.pk, new.pk})
+        self.assertNotIn(cart.SESSION_KEY, self.client.session)
+
+    def test_register_moves_guest_cart_into_new_account(self):
+        book = self.book()
+        self.client.post("/api/orders/cart/", {"book": book.pk})
+        response = self.client.post(
+            "/api/accounts/register/",
+            {
+                "username": "mina",
+                "email": "mina@example.com",
+                "password": "Kt7-reader-pass",
+                "password_confirm": "Kt7-reader-pass",
+            },
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(self.account_cart(User.objects.get(username="mina")), {book.pk})
+
+    def test_logout_empties_visible_cart_but_keeps_account_cart(self):
+        self.client.post("/api/accounts/login/", {"username": "buyer", "password": "Kt7-reader-pass"})
+        self.client.post("/api/orders/cart/", {"book": self.book().pk})
+        self.client.post("/api/accounts/logout/")
+        self.assertEqual(self.client.get("/api/orders/cart/").data["count"], 0)
+        self.assertEqual(CartItem.objects.filter(user=self.buyer).count(), 1)

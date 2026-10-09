@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
+from orders.cart import merge_session_cart
+
 from .models import User
 from .serializers import (
     UserListSerializer,
@@ -34,6 +36,8 @@ class RegisterView(generics.CreateAPIView):
 
         # لاگین خودکار کاربر پس از ثبت‌نام (ایجاد session)
         login(request, user)
+        # سبد مهمان (در همین session) به حساب منتقل می‌شود
+        merge_session_cart(request)
 
         # context لازم است تا آدرس avatar کامل (با دامنه بک‌اند) برگردد
         profile_serializer = UserProfileSerializer(user, context={"request": request})
@@ -69,6 +73,8 @@ class LoginView(APIView):
 
         if user is not None:
             login(request, user)
+            # سبد مهمان (در همین session) به حساب منتقل می‌شود
+            merge_session_cart(request)
             serializer = UserProfileSerializer(user, context={"request": request})
             return Response({"message": "ورود موفقیت‌آمیز", "user": serializer.data})
         else:
