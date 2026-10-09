@@ -9,7 +9,7 @@ function getCurrentPersianYear() {
   );
 }
 
-// ایمیل، تلفن و شبکه‌های اجتماعی قبلی جانگهدار بودند (PRODUCT.md)؛ تنها کانال واقعی تماس، تیکت پشتیبانی است
+// ایمیل، تلفن و شبکه‌های اجتماعی قبلی جانگهدار بودند (PRODUCT.md)؛ تنها کانال واقعی تماس، فرم «تماس با ما» و تیکت پشتیبانی است
 function Footer() {
   return (
     <footer className="site-footer mt-5">
@@ -38,6 +38,12 @@ function Footer() {
             </li>
             <li>
               <Link to="/support">پشتیبانی</Link>
+            </li>
+            <li>
+              <Link to="/about">درباره‌ی ما</Link>
+            </li>
+            <li>
+              <Link to="/contact">تماس با ما</Link>
             </li>
           </ul>
         </nav>
