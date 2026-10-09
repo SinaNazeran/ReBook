@@ -317,3 +317,80 @@ class CartMergeTests(APITestCase):
         self.client.post("/api/accounts/logout/")
         self.assertEqual(self.client.get("/api/orders/cart/").data["count"], 0)
         self.assertEqual(CartItem.objects.filter(user=self.buyer).count(), 1)
+
+
+class CheckoutTests(APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.seller_a = User.objects.create_user(username="seller_a", password="pass")
+        self.seller_b = User.objects.create_user(username="seller_b", password="pass")
+        self.buyer = User.objects.create_user(username="buyer", password="pass")
+        self.a = Book.objects.create(title="a", author="x", price=100, seller=self.seller_a, status="approved")
+        self.b = Book.objects.create(title="b", author="x", price=250, seller=self.seller_b, status="approved")
+        for book in (self.a, self.b):
+            CartItem.objects.create(user=self.buyer, book=book)
+        self.client.force_authenticate(self.buyer)
+
+    def checkout(self, books=None, total=350, address="تهران، خیابان انقلاب"):
+        return self.client.post(
+            "/api/orders/checkout/",
+            {
+                "books": [self.a.pk, self.b.pk] if books is None else books,
+                "total": total,
+                "shipping_address": address,
+            },
+            format="json",
+        )
+
+    def test_checkout_sells_every_book_with_one_code(self):
+        response = self.checkout()
+        self.assertEqual(response.status_code, 201)
+        orders = Order.objects.filter(buyer=self.buyer)
+        self.assertEqual(sorted(orders.values_list("status", flat=True)), ["paid", "paid"])
+        codes = set(
+            Transaction.objects.filter(order__in=orders, status="success").values_list("reference_code", flat=True)
+        )
+        self.assertEqual(codes, {response.data["reference_code"]})
+        self.assertEqual(set(Book.objects.values_list("status", flat=True)), {"sold"})
+        self.assertFalse(CartItem.objects.filter(user=self.buyer).exists())
+        for user in (self.seller_a, self.seller_b, self.buyer):
+            with self.subTest(user=user.username):
+                self.assertTrue(Notification.objects.filter(user=user, notification_type="payment").exists())
+
+    def test_stale_book_rejects_the_whole_checkout(self):
+        Book.objects.filter(pk=self.a.pk).update(status="sold")
+        response = self.checkout()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("detail", response.data)
+        self.assertFalse(Order.objects.exists())
+        self.b.refresh_from_db()
+        self.assertEqual(self.b.status, "approved")
+
+    def test_second_submit_creates_nothing(self):
+        self.assertEqual(self.checkout().status_code, 201)
+        self.assertEqual(self.checkout().status_code, 400)
+        self.assertEqual(Order.objects.count(), 2)
+
+    def test_changed_price_is_rejected(self):
+        Book.objects.filter(pk=self.b.pk).update(price=300)
+        response = self.checkout()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Order.objects.exists())
+
+    def test_book_outside_the_cart_is_rejected(self):
+        other = Book.objects.create(title="c", author="x", price=50, seller=self.seller_a, status="approved")
+        self.assertEqual(self.checkout(books=[self.a.pk, other.pk], total=150).status_code, 400)
+        self.assertFalse(Order.objects.exists())
+
+    def test_blank_address_or_empty_list_is_400(self):
+        self.assertEqual(self.checkout(address="   ").status_code, 400)
+        self.assertEqual(self.checkout(books=[], total=0).status_code, 400)
+        self.assertFalse(Order.objects.exists())
+
+    def test_duplicate_ids_buy_once(self):
+        self.assertEqual(self.checkout(books=[self.a.pk, self.a.pk, self.b.pk]).status_code, 201)
+        self.assertEqual(Order.objects.count(), 2)
+
+    def test_guest_gets_401(self):
+        self.client.force_authenticate(None)
+        self.assertEqual(self.checkout().status_code, 401)
