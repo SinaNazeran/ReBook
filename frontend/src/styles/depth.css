@@ -231,6 +231,50 @@
     box-shadow: 0 10px 18px -10px color-mix(in srgb, var(--rb-ink) 60%, transparent);
 }
 
+/* بیرون کشیدن کتاب: با هاور یا فوکوس کیبورد کتاب ۱۴px بالا و کمی به سمت بیننده (۱٫۰۴) می‌آید، روی همسایه‌ها می‌نشیند
+   و سایه‌اش بلندتر و نرم‌تر می‌شود (از قفسه جدا شده). بیرون آمدن ۲۸۰ms، برگشتن سریع‌تر ۲۰۰ms.
+   حرکت کم: بی‌جابه‌جایی، فقط کمی روشن‌تر */
+.spine:hover,
+.spine:focus-visible {
+    z-index: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .spine {
+        transition: transform 200ms var(--rb-ease-out), box-shadow 200ms var(--rb-ease-out);
+    }
+
+    .spine:focus-visible {
+        transform: translateY(-14px) scale(1.04);
+        box-shadow:
+            0 6px 10px -6px color-mix(in srgb, var(--rb-ink) 35%, transparent),
+            0 28px 28px -16px color-mix(in srgb, var(--rb-ink) 70%, transparent);
+        transition-duration: 280ms;
+    }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .spine:hover {
+        transform: translateY(-14px) scale(1.04);
+        box-shadow:
+            0 6px 10px -6px color-mix(in srgb, var(--rb-ink) 35%, transparent),
+            0 28px 28px -16px color-mix(in srgb, var(--rb-ink) 70%, transparent);
+        transition-duration: 280ms;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spine:focus-visible {
+        filter: brightness(1.15);
+    }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: reduce) {
+    .spine:hover {
+        filter: brightness(1.15);
+    }
+}
+
 /* ==========================================================================
    ۷. میز رنگی، صفحه برگه‌ای شناور با لبه‌ی برگه‌های زیرین
    ========================================================================== */

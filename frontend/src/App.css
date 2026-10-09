@@ -891,12 +891,6 @@
   color: var(--rb-accent-deep);
 }
 
-@media (hover: hover) {
-  .spine:hover {
-    transform: translateY(-10px);
-  }
-}
-
 .home-latest {
   padding-block: 1rem 3.5rem;
 }
@@ -1049,10 +1043,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .spine {
-    transition: transform var(--rb-duration) var(--rb-ease-out);
-  }
-
   .book-card-skeleton > span {
     animation: skeleton-pulse 1.4s ease-in-out infinite alternate;
   }
