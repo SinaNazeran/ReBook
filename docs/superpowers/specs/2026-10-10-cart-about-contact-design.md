@@ -35,7 +35,7 @@ Facts the design depends on: every listing is one physical copy (no quantity), a
 Plain functions; each one picks `CartItem` when `request.user.is_authenticated`, the session otherwise:
 
 - `get_ids(request)` → list of book ids. For guests it prunes ids whose book no longer exists.
-- `add(request, book)`, `remove(request, book_id)`, `clear(request, ids)`.
+- `add(request, book)`, `remove(request, book_ids)` (a list; also used to clear the bought ids after checkout).
 - `unavailable_reason(book, user)` → `None` or a Persian reason (rules below).
 - `merge_session_cart(request)`: called right after `login()` in `LoginView` and `RegisterView`. It takes the session ids that still exist and aren't the user's own listings, `get_or_create`s a `CartItem` for each (no duplicates), and deletes the session key.
 
@@ -67,7 +67,7 @@ Copies that aren't in `visible_books(user)` (`pending` or `rejected` after an ed
 | `GET cart/` | AllowAny | `{items: [{book, available, reason}], count, total}`. `book` uses `BookListSerializer` (same shape as a card). `count` = visible items; `total` = sum of available items' prices. |
 | `POST cart/` `{book}` | AllowAny, `csrf_protect`, throttle `cart` | Adds a buyable copy and returns the cart. Adding a copy that's already there changes nothing (200). Cap: 50 items → 400. Unknown or invisible id → 404. |
 | `DELETE cart/<int:book_id>/` | AllowAny, `csrf_protect`, throttle `cart` | Removes it (no-op if absent) and returns the cart. |
-| `POST checkout/` `{books: [ids], shipping_address}` | IsAuthenticated | See below. |
+| `POST checkout/` `{books: [ids], total, shipping_address}` | IsAuthenticated | See below. `total` is the sum the user saw; a mismatch is a 400 («قیمت سبد عوض شده است»). |
 
 `DEFAULT_THROTTLE_RATES` gains `"cart": "60/min"`. `GET` and the writes share one `CartView`, so the throttle counts all of them. That's fine, because the frontend only reads the cart once per auth change. Errors use `{"detail": ...}` or per-field lists, never `{"error": ...}`.
 
@@ -162,7 +162,7 @@ Orders are created as `paid` directly because the payment is instant. Selling a 
    - Links to «معاملات من» and «مرور کتاب‌ها».
    - It reuses the existing `.bookplate` / `.receipt-code` styles. The receipt is wrapped in `.purchase-receipt`, because the stamp motion in `depth.css` and the code styles in `App.css` are scoped to that class.
 
-**States:** skeleton ledger rows while loading, an inline error with «تلاش دوباره», and an empty cart with `EmptyShelf` + «مرور کتاب‌ها».
+**States:** `<Loading fullPage />` while loading (like the other ledger pages), an inline error with «تلاش دوباره», and an empty cart with `EmptyShelf` + «مرور کتاب‌ها».
 
 ## 3. About and Contact
 
@@ -172,7 +172,7 @@ Orders are created as `paid` directly because the payment is instant. Selling a 
 
 1. **Why ReBook:** a second life for books (the footer line «جایی برای دادن زندگی دوباره به کتاب‌هایتان»).
 2. **Buying:** find a copy → cart → simulated payment → each seller ships their own book → track it in «معاملات من».
-3. **Selling:** `components/SellSteps.jsx`, extracted from Home's three-step rail (ثبت آگهی → بررسی → فروش) and used by both pages. This is where the review step is explained.
+3. **Selling:** `components/StepRail.jsx` + `utils/steps.js` (`SELL_STEPS`, `BUY_STEPS`), extracted from Home's three-step rail (ثبت آگهی → بررسی → فروش) and used by Home and About (the buying steps use the same rail). This is where the review step is explained.
 4. **Condition grades:** the five grades with `ConditionMeasure` + `CONDITION_NOTES` (shared with the book page and CreateBook).
 5. **Honesty:** sellers' contact details are never shown (only the username), and payment is simulated for now.
 6. **Closing:** «مرور کتاب‌ها» / «فروش کتاب».
