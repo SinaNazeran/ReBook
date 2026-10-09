@@ -1,4 +1,5 @@
 import io
+import tempfile
 
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -50,6 +51,20 @@ class AccountTests(APITestCase):
         response = self.client.patch("/api/accounts/profile/", {"avatar": png_of_size(3.1)}, format="multipart")
         self.assertEqual(response.status_code, 400)
         self.assertIn("avatar", response.data)
+
+    def test_avatar_is_shrunk_to_webp(self):
+        user = User.objects.create_user(username="u", password="x")
+        self.client.force_authenticate(user)
+        buf = io.BytesIO()
+        Image.new("RGB", (1600, 1200)).save(buf, "JPEG")
+        avatar = SimpleUploadedFile("me.jpg", buf.getvalue(), "image/jpeg")
+        with tempfile.TemporaryDirectory() as media, self.settings(MEDIA_ROOT=media):
+            response = self.client.patch("/api/accounts/profile/", {"avatar": avatar}, format="multipart")
+            self.assertEqual(response.status_code, 200)
+            user.refresh_from_db()
+            self.assertTrue(user.avatar.name.endswith(".webp"))
+            with Image.open(user.avatar.path) as img:
+                self.assertEqual(img.size, (400, 300))
 
     def test_unauthenticated_gets_401_but_forbidden_stays_403(self):
         # api.js فقط با 401 کاربر را از حالت ورود خارج می‌کند

@@ -236,6 +236,20 @@ class BookUpdateDeleteTests(APITestCase):
             detail = self.client.get(f"/api/books/{book.pk}/").data
             self.assertEqual((detail["cover_width"], detail["cover_height"]), (1000, 1500))
 
+    def test_cover_saved_outside_the_api_is_shrunk_once(self):
+        # پنل مدیریت هم از save() مدل رد می‌شود
+        buf = io.BytesIO()
+        Image.new("RGB", (1200, 1200)).save(buf, "PNG")
+        cover = SimpleUploadedFile("admin.png", buf.getvalue(), "image/png")
+        with tempfile.TemporaryDirectory() as media, self.settings(MEDIA_ROOT=media):
+            book = Book.objects.create(title="b", author="a", price=100, seller=self.seller, cover_image=cover)
+            self.assertTrue(book.cover_image.name.endswith(".webp"))
+            self.assertEqual((book.cover_width, book.cover_height), (1000, 1000))
+            name = book.cover_image.name
+            book.status = "approved"
+            book.save()
+            self.assertEqual(book.cover_image.name, name)
+
     def test_sold_book_cannot_be_edited_or_deleted(self):
         book = self.book("sold")
         buyer = User.objects.create_user(username="buyer", password="pass")

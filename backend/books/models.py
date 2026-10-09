@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from config.images import shrink_new_upload
+
 
 class Category(models.Model):
     """دسته‌بندی کتاب‌ها"""
@@ -135,6 +137,11 @@ class Book(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.author}"
+
+    def save(self, *args, **kwargs):
+        # بزرگ‌ترین جلدی که لازم است: ستون جلد در صفحه‌ی کتاب روی نمایشگر 2x
+        shrink_new_upload(self.cover_image, (1000, 1500))
+        super().save(*args, **kwargs)
 
 
 class Wishlist(models.Model):
