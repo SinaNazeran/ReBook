@@ -12,6 +12,13 @@ export function CartProvider({ children }) {
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [reloadKey, setReloadKey] = useState(0);
   const userId = user?.id;
+  // کاربر عوض شد (خروج، پایان session، ورود دیگری): سبد قبلی همین حالا پاک می‌شود، نه وقتی سبد تازه رسید
+  const [cartOwner, setCartOwner] = useState(userId);
+  if (cartOwner !== userId) {
+    setCartOwner(userId);
+    setCart(EMPTY_CART);
+    setStatus("loading");
+  }
 
   // پس از روشن شدن وضعیت ورود، و هر بار که کاربر عوض شد: ورود (سرور سبد مهمان را ادغام کرده)، خروج، پایان session
   useEffect(() => {

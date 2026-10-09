@@ -32,7 +32,8 @@ function BookDetail() {
   const [loadError, setLoadError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [wishlisted, setWishlisted] = useState(false);
-  const [showPurchase, setShowPurchase] = useState(false);
+  // شناسه‌ی سفارشی که مودال پرداختش باز است؛ پس از پرداخت open_order تهی می‌شود ولی رسید باید بماند
+  const [payingOrderId, setPayingOrderId] = useState(null);
   const [boughtByMe, setBoughtByMe] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
@@ -255,7 +256,7 @@ function BookDetail() {
       </Button>
     )
   ) : canPay ? (
-    <Button variant="primary" onClick={() => setShowPurchase(true)}>
+    <Button variant="primary" onClick={() => setPayingOrderId(openOrder.id)}>
       پرداخت آزمایشی
     </Button>
   ) : null;
@@ -457,12 +458,12 @@ function BookDetail() {
           </div>
         )}
 
-        {showPurchase && (
+        {payingOrderId !== null && (
           <PurchaseModal
             show
-            onHide={() => setShowPurchase(false)}
+            onHide={() => setPayingOrderId(null)}
             book={book}
-            existingOrderId={openOrder.id}
+            existingOrderId={payingOrderId}
             onPaid={handlePaid}
             onStale={refreshBook}
           />

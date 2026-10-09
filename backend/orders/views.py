@@ -269,6 +269,14 @@ class CheckoutView(APIView):
             )
 
         in_cart = set(cart.get_ids(request))
+        # درخواست تکراری پس از پاسخی که نرسید: همه‌ی این کتاب‌ها را خود همین خریدار پرداخت کرده و از سبد رفته‌اند
+        if not in_cart.intersection(ids) and Order.objects.filter(
+            buyer=user, book_id__in=ids, status=Order.StatusChoices.PAID
+        ).count() == len(ids):
+            return Response(
+                {"detail": "این خرید پیش‌تر انجام شده است؛ سفارش‌ها و کد پیگیری در «معاملات من» هستند."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         books = {book.pk: book for book in visible_books(user).filter(pk__in=ids).select_related("seller")}
         pending = cart.pending_buyers(ids)
         for book_id in ids:

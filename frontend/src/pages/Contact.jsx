@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import Form from '../components/Form';
@@ -35,6 +35,11 @@ function Contact() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(null); // null | 'ticket' | 'message'
+  // فرم جایش را به پیام «ثبت شد» می‌دهد؛ فوکوس به سرتیتر همان پیام می‌رود تا گم نشود
+  const sentHeadingRef = useRef(null);
+  useEffect(() => {
+    if (sent) sentHeadingRef.current?.focus();
+  }, [sent]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -119,7 +124,9 @@ function Contact() {
           <Col lg={7}>
             {sent ? (
               <div className="support-form" role="status">
-                <h2 className="support-heading">پیامت ثبت شد</h2>
+                <h2 className="support-heading" tabIndex={-1} ref={sentHeadingRef}>
+                  پیامت ثبت شد
+                </h2>
                 {sent === 'ticket' ? (
                   <p>
                     پاسخ تیم ری‌بوک در <Link to="/support">پشتیبانی</Link> می‌آید.

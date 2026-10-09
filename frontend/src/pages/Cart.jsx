@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -70,6 +70,16 @@ function Cart() {
   const [removingId, setRemovingId] = useState(null);
   // رسید از کتاب‌هایی ساخته می‌شود که پیش از تازه شدن سبد خریده شدند
   const [receipt, setReceipt] = useState(null);
+  // مرحله که عوض می‌شود فرم از صفحه می‌رود؛ فوکوس به سرتیتر رسید یا پیام خطا می‌رود تا گم نشود
+  const receiptHeadingRef = useRef(null);
+  const errorRef = useRef(null);
+  useEffect(() => {
+    if (receipt) receiptHeadingRef.current?.focus();
+  }, [receipt]);
+  // پس از 401 سبد دوباره بارگذاری می‌شود و پیام خطا تازه برمی‌گردد؛ پس با آماده شدن سبد هم دوباره فوکوس می‌گیرد
+  useEffect(() => {
+    if (error && status === 'ready') errorRef.current?.focus();
+  }, [error, status]);
 
   const available = items.filter((item) => item.available);
   const unavailable = items.filter((item) => !item.available);
@@ -136,7 +146,7 @@ function Cart() {
         <Container className="ledger-page">
           <title>رسید خرید | ری‌بوک</title>
           <section className="purchase-receipt cart-receipt" aria-labelledby="receipt-title">
-            <h1 id="receipt-title" className="ledger-title">
+            <h1 id="receipt-title" className="ledger-title" tabIndex={-1} ref={receiptHeadingRef}>
               پرداخت آزمایشی انجام شد
             </h1>
             <Receipt
@@ -302,7 +312,7 @@ function Cart() {
           <h1 className="ledger-title">{step === 'checkout' ? 'پرداخت' : 'سبد خرید'}</h1>
         </header>
         {error && (
-          <Alert variant="danger" role="alert">
+          <Alert variant="danger" role="alert" tabIndex={-1} ref={errorRef}>
             {error}
           </Alert>
         )}

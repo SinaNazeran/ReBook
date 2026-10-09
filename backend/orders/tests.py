@@ -394,3 +394,12 @@ class CheckoutTests(APITestCase):
     def test_guest_gets_401(self):
         self.client.force_authenticate(None)
         self.assertEqual(self.checkout().status_code, 401)
+
+
+    def test_retry_after_success_says_already_bought(self):
+        # پاسخ اولی گم شده و خریدار دوباره می‌زند: باید بداند خرید انجام شده، نه اینکه «سبدت عوض شده»
+        self.assertEqual(self.checkout().status_code, 201)
+        response = self.checkout()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("معاملات من", response.data["detail"])
+        self.assertEqual(Order.objects.count(), 2)
