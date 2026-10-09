@@ -69,11 +69,13 @@ Copies that aren't in `visible_books(user)` (`pending` or `rejected` after an ed
 | `DELETE cart/<int:book_id>/` | AllowAny, `csrf_protect`, throttle `cart` | Removes it (no-op if absent) and returns the cart. |
 | `POST checkout/` `{books: [ids], shipping_address}` | IsAuthenticated | See below. |
 
-`DEFAULT_THROTTLE_RATES` gains `"cart": "60/min"`. Errors use `{"detail": ...}` or per-field lists, never `{"error": ...}`.
+`DEFAULT_THROTTLE_RATES` gains `"cart": "60/min"`. `GET` and the writes share one `CartView`, so the throttle counts all of them. That's fine, because the frontend only reads the cart once per auth change. Errors use `{"detail": ...}` or per-field lists, never `{"error": ...}`.
+
+Building the response takes a fixed number of queries, not one per book: `select_related("seller", "category")` on the books, plus one query for every pending order on them, which feeds `unavailable_reason`. `BookListSerializer` gets `context={"request": request}` so cover URLs are absolute.
 
 ### Checkout
 
-`books` is the list of ids the user confirmed on the cart page. Validation runs **before** writing:
+`books` is the list of ids the user confirmed on the cart page; duplicate ids are ignored. Validation runs **before** writing:
 - `books` isn't empty
 - `shipping_address` isn't blank
 - every id is in the user's cart and `unavailable_reason` is `None`
@@ -158,7 +160,7 @@ Orders are created as `paid` directly because the payment is instant. Selling a 
    - The bookplate lists every title. It uses the book's series ink for one book and `--rb-brand` for several.
    - One tracking code (`.latin-id`, `dir="ltr"`) with a copy button.
    - Links to «معاملات من» and «مرور کتاب‌ها».
-   - It reuses the existing `.bookplate` / `.receipt-code` styles and motion.
+   - It reuses the existing `.bookplate` / `.receipt-code` styles. The receipt is wrapped in `.purchase-receipt`, because the stamp motion in `depth.css` and the code styles in `App.css` are scoped to that class.
 
 **States:** skeleton ledger rows while loading, an inline error with «تلاش دوباره», and an empty cart with `EmptyShelf` + «مرور کتاب‌ها».
 
@@ -213,6 +215,17 @@ The footer gets «درباره‌ی ما» (`/about`) and «تماس با ما»
 - Screenshots at 1440 and 375 (plus 320 for the navbar) with `.claude/tools/shot.mjs` / `shot-auth.mjs`. Add a cart fixture first, because a real 401 on `orders/cart/` logs the fake user out.
 - Keyboard: `kbd.mjs` on `/cart` and `/contact` (focus after add, checkout errors, form errors).
 - End to end: an extended `/smoke`. A guest adds two books from two sellers → logs in (the cart merges) → checks out → one tracking code → both sales listed for the sellers. Run through Playwright MCP if it's connected, otherwise CDP.
+
+## Documentation to update
+
+- `CLAUDE.md`:
+  - Architecture → book and order lifecycle: cart, checkout, and `PurchaseModal` now only paying existing pending orders.
+  - The `cart` and `contact` throttle scopes (tests `cache.clear()`).
+  - `ContactMessage` and `cartAPI` in the list of API objects.
+- `PRODUCT.md`: the buyer flow goes through the cart; Contact is a real channel (admin inbox and support tickets).
+- `.claude/skills/smoke/SKILL.md`: the purchase step goes through «افزودن به سبد» → `/cart` → checkout, because the book page no longer has «خرید».
+- `DESIGN.md`: Cart Ledger, Checkout, Contact form, About sections.
+- `.claude/REDESIGN-GUIDE.md`: a progress entry with commits, shots and gotchas.
 
 ## Open items for the owner
 
