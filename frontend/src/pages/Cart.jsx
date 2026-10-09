@@ -1,0 +1,302 @@
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import Form from '../components/Form';
+import { cartAPI, getErrorMessage } from '../services/api';
+import { useAuth } from '../context/useAuth.js';
+import { useCart } from '../context/useCart.js';
+import Loading from '../components/Loading';
+import CoverThumb from '../components/CoverThumb';
+import StatusMark from '../components/StatusMark';
+import EmptyShelf from '../components/EmptyShelf';
+import Receipt from '../components/Receipt';
+import { seriesInk } from '../utils/series';
+
+const toman = (value) => Number(value).toLocaleString('fa-IR');
+
+/** ردیف‌های سبد، با همان ستون‌های «معاملات من»: جلد، نام و مشخصات، مبلغ، وضعیت، اقدام */
+function CartList({ items, onRemove, removingId }) {
+  return (
+    <ul className="ledger">
+      {items.map(({ book, available, reason }) => (
+        <li key={book.id} className="ledger-row" style={{ '--card-ink': seriesInk(book.category_root) }}>
+          <CoverThumb book={book} />
+          <div className="ledger-main">
+            <Link to={`/books/${book.id}`} className="ledger-name">
+              <bdi>{book.title}</bdi>
+            </Link>
+            <span className="ledger-meta">
+              <bdi>{book.author}</bdi>
+              <span aria-hidden="true"> · </span>
+              <span className="visually-hidden">، </span>
+              {book.condition_display}
+              <span aria-hidden="true"> · </span>
+              <span className="visually-hidden">، </span>
+              فروشنده: <bdi translate="no" className="latin-id">{book.seller_name}</bdi>
+            </span>
+          </div>
+          <span className="ledger-amount price-tag">
+            {toman(book.price)} <span className="book-card-currency">تومان</span>
+          </span>
+          <span className="ledger-status">
+            {!available && <StatusMark tone={book.status === 'sold' ? 'sold' : 'closed'}>{reason}</StatusMark>}
+          </span>
+          <span className="ledger-actions">
+            <Button
+              variant="outline-secondary"
+              onClick={() => onRemove(book.id)}
+              disabled={removingId !== null}
+              aria-label={`حذف «${book.title}» از سبد`}
+            >
+              {removingId === book.id ? 'در حال حذف…' : 'حذف'}
+            </Button>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Cart() {
+  const location = useLocation();
+  const { user, isAuthenticated } = useAuth();
+  const { items, total, status, remove, refresh } = useCart();
+  const [step, setStep] = useState('cart'); // cart | checkout
+  const [address, setAddress] = useState('');
+  const [addressError, setAddressError] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [removingId, setRemovingId] = useState(null);
+  // رسید از کتاب‌هایی ساخته می‌شود که پیش از تازه شدن سبد خریده شدند
+  const [receipt, setReceipt] = useState(null);
+
+  const available = items.filter((item) => item.available);
+  const unavailable = items.filter((item) => !item.available);
+
+  const handleRemove = async (bookId) => {
+    setRemovingId(bookId);
+    try {
+      await remove(bookId);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setRemovingId(null);
+    }
+  };
+
+  const goToCheckout = () => {
+    setAddress((current) => current || user?.address || '');
+    setError('');
+    setStep('checkout');
+    // پس از رندر مرحله‌ی پرداخت، فوکوس روی آدرس
+    requestAnimationFrame(() => document.getElementById('shipping-address')?.focus());
+  };
+
+  const handleCheckout = async (e) => {
+    e.preventDefault();
+    if (!address.trim()) {
+      setAddressError('آدرس ارسال را بنویس تا فروشنده‌ها بدانند کتاب‌ها را کجا بفرستند.');
+      document.getElementById('shipping-address')?.focus();
+      return;
+    }
+    setBusy(true);
+    setError('');
+    const books = available.map((item) => item.book);
+    try {
+      const response = await cartAPI.checkout({
+        books: books.map((book) => book.id),
+        total,
+        shipping_address: address.trim(),
+      });
+      setReceipt({ books, code: response.data.reference_code });
+      refresh();
+    } catch (err) {
+      const data = err.response?.data;
+      if (data?.shipping_address) {
+        setAddressError(data.shipping_address[0]);
+      } else {
+        // سبد روی سرور عوض شده (یا session تمام شده)؛ سبد تازه دیده و دوباره تأیید می‌شود
+        setError(getErrorMessage(err));
+        setStep('cart');
+        refresh();
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (receipt) {
+    return (
+      <div className="series-paper">
+        <Container className="ledger-page">
+          <title>رسید خرید | ری‌بوک</title>
+          <section className="purchase-receipt cart-receipt" aria-labelledby="receipt-title">
+            <h1 id="receipt-title" className="ledger-title">
+              پرداخت آزمایشی انجام شد
+            </h1>
+            <Receipt
+              books={receipt.books}
+              trackingCode={receipt.code}
+              note="سفارش‌ها به نام تو ثبت شد و هر فروشنده خبردار شد. هر کتاب را فروشنده‌ی خودش جدا می‌فرستد؛ وضعیت ارسال را در «معاملات من» دنبال کن."
+            />
+            <div className="d-flex flex-wrap gap-2 mt-4">
+              <Link to="/my-orders" className="btn btn-primary">
+                معاملات من
+              </Link>
+              <Link to="/books" className="btn btn-outline-secondary">
+                مرور کتاب‌ها
+              </Link>
+            </div>
+          </section>
+        </Container>
+      </div>
+    );
+  }
+
+  if (status === 'loading') return <Loading fullPage />;
+
+  let body;
+  if (status === 'error') {
+    body = (
+      <div className="list-state" role="alert">
+        <p>سبد بارگذاری نشد. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
+        <Button variant="outline-secondary" onClick={refresh}>
+          تلاش دوباره
+        </Button>
+      </div>
+    );
+  } else if (!items.length) {
+    body = (
+      <div className="list-state">
+        <EmptyShelf />
+        <p>سبدت خالی است.</p>
+        {!isAuthenticated && (
+          <p>
+            اگر پیش‌تر در حسابت کتابی به سبد اضافه کرده‌ای،{' '}
+            <Link to="/login" state={{ from: location }}>
+              وارد شو
+            </Link>{' '}
+            تا ببینی‌اش.
+          </p>
+        )}
+        <Link to="/books" className="btn btn-primary">
+          مرور کتاب‌ها
+        </Link>
+      </div>
+    );
+  } else {
+    let action;
+    if (step === 'checkout') {
+      action = (
+        <>
+          <Button type="submit" form="checkout-form" variant="primary" className="w-100" disabled={busy}>
+            {busy ? 'در حال پرداخت آزمایشی…' : `پرداخت آزمایشی ${toman(total)} تومان`}
+          </Button>
+          <Button variant="link" className="w-100 mt-2" onClick={() => setStep('cart')} disabled={busy}>
+            بازگشت به سبد
+          </Button>
+        </>
+      );
+    } else if (!available.length) {
+      action = (
+        <Button variant="primary" className="w-100" disabled>
+          ادامه‌ی خرید
+        </Button>
+      );
+    } else if (isAuthenticated) {
+      action = (
+        <Button variant="primary" className="w-100" onClick={goToCheckout}>
+          ادامه‌ی خرید
+        </Button>
+      );
+    } else {
+      action = (
+        <Link to="/login" state={{ from: location }} className="btn btn-primary w-100">
+          برای پرداخت وارد شو
+        </Link>
+      );
+    }
+
+    body = (
+      <Row className="g-4 g-lg-5">
+        <Col lg={8}>
+          {step === 'cart' ? (
+            <>
+              {available.length > 0 && <CartList items={available} onRemove={handleRemove} removingId={removingId} />}
+              {unavailable.length > 0 && (
+                <section className="cart-unavailable" aria-labelledby="unavailable-title">
+                  <h2 id="unavailable-title" className="support-heading">
+                    دیگر قابل خرید نیست
+                  </h2>
+                  <CartList items={unavailable} onRemove={handleRemove} removingId={removingId} />
+                </section>
+              )}
+            </>
+          ) : (
+            <Form id="checkout-form" onSubmit={handleCheckout} noValidate className="support-form">
+              <Form.Group controlId="shipping-address" className="mb-3">
+                <Form.Label>آدرس ارسال</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  name="shipping_address"
+                  autoComplete="street-address"
+                  rows={3}
+                  value={address}
+                  isInvalid={Boolean(addressError)}
+                  onChange={(e) => {
+                    setAddress(e.target.value);
+                    setAddressError('');
+                  }}
+                  placeholder="استان، شهر، خیابان، پلاک، کد پستی"
+                  required
+                  disabled={busy}
+                />
+                <Form.Control.Feedback type="invalid">{addressError}</Form.Control.Feedback>
+              </Form.Group>
+              <p className="purchase-note mb-0">
+                پرداخت در ری‌بوک فعلاً آزمایشی است: هیچ پولی جابه‌جا نمی‌شود و فقط روند خرید شبیه‌سازی می‌شود.
+              </p>
+            </Form>
+          )}
+        </Col>
+        <Col lg={4}>
+          <aside className="cart-summary" aria-labelledby="summary-title">
+            <h2 id="summary-title" className="support-heading">
+              خلاصه
+            </h2>
+            <dl className="purchase-summary">
+              <dt>کتاب‌ها</dt>
+              <dd>{available.length.toLocaleString('fa-IR')}</dd>
+              <dt>مبلغ کل</dt>
+              <dd className="purchase-price">
+                {toman(total)} <span className="book-card-currency">تومان</span>
+              </dd>
+            </dl>
+            <p className="cart-summary-note">هر کتاب را فروشنده‌ی خودش جداگانه می‌فرستد.</p>
+            {action}
+          </aside>
+        </Col>
+      </Row>
+    );
+  }
+
+  return (
+    <div className="series-paper">
+      <Container className="ledger-page">
+        <title>سبد خرید | ری‌بوک</title>
+        <header className="ledger-header">
+          <h1 className="ledger-title">{step === 'checkout' ? 'پرداخت' : 'سبد خرید'}</h1>
+        </header>
+        {error && (
+          <Alert variant="danger" role="alert">
+            {error}
+          </Alert>
+        )}
+        {body}
+      </Container>
+    </div>
+  );
+}
+
+export default Cart;

@@ -26,6 +26,7 @@ const MyOrders = lazy(() => import("./pages/MyOrders"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Support = lazy(() => import("./pages/Support"));
+const Cart = lazy(() => import("./pages/Cart"));
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/books" element={<BookList />} />
                 <Route path="/books/:id" element={<BookDetail />} />
+                <Route path="/cart" element={<Cart />} />
 
                 {/* صفحات محافظت‌شده (نیاز به لاگین) */}
                 <Route
