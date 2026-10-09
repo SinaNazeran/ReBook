@@ -155,8 +155,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "config.pagination.StandardPagination",
     "PAGE_SIZE": 12,
     "EXCEPTION_HANDLER": "config.exceptions.exception_handler",
-    # محدودیت برای هر IP (مهمان) یا کاربر: ورود/ثبت‌نام، سبد خرید (مهمان هم session می‌سازد)
-    "DEFAULT_THROTTLE_RATES": {"auth": "10/min", "cart": "60/min"},
+    # محدودیت برای هر IP (مهمان) یا کاربر: ورود/ثبت‌نام، سبد خرید (مهمان هم session می‌سازد)، پیام تماس
+    "DEFAULT_THROTTLE_RATES": {"auth": "10/min", "cart": "60/min", "contact": "10/hour"},
 }
 
 # CORS Configuration

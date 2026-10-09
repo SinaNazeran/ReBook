@@ -25,4 +25,5 @@ urlpatterns = [
         name="support-create",
     ),
     path("support/", views.MySupportTicketsView.as_view(), name="support-list"),
+    path("contact/", views.ContactMessageCreateView.as_view(), name="contact"),
 ]

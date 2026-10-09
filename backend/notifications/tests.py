@@ -1,8 +1,9 @@
+from django.core.cache import cache
 from rest_framework.test import APITestCase
 
 from accounts.models import User
 
-from .models import Notification, SupportTicket
+from .models import ContactMessage, Notification, SupportTicket
 
 
 class PersonalListsTests(APITestCase):
@@ -31,3 +32,37 @@ class PersonalListsTests(APITestCase):
     def test_support_tickets_list_is_not_cut_at_one_page(self):
         response = self.client.get("/api/notifications/support/")
         self.assertEqual(len(response.data), 15)
+
+
+class ContactMessageTests(APITestCase):
+    def setUp(self):
+        cache.clear()  # throttle «contact» در LocMem
+
+    def send(self, **extra):
+        data = {
+            "name": "سارا",
+            "email": "sara@example.com",
+            "subject": "سؤال درباره‌ی ارسال",
+            "message": "این یک پیام آزمایشی است.",
+            **extra,
+        }
+        return self.client.post("/api/notifications/contact/", data)
+
+    def test_guest_can_send_a_message(self):
+        response = self.send()
+        self.assertEqual(response.status_code, 201)
+        message = ContactMessage.objects.get()
+        self.assertEqual((message.email, message.is_handled), ("sara@example.com", False))
+
+    def test_invalid_input_is_rejected(self):
+        for extra in ({"email": "not-an-email"}, {"message": "کوتاه"}, {"message": "            "}, {"name": ""}):
+            with self.subTest(extra=extra):
+                response = self.send(**extra)
+                self.assertEqual(response.status_code, 400)
+                self.assertIn(next(iter(extra)), response.data)
+        self.assertFalse(ContactMessage.objects.exists())
+
+    def test_eleventh_message_in_an_hour_is_throttled(self):
+        for _ in range(10):
+            self.assertEqual(self.send().status_code, 201)
+        self.assertEqual(self.send().status_code, 429)
