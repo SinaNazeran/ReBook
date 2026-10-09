@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar as BSNavbar, Nav, Container, Badge, NavDropdown, Form } from 'react-bootstrap';
 import { useAuth } from '../context/useAuth.js';
+import { useCart } from '../context/useCart.js';
 import BrandMark from './BrandMark';
 import { notificationAPI, ADMIN_URL } from '../services/api';
 import {
@@ -11,6 +12,7 @@ import {
   FiBookOpen,
   FiPlusCircle,
   FiShoppingBag,
+  FiShoppingCart,
   FiLogOut,
   FiSearch,
   FiSettings,
@@ -112,6 +114,20 @@ function Navbar() {
     );
   };
 
+  const { count: cartCount } = useCart();
+  const cartLabel = cartCount ? `سبد خرید، ${cartCount.toLocaleString('fa-IR')} کتاب` : 'سبد خرید، خالی';
+  // خرید فقط از راه سبد است، پس روی موبایل هم بیرون از منو می‌ماند
+  const renderCartLink = (className) => (
+    <Link to="/cart" className={`nav-cart ${className}`} aria-label={cartLabel}>
+      <FiShoppingCart aria-hidden="true" />
+      {cartCount > 0 && (
+        <span className="nav-cart-count" aria-hidden="true">
+          {cartCount > 99 ? '۹۹+' : cartCount.toLocaleString('fa-IR')}
+        </span>
+      )}
+    </Link>
+  );
+
   const displayedUnreadCount = isAuthenticated ? unreadCount : 0;
   // صفحه‌ی کتاب‌ها جستجوی خودش را دارد؛ دو جعبه‌ی جستجو روی هم نمی‌آیند
   const showSearch = location.pathname !== '/books';
@@ -124,8 +140,9 @@ function Navbar() {
           ری‌بوک
         </BSNavbar.Brand>
 
+        {renderCartLink('d-lg-none ms-auto me-1')}
         {/* در موبایل فروش هم‌ارز خرید است، پس پشت منو پنهان نمی‌شود */}
-        <Link to="/create-book" className="btn btn-primary text-nowrap d-lg-none ms-auto me-2">
+        <Link to="/create-book" className="btn btn-primary text-nowrap d-lg-none me-2 nav-sell-mobile">
           فروش کتاب
         </Link>
 
@@ -188,10 +205,11 @@ function Navbar() {
 
           {/* اکشن‌ها و منوی کاربر */}
           <Nav className="align-items-lg-center gap-lg-2 mt-3 mt-lg-0 flex-column flex-lg-row">
+            {renderCartLink('d-none d-lg-inline-flex')}
             {/* فروش هم‌ارز خرید است، پس برای همه دیده می‌شود؛ مهمان پس از ورود به همین فرم برمی‌گردد */}
             <Link
               to="/create-book"
-              className="btn btn-primary d-none d-lg-flex align-items-center justify-content-center gap-2 text-nowrap"
+              className="btn btn-primary d-none d-lg-flex align-items-center justify-content-center gap-2 text-nowrap nav-sell-desktop"
             >
               <FiPlusCircle aria-hidden="true" />
               فروش کتاب

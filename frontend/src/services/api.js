@@ -160,6 +160,18 @@ export const orderAPI = {
 };
 
 // ============================================
+// سبد خرید؛ برای مهمان هم (سبد در session سرور) و پس از ورود به حساب منتقل می‌شود
+// ============================================
+
+export const cartAPI = {
+  getCart: () => api.get("/orders/cart/"), // { items: [{ book, available, reason }], count, total }
+  addToCart: (bookId) => api.post("/orders/cart/", { book: bookId }),
+  removeFromCart: (bookId) => api.delete(`/orders/cart/${bookId}/`),
+  // books و total همان چیزی است که خریدار دید؛ اگر سرور چیز دیگری ببیند 400 می‌دهد
+  checkout: (data) => api.post("/orders/checkout/", data), // → { reference_code, orders }
+};
+
+// ============================================
 // توابع مربوط به اعلان‌ها
 // ============================================
 
@@ -170,6 +182,7 @@ export const notificationAPI = {
   markAllAsRead: () => api.post("/notifications/read-all/"),
   createTicket: (data) => api.post("/notifications/support/create/", data),
   getMyTickets: () => api.get("/notifications/support/"),
+  sendContactMessage: (data) => api.post("/notifications/contact/", data), // فرم تماس مهمان
 };
 
 export default api;

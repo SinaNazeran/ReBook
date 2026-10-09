@@ -1013,7 +1013,7 @@
 
 @media (min-width: 768px) {
   .sell-steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--steps, 3), minmax(0, 1fr));
     gap: 2rem;
   }
 
@@ -2447,8 +2447,9 @@ body:has(main > .series-paper) .site-footer {
   background-color: var(--rb-accent-deep);
 }
 
-/* کارت پروفایل و فرم پشتیبانی و پنل ورود: کلید مجموعه‌ها در لبه‌ی بالا */
+/* کارت پروفایل و فرم پشتیبانی و پنل ورود و خلاصه‌ی سبد: کلید مجموعه‌ها در لبه‌ی بالا */
 .profile-card,
+.cart-summary,
 .support-form,
 .auth-panel {
   overflow: hidden;
@@ -2541,4 +2542,163 @@ body:has(main > .series-paper) .site-footer {
 .support-heading,
 .profile-username {
   color: var(--rb-brand);
+}
+
+/* ==========================================================================
+   ۱۶. سبد خرید
+   ========================================================================== */
+
+/* نشان سبد در نوار تیره: آیکون سفید، شمار کتاب‌ها روی نشان رز */
+.nav-cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--bs-border-radius);
+  color: #fff;
+  font-size: 1.25rem;
+}
+
+.nav-cart:hover {
+  background-color: rgb(255 255 255 / 0.12);
+  color: #fff;
+}
+
+.site-navbar .nav-cart:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* زیر ۳۶۰ پیکسل سبد و فروش کنار هم جا نمی‌شوند؛ فروش به منو می‌رود و سبد بیرون می‌ماند */
+@media (max-width: 359.98px) {
+  .nav-sell-mobile {
+    display: none !important;
+  }
+
+  .site-navbar .nav-sell-desktop {
+    display: flex !important;
+  }
+}
+
+.nav-cart-count {
+  position: absolute;
+  inset-block-start: 0.125rem;
+  inset-inline-end: 0.125rem;
+  min-inline-size: 1.25rem;
+  padding-inline: 0.3rem;
+  border-radius: 999px;
+  background-color: var(--rb-accent);
+  color: var(--rb-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+  text-align: center;
+}
+
+/* رسید چند کتابی: نام‌ها زیر هم، کوچک‌تر از رسید تک‌کتابی */
+.bookplate-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bookplate-list .bookplate-book {
+  font-size: 1.125rem;
+}
+
+/* خلاصه‌ی سبد کنار فهرست؛ روی دسکتاپ با اسکرول همراه می‌ماند. ۶px بالا جای نوار مجموعه‌هاست (بخش ۱۴) */
+.cart-summary {
+  padding: calc(1.25rem + 6px) 1.25rem 1.25rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+@media (min-width: 992px) {
+  .cart-summary {
+    position: sticky;
+    inset-block-start: 6.5rem;
+  }
+}
+
+.cart-summary-note {
+  color: var(--rb-ink-muted);
+  font-size: 0.875rem;
+}
+
+.cart-unavailable {
+  margin-block-start: 2rem;
+}
+
+.cart-receipt {
+  max-inline-size: 34rem;
+  margin-inline: auto;
+}
+
+/* ==========================================================================
+   ۱۷. درباره‌ی ما و تماس با ما
+   ========================================================================== */
+
+.about-page {
+  padding-block: 2rem 3.5rem;
+}
+
+.about-section {
+  margin-block-start: 3rem;
+}
+
+.about-heading {
+  margin-block-end: 1rem;
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  line-height: 1.35;
+}
+
+.about-lead {
+  max-inline-size: 60ch;
+  color: var(--rb-ink-muted);
+}
+
+.about-grades {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+}
+
+.about-grade {
+  display: grid;
+  gap: 0.25rem 1.5rem;
+}
+
+.about-grade dd {
+  margin: 0;
+  color: var(--rb-ink-muted);
+}
+
+@media (min-width: 768px) {
+  .about-grade {
+    grid-template-columns: 14rem minmax(0, 1fr);
+    align-items: center;
+  }
+}
+
+.about-facts {
+  max-inline-size: 70ch;
+  padding-inline-start: 1.25rem;
+}
+
+.about-facts li + li {
+  margin-block-start: 0.5rem;
+}
+
+.about-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block-start: 3rem;
+}
+
+.contact-aside {
+  padding-block-start: 0.25rem;
 }

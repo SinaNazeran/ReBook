@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ToastContainer, Slide } from "react-toastify";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { CartProvider } from "./context/CartContext.jsx";
 
 // کامپوننت‌های ثابت (همیشه لازم‌اند، lazy نمی‌شوند)
 import Navbar from "./components/Navbar";
@@ -29,6 +30,7 @@ const Support = lazy(() => import("./pages/Support"));
 function App() {
   return (
     <AuthProvider>
+      <CartProvider>
       <div className="d-flex flex-column min-vh-100">
         <ScrollToTop />
         <a href="#main" className="skip-link visually-hidden-focusable">
@@ -123,6 +125,7 @@ function App() {
           transition={Slide}
         />
       </div>
+      </CartProvider>
     </AuthProvider>
   );
 }
