@@ -2605,7 +2605,9 @@ body:has(main > .series-paper) .site-footer {
 }
 
 .bookplate-list .bookplate-book {
-  font-size: 1.125rem;
+  margin: 0;
+  font-size: 1.375rem;
+  line-height: 1.6;
 }
 
 /* خلاصه‌ی سبد کنار فهرست؛ روی دسکتاپ با اسکرول همراه می‌ماند. ۶px بالا جای نوار مجموعه‌هاست (بخش ۱۴) */

@@ -186,37 +186,35 @@ function Cart() {
       </div>
     );
   } else {
-    let action;
-    if (step === 'checkout') {
-      action = (
-        <>
-          <Button type="submit" form="checkout-form" variant="primary" className="w-100" disabled={busy}>
+    // اقدام اصلی هم در خلاصه است و هم در نوار چسبان موبایل (خلاصه آنجا زیر همه‌ی ردیف‌ها می‌افتد)
+    const primaryAction = (className) => {
+      if (step === 'checkout') {
+        return (
+          <Button type="submit" form="checkout-form" variant="primary" className={className} disabled={busy}>
             {busy ? 'در حال پرداخت آزمایشی…' : `پرداخت آزمایشی ${toman(total)} تومان`}
           </Button>
-          <Button variant="link" className="w-100 mt-2" onClick={() => setStep('cart')} disabled={busy}>
-            بازگشت به سبد
+        );
+      }
+      if (!available.length) {
+        return (
+          <Button variant="primary" className={className} disabled>
+            ادامه‌ی خرید
           </Button>
-        </>
-      );
-    } else if (!available.length) {
-      action = (
-        <Button variant="primary" className="w-100" disabled>
-          ادامه‌ی خرید
-        </Button>
-      );
-    } else if (isAuthenticated) {
-      action = (
-        <Button variant="primary" className="w-100" onClick={goToCheckout}>
-          ادامه‌ی خرید
-        </Button>
-      );
-    } else {
-      action = (
-        <Link to="/login" state={{ from: location }} className="btn btn-primary w-100">
+        );
+      }
+      if (isAuthenticated) {
+        return (
+          <Button variant="primary" className={className} onClick={goToCheckout}>
+            ادامه‌ی خرید
+          </Button>
+        );
+      }
+      return (
+        <Link to="/login" state={{ from: location }} className={`btn btn-primary ${className}`}>
           برای پرداخت وارد شو
         </Link>
       );
-    }
+    };
 
     body = (
       <Row className="g-4 g-lg-5">
@@ -274,9 +272,20 @@ function Cart() {
               </dd>
             </dl>
             <p className="cart-summary-note">هر کتاب را فروشنده‌ی خودش جداگانه می‌فرستد.</p>
-            {action}
+            {primaryAction('w-100')}
+            {step === 'checkout' && (
+              <Button variant="link" className="w-100 mt-2" onClick={() => setStep('cart')} disabled={busy}>
+                بازگشت به سبد
+              </Button>
+            )}
           </aside>
         </Col>
+        <div className="buy-bar d-lg-none">
+          <p className="buy-price">
+            {toman(total)} <span className="book-card-currency">تومان</span>
+          </p>
+          {primaryAction('')}
+        </div>
       </Row>
     );
   }
