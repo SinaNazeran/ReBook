@@ -1,8 +1,30 @@
+from io import BytesIO
+from pathlib import Path
+
+from django.core.files.base import ContentFile
+from PIL import Image, ImageOps
 from rest_framework import serializers
 
 from accounts.models import User
 
 from .models import Book, Category, Wishlist
+
+# بزرگ‌ترین جلدی که لازم است: ستون جلد در صفحه‌ی کتاب روی نمایشگر 2x
+COVER_MAX_SIZE = (1000, 1500)
+
+
+def shrink_cover(image):
+    """جلد را کوچک و WebP می‌کند تا عکس چند مگابایتی گوشی به صفحه‌ها نرسد.
+
+    چرخش EXIF گوشی اعمال و بقیه‌ی متادیتا (مثل موقعیت مکانی) دور ریخته می‌شود.
+    """
+    image.seek(0)
+    img = ImageOps.exif_transpose(Image.open(image))
+    img.thumbnail(COVER_MAX_SIZE)
+    img = img.convert("RGBA" if img.has_transparency_data else "RGB")
+    buf = BytesIO()
+    img.save(buf, "WEBP", quality=82)
+    return ContentFile(buf.getvalue(), name=f"{Path(image.name).stem}.webp")
 
 
 class SellerSerializer(serializers.ModelSerializer):
@@ -108,10 +130,12 @@ class BookCreateSerializer(serializers.ModelSerializer):
         )
 
     def validate_cover_image(self, image):
+        if not image:
+            return image
         # سقف حجم سمت سرور، هم‌اندازه MAX_IMAGE_SIZE_MB در CreateBook.jsx
-        if image and image.size > 5 * 1024 * 1024:
+        if image.size > 5 * 1024 * 1024:
             raise serializers.ValidationError("حجم تصویر جلد نباید بیشتر از ۵ مگابایت باشد.")
-        return image
+        return shrink_cover(image)
 
     def create(self, validated_data):
         """فروشنده به صورت خودکار از کاربر فعلی گرفته می‌شود"""

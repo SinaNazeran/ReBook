@@ -1305,6 +1305,18 @@
   background-color: var(--rb-surface-sunken);
 }
 
+/* ابعاد جلد از API آمده: قاب پیش از بارگیری عکس همان اندازه‌ای را می‌گیرد که عکس می‌گرفت
+   (نه بزرگ‌تر از خود عکس، نه بیشتر از سقف ارتفاع) و صفحه پرش نمی‌کند */
+.detail-cover.is-sized {
+  width: min(100%, var(--cover-w) * 1px, 50vh * var(--cover-ratio));
+}
+
+.detail-cover.is-sized .detail-cover-img {
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
 /* جلد بی‌عکس اندازه‌ی ذاتی ندارد؛ قاب اندازه را می‌دهد و جلد پرش می‌کند */
 .detail-cover:has(.detail-plain-cover) {
   width: min(100%, 50vh * 0.75);
@@ -1328,6 +1340,10 @@
 
   .detail-cover-img {
     max-height: min(75vh, 42rem);
+  }
+
+  .detail-cover.is-sized {
+    width: min(100%, var(--cover-w) * 1px, min(75vh, 42rem) * var(--cover-ratio));
   }
 
   .detail-cover:has(.detail-plain-cover) {

@@ -1,3 +1,8 @@
+import io
+import tempfile
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+from PIL import Image
 from rest_framework.test import APITestCase
 
 from accounts.models import User
@@ -213,6 +218,23 @@ class BookUpdateDeleteTests(APITestCase):
         response = self.client.post("/api/books/create/", data, format="multipart")
         self.assertEqual(response.status_code, 400)
         self.assertIn("cover_image", response.data)
+
+    def test_cover_is_shrunk_to_webp_with_its_dimensions(self):
+        buf = io.BytesIO()
+        Image.new("RGBA", (2000, 3000), "red").save(buf, "PNG")
+        cover = SimpleUploadedFile("big.png", buf.getvalue(), "image/png")
+        data = {"title": "b", "author": "a", "price": 100, "cover_image": cover}
+        with tempfile.TemporaryDirectory() as media, self.settings(MEDIA_ROOT=media):
+            self.assertEqual(self.client.post("/api/books/create/", data, format="multipart").status_code, 201)
+            book = Book.objects.get()
+            self.assertTrue(book.cover_image.name.endswith(".webp"))
+            self.assertEqual((book.cover_width, book.cover_height), (1000, 1500))
+            with Image.open(book.cover_image.path) as img:
+                self.assertEqual(img.size, (1000, 1500))
+            book.status = "approved"
+            book.save()
+            detail = self.client.get(f"/api/books/{book.pk}/").data
+            self.assertEqual((detail["cover_width"], detail["cover_height"]), (1000, 1500))
 
     def test_sold_book_cannot_be_edited_or_deleted(self):
         book = self.book("sold")

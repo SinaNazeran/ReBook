@@ -226,10 +226,23 @@ function BookDetail() {
         <title>{`${book.title} | ری‌بوک`}</title>
         <Row className="g-4 g-lg-5">
           <Col lg={4}>
-            <figure className="detail-cover" style={{ '--card-ink': ink }}>
+            <figure
+              className={`detail-cover${book.cover_width ? ' is-sized' : ''}`}
+              style={{
+                '--card-ink': ink,
+                ...(book.cover_width && { '--cover-w': book.cover_width, '--cover-ratio': book.cover_width / book.cover_height }),
+              }}
+            >
               {book.cover_image ? (
                 <div className="book-cover-hinge">
-                  <img src={book.cover_image} alt={`جلد ${book.title}`} className="detail-cover-img" fetchPriority="high" />
+                  <img
+                    src={book.cover_image}
+                    alt={`جلد ${book.title}`}
+                    className="detail-cover-img"
+                    width={book.cover_width ?? undefined}
+                    height={book.cover_height ?? undefined}
+                    fetchPriority="high"
+                  />
                 </div>
               ) : (
                 <PlainCover

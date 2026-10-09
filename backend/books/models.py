@@ -87,7 +87,21 @@ class Book(models.Model):
     # ---------- تصویر ----------
 
     cover_image = models.ImageField(
-        upload_to="book_covers/", blank=True, null=True, verbose_name="تصویر جلد"
+        upload_to="book_covers/",
+        blank=True,
+        null=True,
+        width_field="cover_width",
+        height_field="cover_height",
+        verbose_name="تصویر جلد",
+    )
+
+    # ابعاد جلد را خود ImageField پر می‌کند؛ صفحه‌ی کتاب با آن جای جلد را پیش از بارگیری نگه می‌دارد
+    cover_width = models.PositiveIntegerField(
+        blank=True, null=True, editable=False, verbose_name="عرض جلد"
+    )
+
+    cover_height = models.PositiveIntegerField(
+        blank=True, null=True, editable=False, verbose_name="ارتفاع جلد"
     )
 
     # ---------- روابط ----------
