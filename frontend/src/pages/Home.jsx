@@ -5,19 +5,14 @@ import { bookAPI } from '../services/api';
 import BookCard, { BookCardSkeleton } from '../components/BookCard';
 import EmptyShelf from '../components/EmptyShelf';
 import HomeHero from '../components/HomeHero';
+import StepRail from '../components/StepRail';
+import { SELL_STEPS } from '../utils/steps';
 import { seriesInk } from '../utils/series';
 import { FiArrowLeft, FiPlusCircle } from 'react-icons/fi';
 
 // هیرو تازه‌ترین ۱۳ جلد را در فضا می‌گرداند (بیشتر شلوغ می‌شود، کمتر خالی)؛ «در قفسه» هشت تای اول را مرتب نشان می‌دهد
 const HERO_COUNT = 13;
 const GRID_COUNT = 8;
-
-// مسیر فروشنده، همان‌طور که در محصول رخ می‌دهد؛ بررسی تیم فقط همین‌جا و بی‌سروصدا گفته می‌شود
-const SELL_STEPS = [
-  { title: 'ثبت آگهی', text: 'عنوان، عکس جلد، وضعیت و قیمت کتاب را وارد کن.' },
-  { title: 'بررسی', text: 'تیم ری‌بوک آگهی را پیش از انتشار بررسی می‌کند.' },
-  { title: 'فروش', text: 'وقتی کسی کتاب را سفارش داد، اعلان می‌گیری.' },
-];
 
 function Home() {
   const [latestBooks, setLatestBooks] = useState([]);
@@ -144,14 +139,7 @@ function Home() {
         <Container>
           <span className="ornament-rule home-ornament" aria-hidden="true" />
           <h2 id="sell-title" className="home-section-title display-type">کتابی داری که دیگر سراغش نمی‌روی؟</h2>
-          <ol className="sell-steps">
-            {SELL_STEPS.map(({ title, text }) => (
-              <li key={title} className="sell-step">
-                <h3 className="sell-step-title">{title}</h3>
-                <p className="sell-step-text">{text}</p>
-              </li>
-            ))}
-          </ol>
+          <StepRail steps={SELL_STEPS} />
           <Link to="/create-book" className="btn btn-primary btn-lg d-inline-flex align-items-center gap-2">
             <FiPlusCircle aria-hidden="true" />
             فروش کتاب
