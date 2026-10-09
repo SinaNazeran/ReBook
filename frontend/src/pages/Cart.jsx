@@ -115,6 +115,10 @@ function Cart() {
       const data = err.response?.data;
       if (data?.shipping_address) {
         setAddressError(data.shipping_address[0]);
+      } else if (err.response?.status === 401) {
+        // نشست تمام شده؛ سبد حساب سر جایش است و پس از ورود دوباره دیده می‌شود
+        setError('نشستت تمام شده است. دوباره وارد شو؛ سبدت سر جایش است و می‌توانی پرداخت را تمام کنی.');
+        setStep('cart');
       } else {
         // سبد روی سرور عوض شده (یا session تمام شده)؛ سبد تازه دیده و دوباره تأیید می‌شود
         setError(getErrorMessage(err));
