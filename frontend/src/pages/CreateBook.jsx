@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Alert, InputGroup } from 'react-bootstrap';
 import Form from '../components/Form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { toast } from '../utils/toast';
 import { FiUpload, FiTrash2 } from 'react-icons/fi';
 import { bookAPI, getErrorMessage } from '../services/api';
@@ -10,6 +10,9 @@ import ConditionMeasure from '../components/ConditionMeasure';
 import { CONDITION_LABELS, CONDITION_NOTES } from '../utils/condition';
 import { onlyDigits, toLatinDigits } from '../utils/digits';
 import { seriesInk } from '../utils/series';
+import { useAuth } from '../context/useAuth.js';
+import Loading from '../components/Loading';
+import NotFound from './NotFound';
 
 const INITIAL_FORM = {
   title: '',
@@ -57,6 +60,13 @@ function normalizeServerErrors(errorData) {
   return { nextFieldErrors, nextGeneralError };
 }
 
+// پیش‌درآمد ویرایش به وضعیت آگهی: فروشنده بداند ذخیره چه می‌کند
+const EDIT_LEADS = {
+  approved: 'پس از ذخیره، آگهی تا تأیید دوباره‌ی تیم ری‌بوک از فهرست عمومی بیرون می‌رود.',
+  rejected: 'این آگهی تأیید نشد. ویرایشش کن و دوباره برای بررسی بفرست.',
+  pending: 'آگهی هنوز در صف بررسی است؛ تیم ری‌بوک نسخه‌ی ویرایش‌شده را بررسی می‌کند.',
+};
+
 // شابک ۱۰ یا ۱۳ کاراکتری، بی خط تیره و فاصله (ستون isbn در مدل ۱۳ کاراکتر است)
 const normalizeIsbn = (value) => toLatinDigits(value).replace(/[\s-]/g, '').toUpperCase();
 
@@ -73,8 +83,20 @@ function validate(form) {
   return errors;
 }
 
+/**
+ * فروش کتاب (/create-book) و ویرایش آگهی (/books/:id/edit) یک فرم‌اند.
+ * ویرایش: فقط آگهی خودت، نه فروخته‌شده، نه وقتی خریداری سفارش داده و پرداختش مانده (سرور هم همین را رد می‌کند).
+ */
 function CreateBook() {
+  const { id } = useParams();
+  const editing = id != null;
+  const { user } = useAuth();
   const [formData, setFormData] = useState(INITIAL_FORM);
+  // مقدار اولیه برای «تغییری داده‌ای؟»: فرم خالی، یا همان کتاب در ویرایش
+  const [baseline, setBaseline] = useState(INITIAL_FORM);
+  const [existingCover, setExistingCover] = useState(null);
+  const [listing, setListing] = useState(editing ? { state: 'loading' } : { state: 'ready' });
+  const [reloadKey, setReloadKey] = useState(0);
   const [coverImage, setCoverImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [dragging, setDragging] = useState(false);
@@ -100,9 +122,51 @@ function CreateBook() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!editing) return undefined;
+    let ignore = false;
+    bookAPI
+      .getBook(id)
+      .then(({ data: book }) => {
+        if (ignore) return;
+        // آگهی دیگران مثل آگهی‌ای است که نیست
+        if (book.seller?.id !== user?.id) {
+          setListing({ state: 'not_found' });
+        } else if (book.status === 'sold') {
+          setListing({ state: 'sold' });
+        } else if (book.open_order) {
+          setListing({ state: 'ordered' });
+        } else {
+          const values = {
+            title: book.title,
+            author: book.author,
+            publisher: book.publisher || '',
+            isbn: book.isbn || '',
+            description: book.description || '',
+            price: String(book.price),
+            condition: book.condition,
+            category: book.category ? String(book.category.id) : '',
+          };
+          setFormData(values);
+          setBaseline(values);
+          setExistingCover(book.cover_image);
+          setListing({ state: 'ready', status: book.status });
+        }
+      })
+      .catch((err) => {
+        if (ignore) return;
+        setListing(
+          err.response?.status === 404 ? { state: 'not_found' } : { state: 'error', message: getErrorMessage(err) }
+        );
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [editing, id, user?.id, reloadKey]);
+
   // بستن یا رفرش تب با فرم نیمه‌پر، آگهی را بی‌هشدار پاک می‌کرد
   // ponytail: فقط beforeunload؛ رفتن با لینک‌های داخل برنامه هشدار نمی‌دهد (useBlocker به data router نیاز دارد)
-  const isDirty = coverImage !== null || Object.keys(INITIAL_FORM).some((key) => formData[key] !== INITIAL_FORM[key]);
+  const isDirty = coverImage !== null || Object.keys(INITIAL_FORM).some((key) => formData[key] !== baseline[key]);
   useEffect(() => {
     if (!isDirty || loading) return undefined;
     const warn = (event) => event.preventDefault();
@@ -185,14 +249,20 @@ function CreateBook() {
     try {
       const data = new FormData();
       const payload = { ...formData, isbn: normalizeIsbn(formData.isbn) };
+      // در ویرایش، فیلد خالی هم فرستاده می‌شود تا مقدار قبلی (مثلاً انتشارات) پاک شود
       Object.entries(payload).forEach(([key, value]) => {
-        if (value !== '') data.append(key, typeof value === 'string' ? value.trim() : value);
+        if (value !== '' || editing) data.append(key, typeof value === 'string' ? value.trim() : value);
       });
+      // جلد فقط اگر عکس تازه‌ای انتخاب شده باشد؛ وگرنه جلد فعلی می‌ماند
       if (coverImage) data.append('cover_image', coverImage);
 
-      await bookAPI.createBook(data);
-
-      toast.success('آگهی ثبت شد و پس از بررسی در فهرست دیده می‌شود.');
+      if (editing) {
+        await bookAPI.updateBook(id, data);
+        toast.success('تغییرات ذخیره شد و آگهی برای بررسی رفت.');
+      } else {
+        await bookAPI.createBook(data);
+        toast.success('آگهی ثبت شد و پس از بررسی در فهرست دیده می‌شود.');
+      }
       navigate('/my-books', { replace: true });
     } catch (err) {
       const errorData = err.response?.data;
@@ -221,7 +291,7 @@ function CreateBook() {
     id: 'preview',
     title: formData.title.trim() || 'عنوان کتاب',
     author: formData.author.trim() || 'نویسنده',
-    cover_image: imagePreview,
+    cover_image: imagePreview || existingCover,
     category_root: selectedCategory ? selectedCategory.parent || selectedCategory.id : null,
     category_name: selectedCategory?.name,
     condition: formData.condition,
@@ -230,17 +300,76 @@ function CreateBook() {
   };
 
   const error = (name) => fieldErrors[name]?.[0];
+  const shownCover = imagePreview || existingCover;
+
+  if (listing.state === 'loading') return <Loading fullPage />;
+  if (listing.state === 'not_found') {
+    return (
+      <NotFound
+        title="این آگهی پیدا نشد"
+        message="شاید حذف شده یا آگهی تو نیست. آگهی‌هایت را در «کتاب‌های من» ببین."
+      />
+    );
+  }
+  if (listing.state !== 'ready') {
+    // آگهی هست اما الان ویرایش‌شدنی نیست؛ همان حالت پیام صفحه‌های دیگر
+    return (
+      <div className="series-paper">
+        <Container className="sell-page">
+          <title>ویرایش آگهی | ری‌بوک</title>
+          <header className="sell-header">
+            <h1 className="sell-title">ویرایش آگهی</h1>
+          </header>
+          <div className="list-state" role={listing.state === 'error' ? 'alert' : undefined}>
+            {listing.state === 'ordered' && (
+              <>
+                <p>
+                  خریداری این کتاب را سفارش داده و پرداختش مانده است؛ اگر لازم است تغییرش بدهی، اول سفارش را لغو کن.
+                </p>
+                <Link to="/my-orders?tab=sales" className="btn btn-primary">
+                  معاملات من
+                </Link>
+              </>
+            )}
+            {listing.state === 'sold' && (
+              <>
+                <p>این کتاب فروخته شده و دیگر ویرایش نمی‌شود. جزئیات فروش در «معاملات من» است.</p>
+                <Link to="/my-orders?tab=sales" className="btn btn-outline-secondary">
+                  معاملات من
+                </Link>
+              </>
+            )}
+            {listing.state === 'error' && (
+              <>
+                <p>{listing.message}</p>
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => {
+                    setListing({ state: 'loading' });
+                    setReloadKey((key) => key + 1);
+                  }}
+                >
+                  تلاش دوباره
+                </Button>
+              </>
+            )}
+          </div>
+        </Container>
+      </div>
+    );
+  }
 
   return (
     <div className="series-paper" style={{ '--series': previewBook.category_root != null ? seriesInk(previewBook.category_root) : undefined }}>
       {/* کاغذ صفحه همان مجموعه‌ای است که فروشنده انتخاب می‌کند، هم‌رنگ کارت پیش‌نمایش */}
       <Container className="sell-page">
-        <title>فروش کتاب | ری‌بوک</title>
+        <title>{editing ? 'ویرایش آگهی | ری‌بوک' : 'فروش کتاب | ری‌بوک'}</title>
         <header className="sell-header">
-          <h1 className="sell-title">فروش کتاب</h1>
+          <h1 className="sell-title">{editing ? 'ویرایش آگهی' : 'فروش کتاب'}</h1>
           <p className="sell-lead">
-            مشخصات نسخه‌ای را که داری بنویس. پیش از انتشار، تیم ری‌بوک آگهی را بررسی می‌کند و نتیجه را در
-            «کتاب‌های من» می‌بینی.
+            {editing
+              ? EDIT_LEADS[listing.status]
+              : 'مشخصات نسخه‌ای را که داری بنویس. پیش از انتشار، تیم ری‌بوک آگهی را بررسی می‌کند و نتیجه را در «کتاب‌های من» می‌بینی.'}
           </p>
         </header>
 
@@ -423,21 +552,24 @@ function CreateBook() {
                   <p className="form-label" id="cover-label">
                     عکس جلد <span className="sell-optional">(اختیاری)</span>
                   </p>
-                  {imagePreview ? (
+                  {shownCover ? (
                     <div className="cover-picked">
-                      <img src={imagePreview} alt="پیش‌نمایش جلد" />
+                      <img src={shownCover} alt={imagePreview ? 'پیش‌نمایش جلد' : 'جلد فعلی'} />
                       <div className="cover-picked-actions">
                         <label htmlFor="cover_image" className="btn btn-outline-secondary">
                           تغییر عکس
                         </label>
-                        <Button
-                          variant="outline-secondary"
-                          onClick={removeImage}
-                          className="d-inline-flex align-items-center gap-2"
-                        >
-                          <FiTrash2 aria-hidden="true" />
-                          حذف
-                        </Button>
+                        {/* در ویرایش، برداشتن عکس تازه جلد فعلی را برمی‌گرداند؛ پاک کردن جلد فعلی هنوز ممکن نیست */}
+                        {coverImage && (
+                          <Button
+                            variant="outline-secondary"
+                            onClick={removeImage}
+                            className="d-inline-flex align-items-center gap-2"
+                          >
+                            <FiTrash2 aria-hidden="true" />
+                            {existingCover ? 'برگشت به جلد فعلی' : 'حذف'}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ) : (
@@ -496,7 +628,13 @@ function CreateBook() {
 
               <div className="sell-submit">
                 <Button type="submit" variant="primary" size="lg" disabled={loading}>
-                  {loading ? 'در حال ثبت…' : 'ثبت آگهی برای بررسی'}
+                  {editing
+                    ? loading
+                      ? 'در حال ذخیره…'
+                      : 'ذخیره و ارسال برای بررسی'
+                    : loading
+                      ? 'در حال ثبت…'
+                      : 'ثبت آگهی برای بررسی'}
                 </Button>
               </div>
             </Form>
@@ -517,4 +655,11 @@ function CreateBook() {
   );
 }
 
-export default CreateBook;
+// صفحه‌ی فروش و ویرایش هر کتاب نمونه‌ی جدای فرم‌اند: Router همان کامپوننت را میان دو مسیر نگه می‌دارد
+// و بی key، رفتن از ویرایش به «فروش کتاب» فرم پرشده‌ی قبلی را نشان می‌داد
+function CreateBookPage() {
+  const { id } = useParams();
+  return <CreateBook key={id ?? 'new'} />;
+}
+
+export default CreateBookPage;

@@ -138,7 +138,11 @@ export const bookAPI = {
     api.post("/books/create/", data, {
       headers: { "Content-Type": "multipart/form-data" },
     }),
-  updateBook: (id, data) => api.patch(`/books/${id}/update/`, data),
+  // ویرایش هم عکس جلد می‌فرستد؛ هر ویرایش آگهی را به صف بررسی برمی‌گرداند. سفارش باز → 400 با detail
+  updateBook: (id, data) =>
+    api.patch(`/books/${id}/update/`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
   deleteBook: (id) => api.delete(`/books/${id}/delete/`),
   getMyBooks: () => api.get("/books/my-books/"),
   getCategories: () => api.get("/books/categories/"),

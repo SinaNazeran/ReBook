@@ -85,6 +85,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/books/:id/edit"
+                  element={
+                    <ProtectedRoute>
+                      <CreateBook />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/my-books"
                   element={
                     <ProtectedRoute>

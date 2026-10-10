@@ -213,6 +213,21 @@ class BookUpdateDeleteTests(APITestCase):
         book.refresh_from_db()
         self.assertEqual((book.title, book.status), ("new", "pending"))
 
+    def test_book_with_an_order_awaiting_payment_cannot_be_edited(self):
+        # ویرایش کتاب را به صف بررسی می‌برد و پرداخت خریدار شکست می‌خورد؛ پس اول باید سفارش لغو شود
+        book = self.book("approved")
+        buyer = User.objects.create_user(username="buyer", password="pass")
+        order = Order.objects.create(buyer=buyer, book=book, total_price=100, shipping_address="x")
+
+        response = self.client.patch(f"/api/books/{book.pk}/update/", {"title": "new"})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("معاملات من", response.data["detail"])
+        book.refresh_from_db()
+        self.assertEqual((book.title, book.status), ("b", "approved"))
+
+        Order.objects.filter(pk=order.pk).update(status="cancelled")
+        self.assertEqual(self.client.patch(f"/api/books/{book.pk}/update/", {"title": "new"}).status_code, 200)
+
     def test_oversized_cover_image_is_rejected(self):
         data = {"title": "b", "author": "a", "price": 100, "cover_image": png_of_size(5.1)}
         response = self.client.post("/api/books/create/", data, format="multipart")

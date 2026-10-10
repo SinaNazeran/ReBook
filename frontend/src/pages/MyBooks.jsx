@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { toast } from '../utils/toast';
-import { FiPlusCircle, FiTrash2 } from 'react-icons/fi';
+import { FiPlusCircle, FiTrash2, FiEdit2 } from 'react-icons/fi';
 import { bookAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
 import StatusMark from '../components/StatusMark';
@@ -136,6 +136,16 @@ function MyBooks() {
                     <StatusMark tone={status.tone}>{status.label}</StatusMark>
                   </span>
                   <span className="ledger-actions">
+                    {book.status !== 'sold' && (
+                      <Link
+                        to={`/books/${book.id}/edit`}
+                        className="btn btn-outline-secondary ledger-icon-btn"
+                        aria-label={`ویرایش آگهی ${book.title}`}
+                        title="ویرایش آگهی"
+                      >
+                        <FiEdit2 aria-hidden="true" />
+                      </Link>
+                    )}
                     {book.status !== 'sold' && (
                       <Button
                         variant="outline-secondary"

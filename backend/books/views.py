@@ -120,6 +120,18 @@ class BookUpdateView(generics.UpdateAPIView):
         # کتاب فروخته‌شده بخشی از سابقه سفارش خریدار است و نباید تغییر کند
         return Book.objects.filter(seller=self.request.user).exclude(status="sold")
 
+    def update(self, request, *args, **kwargs):
+        # ویرایش کتاب را به صف بررسی می‌برد و پرداخت سفارش باز خریدار شکست می‌خورد؛ پس اول باید آن سفارش لغو شود
+        if self.get_object().orders.filter(status="pending").exists():
+            return Response(
+                {
+                    "detail": "خریداری این کتاب را سفارش داده و پرداختش مانده است؛ "
+                    "اگر لازم است تغییرش بدهی، اول سفارش را از «معاملات من» لغو کن."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return super().update(request, *args, **kwargs)
+
     def perform_update(self, serializer):
         # هر ویرایش دوباره به تأیید مدیر نیاز دارد
         serializer.save(status="pending")

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { toast } from '../utils/toast';
-import { FiHeart, FiShoppingCart } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiEdit2 } from 'react-icons/fi';
 import { bookAPI, orderAPI, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/useAuth.js';
 import { useCart } from '../context/useCart.js';
@@ -190,6 +190,8 @@ function BookDetail() {
   const canBuy = !isOwner && book.status === 'approved' && !openOrder;
   const canPay = !isOwner && book.status === 'approved' && openOrder?.is_mine;
   const showBuyBar = canBuy || canPay;
+  // فروشنده آگهی‌اش را ویرایش می‌کند، جز فروخته‌شده یا وقتی خریداری سفارش داده و پرداختش مانده (سرور هم رد می‌کند)
+  const canEdit = isOwner && book.status !== 'sold' && !openOrder;
 
   const rootId = book.category ? book.category.parent || book.category.id : null;
   const ink = seriesInk(rootId);
@@ -204,8 +206,8 @@ function BookDetail() {
       pending: <p>آگهی‌ات در صف بررسی است و پس از تأیید تیم ری‌بوک در فهرست عمومی دیده می‌شود.</p>,
       rejected: (
         <p>
-          این آگهی تأیید نشد و فقط برای تو دیده می‌شود. برای پرسیدن دلیلش به{' '}
-          <Link to="/support">پشتیبانی</Link> پیام بده.
+          این آگهی تأیید نشد و فقط برای تو دیده می‌شود. ویرایشش کن و دوباره برای بررسی بفرست؛ دلیلش را از{' '}
+          <Link to="/support">پشتیبانی</Link> بپرس.
         </p>
       ),
       sold: (
@@ -372,6 +374,12 @@ function BookDetail() {
 
               <div className="buy-actions">
                 {primaryAction && <span className="d-none d-lg-inline-flex">{primaryAction}</span>}
+                {canEdit && (
+                  <Link to={`/books/${book.id}/edit`} className="btn btn-outline-primary d-inline-flex align-items-center gap-2">
+                    <FiEdit2 aria-hidden="true" />
+                    ویرایش آگهی
+                  </Link>
+                )}
                 {canPay && (
                   <Button variant="outline-secondary" onClick={handleCancelOrder} disabled={cancelling}>
                     {cancelling ? 'در حال لغو…' : 'لغو سفارش'}
