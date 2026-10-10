@@ -170,8 +170,16 @@
     color: var(--rb-ink);
 }
 
+/* اسکرول‌بار بومی مرورگر، فقط رنگش: شرابیِ برند ۷۵٪ در زمینه (۵٫۵۹:۱)، قاب صفحه مثل سربرگ و فوتر و آرام‌تر از جلدها.
+   ارث می‌رسد، پس ردیف‌های افقی هم همین رنگ‌اند. با «کنتراست بیشتر» شرابی کامل (۱۰٫۵:۱) */
 html {
-    scrollbar-color: var(--rb-field-border) var(--rb-ground);
+    scrollbar-color: color-mix(in srgb, var(--rb-brand) 75%, var(--rb-ground)) var(--rb-ground);
+}
+
+@media (prefers-contrast: more) {
+    html {
+        scrollbar-color: var(--rb-brand) var(--rb-ground);
+    }
 }
 
 a {
