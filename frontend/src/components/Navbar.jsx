@@ -5,6 +5,8 @@ import { useAuth } from '../context/useAuth.js';
 import { useCart } from '../context/useCart.js';
 import BrandMark from './BrandMark';
 import { notificationAPI, ADMIN_URL } from '../services/api';
+import { useSeries } from '../utils/categories';
+import { seriesInk } from '../utils/series';
 import {
   FiBell,
   FiUser,
@@ -117,12 +119,13 @@ function Navbar() {
   const { count: cartCount } = useCart();
   const cartLabel = cartCount ? `سبد خرید، ${cartCount.toLocaleString('fa-IR')} کتاب` : 'سبد خرید، خالی';
   // خرید فقط از راه سبد است، پس روی موبایل هم بیرون از منو می‌ماند
+  const countLabel = (count) => (count > 99 ? '۹۹+' : count.toLocaleString('fa-IR'));
   const renderCartLink = (className) => (
-    <Link to="/cart" className={`nav-cart ${className}`} aria-label={cartLabel}>
+    <Link to="/cart" className={`nav-icon ${className}`} aria-label={cartLabel}>
       <FiShoppingCart aria-hidden="true" />
       {cartCount > 0 && (
-        <span className="nav-cart-count" aria-hidden="true">
-          {cartCount > 99 ? '۹۹+' : cartCount.toLocaleString('fa-IR')}
+        <span className="nav-icon-count" aria-hidden="true">
+          {countLabel(cartCount)}
         </span>
       )}
     </Link>
@@ -131,6 +134,15 @@ function Navbar() {
   const displayedUnreadCount = isAuthenticated ? unreadCount : 0;
   // صفحه‌ی کتاب‌ها جستجوی خودش را دارد؛ دو جعبه‌ی جستجو روی هم نمی‌آیند
   const showSearch = location.pathname !== '/books';
+
+  // هشت مجموعه (دسته‌های سطح اول)، هر کدام با مرکب خودش؛ اگر دسته‌ها نرسیدند، این پیوندها نمی‌آیند
+  const series = useSeries();
+  const activeSlug = location.pathname === '/books' ? new URLSearchParams(location.search).get('category') : null;
+  const seriesLinkProps = (category) => ({
+    to: `/books?category=${category.slug}`,
+    style: { '--series-ink': seriesInk(category.id) },
+    'aria-current': activeSlug === category.slug ? 'page' : undefined,
+  });
 
   return (
     <BSNavbar expand="lg" expanded={menuOpen} onToggle={setMenuOpen} className="site-navbar sticky-top py-2" aria-label="منوی اصلی">
@@ -174,9 +186,42 @@ function Navbar() {
 
         <BSNavbar.Collapse id="site-nav" className="mt-2 mt-lg-0">
           <Nav className="me-auto flex-column flex-lg-row">
-            <Nav.Link as={NavLink} to="/books" className="py-2 py-lg-1">
+            <Nav.Link as={NavLink} to="/books" className="py-2">
               کتاب‌ها
             </Nav.Link>
+            {series.length > 0 && (
+              <NavDropdown title="مجموعه‌ها" id="series-menu" className="series-menu d-none d-lg-block">
+                <div className="series-menu-grid">
+                  {series.map((category) => (
+                    <NavDropdown.Item key={category.id} as={Link} className="series-menu-item" {...seriesLinkProps(category)}>
+                      <span className="series-index-mark" aria-hidden="true" />
+                      <span className="series-link-label">{category.name}</span>
+                    </NavDropdown.Item>
+                  ))}
+                </div>
+                <NavDropdown.Divider />
+                <NavDropdown.Item as={Link} to="/books" className="series-menu-all">
+                  همه‌ی کتاب‌ها
+                </NavDropdown.Item>
+              </NavDropdown>
+            )}
+            {series.length > 0 && (
+              <div className="nav-series-mobile d-lg-none">
+                <p className="nav-series-title" id="nav-series-title">
+                  مجموعه‌ها
+                </p>
+                <ul aria-labelledby="nav-series-title">
+                  {series.map((category) => (
+                    <li key={category.id}>
+                      <Link {...seriesLinkProps(category)}>
+                        <span className="series-index-mark" aria-hidden="true" />
+                        {category.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </Nav>
 
           {/* جستجوی دسکتاپ */}
@@ -204,8 +249,25 @@ function Navbar() {
           )}
 
           {/* اکشن‌ها و منوی کاربر */}
-          <Nav className="align-items-lg-center gap-lg-2 mt-3 mt-lg-0 flex-column flex-lg-row">
-            {renderCartLink('d-none d-lg-inline-flex')}
+          <Nav className="nav-actions align-items-lg-center mt-3 mt-lg-0 flex-column flex-lg-row">
+            {/* آیکن‌ها یک گروه‌اند: سبد برای همه، اعلان‌ها برای کاربر واردشده (در موبایل اعلان‌ها در منوی حساب است) */}
+            <div className="nav-icons d-none d-lg-flex">
+              {isAuthenticated && (
+                <Link
+                  to="/notifications"
+                  className="nav-icon nav-bell"
+                  aria-label={displayedUnreadCount ? `اعلان‌ها، ${displayedUnreadCount.toLocaleString('fa-IR')} خوانده‌نشده` : 'اعلان‌ها'}
+                >
+                  <FiBell aria-hidden="true" />
+                  {displayedUnreadCount > 0 && (
+                    <span className="nav-icon-count" aria-hidden="true">
+                      {countLabel(displayedUnreadCount)}
+                    </span>
+                  )}
+                </Link>
+              )}
+              {renderCartLink('')}
+            </div>
             {/* فروش هم‌ارز خرید است، پس برای همه دیده می‌شود؛ مهمان پس از ورود به همین فرم برمی‌گردد */}
             <Link
               to="/create-book"
