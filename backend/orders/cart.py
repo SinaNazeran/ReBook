@@ -56,10 +56,23 @@ def remove(request, book_ids):
 
 
 def merge_session_cart(request):
-    """پس از login(): سبد مهمان به حساب منتقل می‌شود؛ تکراری و آگهی خود کاربر کنار می‌روند"""
+    """پس از login(): سبد مهمان به حساب منتقل می‌شود؛ تکراری و آگهی خود کاربر کنار می‌روند.
+
+    جمع دو سبد از سقف نمی‌گذرد؛ اگر جا کم بود، تازه‌ترین کتاب‌های مهمان می‌مانند.
+    """
     ids = request.session.pop(SESSION_KEY, [])
-    for book in Book.objects.filter(pk__in=ids).exclude(seller=request.user):
-        CartItem.objects.get_or_create(user=request.user, book=book)
+    have = set(CartItem.objects.filter(user=request.user).values_list("book_id", flat=True))
+    room = MAX_ITEMS - len(have)
+    if room <= 0:
+        return
+    valid = set(
+        Book.objects.filter(pk__in=ids).exclude(seller=request.user).exclude(pk__in=have).values_list("pk", flat=True)
+    )
+    # ids قدیمی‌ترین اول است؛ به همان ترتیب ساخته می‌شوند تا ترتیب «تازه‌ترین اول» سبد درست بماند
+    new = [book_id for book_id in ids if book_id in valid][-room:]
+    CartItem.objects.bulk_create(
+        (CartItem(user=request.user, book_id=book_id) for book_id in new), ignore_conflicts=True
+    )
 
 
 def pending_buyers(book_ids):

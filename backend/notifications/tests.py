@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import User
 
@@ -53,6 +53,15 @@ class ContactMessageTests(APITestCase):
         self.assertEqual(response.status_code, 201)
         message = ContactMessage.objects.get()
         self.assertEqual((message.email, message.is_handled), ("sara@example.com", False))
+
+    def test_requires_csrf_token(self):
+        client = APIClient(enforce_csrf_checks=True)
+        data = {"name": "سارا", "email": "sara@example.com", "subject": "سؤال", "message": "این یک پیام آزمایشی است."}
+        self.assertEqual(client.post("/api/notifications/contact/", data).status_code, 403)
+
+        client.get("/api/accounts/csrf/")
+        token = client.cookies["csrftoken"].value
+        self.assertEqual(client.post("/api/notifications/contact/", data, HTTP_X_CSRFTOKEN=token).status_code, 201)
 
     def test_invalid_input_is_rejected(self):
         for extra in ({"email": "not-an-email"}, {"message": "کوتاه"}, {"message": "            "}, {"name": ""}):

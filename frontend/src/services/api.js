@@ -167,7 +167,7 @@ export const cartAPI = {
   getCart: () => api.get("/orders/cart/"), // { items: [{ book, available, reason }], count, total }
   addToCart: (bookId) => api.post("/orders/cart/", { book: bookId }),
   removeFromCart: (bookId) => api.delete(`/orders/cart/${bookId}/`),
-  // books و total همان چیزی است که خریدار دید؛ اگر سرور چیز دیگری ببیند 400 می‌دهد
+  // books = [{ id, price }] همان چیزی است که خریدار دید؛ اگر سرور چیز دیگری ببیند 400 می‌دهد
   checkout: (data) => api.post("/orders/checkout/", data), // → { reference_code, orders }
 };
 

@@ -259,6 +259,18 @@ class CartTests(APITestCase):
         response = self.client.get("/api/orders/cart/")
         self.assertEqual((response.status_code, response.data["count"]), (200, 0))
 
+    def test_cart_writes_require_csrf_token(self):
+        book = self.book()
+        client = APIClient(enforce_csrf_checks=True)
+        self.assertEqual(client.post("/api/orders/cart/", {"book": book.pk}).status_code, 403)
+
+        client.get("/api/accounts/csrf/")
+        token = client.cookies["csrftoken"].value
+        self.assertEqual(client.post("/api/orders/cart/", {"book": book.pk}, HTTP_X_CSRFTOKEN=token).status_code, 200)
+        self.assertEqual(client.delete(f"/api/orders/cart/{book.pk}/").status_code, 403)
+        response = client.delete(f"/api/orders/cart/{book.pk}/", HTTP_X_CSRFTOKEN=token)
+        self.assertEqual((response.status_code, response.data["count"]), (200, 0))
+
     def test_cart_is_capped(self):
         self.client.force_authenticate(self.buyer)
         CartItem.objects.bulk_create(
@@ -311,6 +323,19 @@ class CartMergeTests(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(self.account_cart(User.objects.get(username="mina")), {book.pk})
 
+    def test_merge_stops_at_the_cap_and_keeps_newest_guest_books(self):
+        CartItem.objects.bulk_create(
+            CartItem(user=self.buyer, book=self.book()) for _ in range(cart.MAX_ITEMS - 2)
+        )
+        older, newer, newest = self.book(), self.book(), self.book()
+        for book in (older, newer, newest):
+            self.client.post("/api/orders/cart/", {"book": book.pk})
+        self.client.post("/api/accounts/login/", {"username": "buyer", "password": "Kt7-reader-pass"})
+        ids = self.account_cart(self.buyer)
+        self.assertEqual(len(ids), cart.MAX_ITEMS)
+        self.assertTrue({newer.pk, newest.pk} <= ids)
+        self.assertNotIn(older.pk, ids)
+
     def test_logout_empties_visible_cart_but_keeps_account_cart(self):
         self.client.post("/api/accounts/login/", {"username": "buyer", "password": "Kt7-reader-pass"})
         self.client.post("/api/orders/cart/", {"book": self.book().pk})
@@ -331,12 +356,14 @@ class CheckoutTests(APITestCase):
             CartItem.objects.create(user=self.buyer, book=book)
         self.client.force_authenticate(self.buyer)
 
-    def checkout(self, books=None, total=350, address="تهران، خیابان انقلاب"):
+    def checkout(self, books=None, prices=None, address="تهران، خیابان انقلاب"):
+        # قیمتی که خریدار در سبد دید، نه قیمت فعلی پایگاه داده
+        seen = {self.a.pk: 100, self.b.pk: 250, **(prices or {})}
+        ids = [self.a.pk, self.b.pk] if books is None else books
         return self.client.post(
             "/api/orders/checkout/",
             {
-                "books": [self.a.pk, self.b.pk] if books is None else books,
-                "total": total,
+                "books": [{"id": book_id, "price": seen.get(book_id, 0)} for book_id in ids],
                 "shipping_address": address,
             },
             format="json",
@@ -379,12 +406,40 @@ class CheckoutTests(APITestCase):
 
     def test_book_outside_the_cart_is_rejected(self):
         other = Book.objects.create(title="c", author="x", price=50, seller=self.seller_a, status="approved")
-        self.assertEqual(self.checkout(books=[self.a.pk, other.pk], total=150).status_code, 400)
+        response = self.checkout(books=[self.a.pk, other.pk])
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("«c»", response.data["detail"])
+        self.assertFalse(Order.objects.exists())
+
+    def test_book_back_in_review_is_named(self):
+        Book.objects.filter(pk=self.b.pk).update(status="pending")
+        response = self.checkout()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("«b»", response.data["detail"])
+
+    def test_swapped_prices_with_the_same_sum_are_rejected(self):
+        Book.objects.filter(pk=self.a.pk).update(price=150)
+        Book.objects.filter(pk=self.b.pk).update(price=200)
+        response = self.checkout()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("«a»", response.data["detail"])
+        self.assertFalse(Order.objects.exists())
+
+    def test_oversized_or_malformed_list_is_400(self):
+        too_many = [{"id": n, "price": 1} for n in range(cart.MAX_ITEMS + 1)]
+        for books in (too_many, "12", [self.a.pk], [{"id": self.a.pk}], {"id": self.a.pk, "price": 100}):
+            with self.subTest(books=str(books)[:30]):
+                response = self.client.post(
+                    "/api/orders/checkout/",
+                    {"books": books, "shipping_address": "تهران"},
+                    format="json",
+                )
+                self.assertEqual(response.status_code, 400)
         self.assertFalse(Order.objects.exists())
 
     def test_blank_address_or_empty_list_is_400(self):
         self.assertEqual(self.checkout(address="   ").status_code, 400)
-        self.assertEqual(self.checkout(books=[], total=0).status_code, 400)
+        self.assertEqual(self.checkout(books=[]).status_code, 400)
         self.assertFalse(Order.objects.exists())
 
     def test_duplicate_ids_buy_once(self):

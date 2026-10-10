@@ -115,8 +115,8 @@ function Cart() {
     const books = available.map((item) => item.book);
     try {
       const response = await cartAPI.checkout({
-        books: books.map((book) => book.id),
-        total,
+        // قیمت هر کتاب همان که خریدار دید؛ سرور هر کدام را جدا می‌سنجد
+        books: books.map((book) => ({ id: book.id, price: book.price })),
         shipping_address: address.trim(),
       });
       setReceipt({ books, code: response.data.reference_code });

@@ -12,8 +12,9 @@ import { orderAPI, getErrorMessage } from '../services/api';
  * @param {object} book - کتاب سفارش
  * @param {number} existingOrderId - سفارش باز خود کاربر
  * @param {() => void} onPaid - پس از پرداخت موفق (صفحه کتاب را فروخته‌شده نشان می‌دهد)
+ * @param {() => void} onStale - پس از پرداخت ناموفق (سفارش شاید لغو یا پرداخت شده باشد؛ صفحه وضعیت تازه را می‌گیرد)
  */
-function PurchaseModal({ show, onHide, book, existingOrderId, onPaid }) {
+function PurchaseModal({ show, onHide, book, existingOrderId, onPaid, onStale }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [trackingCode, setTrackingCode] = useState('');
@@ -32,6 +33,7 @@ function PurchaseModal({ show, onHide, book, existingOrderId, onPaid }) {
       onPaid?.();
     } catch (err) {
       setError(getErrorMessage(err));
+      onStale?.();
     } finally {
       setBusy(false);
     }

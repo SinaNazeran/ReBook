@@ -67,7 +67,7 @@ Copies that aren't in `visible_books(user)` (`pending` or `rejected` after an ed
 | `GET cart/` | AllowAny | `{items: [{book, available, reason}], count, total}`. `book` uses `BookListSerializer` (same shape as a card). `count` = visible items; `total` = sum of available items' prices. |
 | `POST cart/` `{book}` | AllowAny, `csrf_protect`, throttle `cart` | Adds a buyable copy and returns the cart. Adding a copy that's already there changes nothing (200). Cap: 50 items → 400. Unknown or invisible id → 404. |
 | `DELETE cart/<int:book_id>/` | AllowAny, `csrf_protect`, throttle `cart` | Removes it (no-op if absent) and returns the cart. |
-| `POST checkout/` `{books: [ids], total, shipping_address}` | IsAuthenticated | See below. `total` is the sum the user saw; a mismatch is a 400 («قیمت سبد عوض شده است»). |
+| `POST checkout/` `{books: [{id, price}], shipping_address}` | IsAuthenticated | See below. Each `price` is what the user saw for that book; any mismatch is a 400 that names the book («قیمت «…» عوض شده است»). At most `MAX_ITEMS` (50) entries. *(Changed 2026-10-10 from `{books: [ids], total}`: a sum check missed two price changes that cancel out.)* |
 
 `DEFAULT_THROTTLE_RATES` gains `"cart": "60/min"`. `GET` and the writes share one `CartView`, so the throttle counts all of them. That's fine, because the frontend only reads the cart once per auth change. Errors use `{"detail": ...}` or per-field lists, never `{"error": ...}`.
 

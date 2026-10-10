@@ -246,19 +246,34 @@ PERSIAN_DIGITS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
 class CheckoutView(APIView):
     """پرداخت آزمایشی کل سبد: برای هر کتاب یک سفارش پرداخت‌شده، همه با هم یا هیچ‌کدام.
 
-    books و total همان چیزی است که خریدار در سبد دید؛ اگر سبد یا قیمت عوض شده باشد چیزی ساخته نمی‌شود.
+    books = [{id, price}] همان چیزی است که خریدار در سبد دید؛ اگر کتابی یا قیمتی عوض شده باشد چیزی ساخته نمی‌شود.
     """
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @staticmethod
+    def changed_message(book_id, book, in_cart):
+        """کتابی که دیگر در سبد نیست یا دیده نمی‌شود، با نامش؛ نام کتاب بیرون از سبد و دیده‌نشده فاش نمی‌شود"""
+        if book is not None:
+            return f"«{book.title}» دیگر در سبدت نیست؛ دوباره نگاهش کن."
+        if book_id in in_cart:
+            title = Book.objects.filter(pk=book_id).values_list("title", flat=True).first()
+            return f"«{title}» دیگر در دسترس نیست؛ دوباره نگاهش کن."
+        return "سبدت عوض شده است؛ دوباره نگاهش کن."
+
     def post(self, request):
         user = request.user
         address = str(request.data.get("shipping_address") or "").strip()
-        try:
-            ids = list(dict.fromkeys(int(book_id) for book_id in request.data.get("books") or []))
-            expected_total = int(request.data.get("total"))
-        except (TypeError, ValueError):
+        items = request.data.get("books") or []
+        if not isinstance(items, list) or len(items) > cart.MAX_ITEMS:
             return Response({"detail": "سبد ارسال‌شده معتبر نیست."}, status=status.HTTP_400_BAD_REQUEST)
+        seen_prices = {}
+        try:
+            for item in items:
+                seen_prices.setdefault(int(item["id"]), int(item["price"]))
+        except (TypeError, ValueError, KeyError):
+            return Response({"detail": "سبد ارسال‌شده معتبر نیست."}, status=status.HTTP_400_BAD_REQUEST)
+        ids = list(seen_prices)
 
         if not ids:
             return Response({"detail": "سبد خالی است."}, status=status.HTTP_400_BAD_REQUEST)
@@ -282,17 +297,17 @@ class CheckoutView(APIView):
         for book_id in ids:
             book = books.get(book_id)
             if book is None or book_id not in in_cart:
-                return Response(
-                    {"detail": "سبدت عوض شده است؛ دوباره نگاهش کن."}, status=status.HTTP_400_BAD_REQUEST
-                )
+                return Response({"detail": self.changed_message(book_id, book, in_cart)}, status=status.HTTP_400_BAD_REQUEST)
             reason = cart.unavailable_reason(book, user, pending)
             if reason:
                 return Response({"detail": f"«{book.title}»: {reason}."}, status=status.HTTP_400_BAD_REQUEST)
-        # قیمت کتاب تأییدشده با ویرایش فروشنده عوض نمی‌شود (به صف بررسی برمی‌گردد)، اما مدیر می‌تواند عوضش کند
-        if sum(book.price for book in books.values()) != expected_total:
-            return Response(
-                {"detail": "قیمت سبد عوض شده است؛ دوباره نگاهش کن."}, status=status.HTTP_400_BAD_REQUEST
-            )
+            # قیمت کتاب تأییدشده با ویرایش فروشنده عوض نمی‌شود (به صف بررسی برمی‌گردد)، اما مدیر می‌تواند عوضش کند.
+            # هر کتاب جدا سنجیده می‌شود: دو تغییر با جمع برابر هم دیده می‌شوند
+            if book.price != seen_prices[book_id]:
+                return Response(
+                    {"detail": f"قیمت «{book.title}» عوض شده است؛ دوباره نگاهش کن."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         reference_code = "".join(random.choices(string.digits, k=10))
         now = timezone.now()
