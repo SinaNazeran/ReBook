@@ -3,19 +3,32 @@ import { flushSync } from 'react-dom';
 const DETAIL_COVER = '.detail-cover > :first-child';
 const WAIT_MS = 800;
 
-// منتظر جلد صفحه‌ی کتاب می‌ماند (صفحه lazy است و داده را می‌گیرد)؛ اگر دیر برسد، گذار فقط محو می‌شود
-async function waitForDetailCover() {
-  const start = performance.now();
-  while (performance.now() - start < WAIT_MS) {
-    const el = document.querySelector(DETAIL_COVER);
-    if (el) {
-      const img = el.querySelector('img');
-      await Promise.race([img?.decode().catch(() => {}), new Promise((r) => setTimeout(r, 200))]);
-      return el;
+// منتظر جلد صفحه‌ی کتاب می‌ماند (صفحه lazy است و داده را می‌گیرد)؛ اگر دیر برسد، گذار فقط محو می‌شود.
+// نه با requestAnimationFrame: در callback گذار، Chrome رندر صفحه را نگه می‌دارد و rAF اجرا نمی‌شود؛
+// حلقه‌ی rAF تا مهلت ۴ ثانیه‌ای مرورگر گیر می‌کرد و صفحه همان‌قدر یخ می‌زد. MutationObserver و setTimeout اجرا می‌شوند.
+function appeared(selector, ms) {
+  const found = document.querySelector(selector);
+  if (found) return Promise.resolve(found);
+  return new Promise((resolve) => {
+    const observer = new MutationObserver(() => {
+      const el = document.querySelector(selector);
+      if (el) done(el);
+    });
+    const timer = setTimeout(() => done(null), ms);
+    function done(el) {
+      observer.disconnect();
+      clearTimeout(timer);
+      resolve(el);
     }
-    await new Promise((r) => requestAnimationFrame(r));
-  }
-  return null;
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+}
+
+async function waitForDetailCover() {
+  const el = await appeared(DETAIL_COVER, WAIT_MS);
+  const img = el?.querySelector('img');
+  if (img) await Promise.race([img.decode().catch(() => {}), new Promise((r) => setTimeout(r, 200))]);
+  return el;
 }
 
 /**

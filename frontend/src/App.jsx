@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
@@ -18,7 +18,10 @@ const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const BookList = lazy(() => import("./pages/BookList"));
-const BookDetail = lazy(() => import("./pages/BookDetail"));
+// صفحه‌ی کتاب پربازدیدترین مقصد است (کارت‌های خانه، فهرست، علاقه‌مندی‌ها): کدش در زمان بیکاری از پیش گرفته می‌شود.
+// بی این، اولین کلیک منتظر دانلود این تکه می‌ماند و React Router صفحه‌ی قبل را بی هیچ نشانه‌ای نگه می‌داشت
+const loadBookDetail = () => import("./pages/BookDetail");
+const BookDetail = lazy(loadBookDetail);
 const CreateBook = lazy(() => import("./pages/CreateBook"));
 const Profile = lazy(() => import("./pages/Profile"));
 const MyBooks = lazy(() => import("./pages/MyBooks"));
@@ -31,6 +34,15 @@ const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 
 function App() {
+  useEffect(() => {
+    if (!window.requestIdleCallback) {
+      const timer = setTimeout(loadBookDetail, 2000);
+      return () => clearTimeout(timer);
+    }
+    const idle = window.requestIdleCallback(loadBookDetail, { timeout: 3000 });
+    return () => window.cancelIdleCallback(idle);
+  }, []);
+
   return (
     <AuthProvider>
       <CartProvider>
