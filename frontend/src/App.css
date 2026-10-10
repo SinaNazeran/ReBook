@@ -2647,19 +2647,46 @@ body:has(main > .series-paper) .site-footer {
   padding-block: 2rem 3.5rem;
 }
 
+/* هر بخش در قاب دوخطی شناسنامه‌ی کتاب (همان .colophon صفحه‌ی کتاب)، به مرکب مجموعه‌ی خودش (--series روی بخش) */
 .about-section {
   margin-block-start: 3rem;
+  padding: 1.75rem 2rem 2rem;
+  border-radius: var(--bs-border-radius-xl);
+  background-color: var(--rb-surface);
+  box-shadow:
+    inset 0 0 0 5px var(--rb-surface),
+    inset 0 0 0 6px var(--rb-rule),
+    var(--d-panel);
 }
 
 .about-heading {
   margin-block-end: 1rem;
   font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
   line-height: 1.35;
+  text-align: center;
+}
+
+/* سرعنوان وسط با ردیف زینتی به مرکب بخش، مثل سرعنوان شناسنامه */
+.about-heading::after {
+  content: "";
+  display: block;
+  inline-size: min(16rem, 70%);
+  block-size: 12px;
+  margin: 0.5rem auto 0;
+  background-color: var(--series);
+  -webkit-mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
+  mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
 }
 
 .about-lead {
   max-inline-size: 60ch;
+  margin-inline: auto;
   color: var(--rb-ink-muted);
+  text-align: center;
+}
+
+.about-page .sell-step::before {
+  background-color: var(--series);
 }
 
 .about-grades {
@@ -2671,6 +2698,19 @@ body:has(main > .series-paper) .site-footer {
 .about-grade {
   display: grid;
   gap: 0.25rem 1.5rem;
+}
+
+/* نقطه‌چین از درجه تا معنایش، مثل فهرست شناسنامه */
+.about-grade dt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.about-grade dt::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px dotted var(--rb-field-border);
 }
 
 .about-grade dd {

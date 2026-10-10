@@ -8,6 +8,7 @@ import { CONDITION_LABELS, CONDITION_NOTES } from '../utils/condition';
 /**
  * درباره‌ی ری‌بوک: فقط آنچه در خود محصول درست است (PRODUCT.md)؛ بدون آمار، آدم یا نقل‌قول ساختگی.
  * معنای درجه‌ها از همان CONDITION_NOTES صفحه‌ی کتاب و فرم فروش می‌آید تا از هم جدا نشوند.
+ * هر بخش در قاب شناسنامه به مرکب یک مجموعه (--series) است؛ انتخاب مالک، ۲۰۲۶-۱۰-۱۰.
  */
 function About() {
   return (
@@ -22,21 +23,21 @@ function About() {
           </p>
         </header>
 
-        <section className="about-section" aria-labelledby="about-buy">
+        <section className="about-section" aria-labelledby="about-buy" style={{ '--series': 'var(--rb-series-2)' }}>
           <h2 id="about-buy" className="about-heading display-type">
             خرید
           </h2>
           <StepRail steps={BUY_STEPS} />
         </section>
 
-        <section className="about-section" aria-labelledby="about-sell">
+        <section className="about-section" aria-labelledby="about-sell" style={{ '--series': 'var(--rb-series-5)' }}>
           <h2 id="about-sell" className="about-heading display-type">
             فروش
           </h2>
           <StepRail steps={SELL_STEPS} />
         </section>
 
-        <section className="about-section" aria-labelledby="about-condition">
+        <section className="about-section" aria-labelledby="about-condition" style={{ '--series': 'var(--rb-series-6)' }}>
           <h2 id="about-condition" className="about-heading display-type">
             وضعیت ظاهری، به زبان ساده
           </h2>
@@ -53,7 +54,7 @@ function About() {
           </dl>
         </section>
 
-        <section className="about-section" aria-labelledby="about-trust">
+        <section className="about-section" aria-labelledby="about-trust" style={{ '--series': 'var(--rb-series-4)' }}>
           <h2 id="about-trust" className="about-heading display-type">
             چند نکته که بهتر است بدانی
           </h2>
