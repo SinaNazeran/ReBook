@@ -1,11 +1,11 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
-import { ToastContainer, Slide } from "react-toastify";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 
 // کامپوننت‌های ثابت (همیشه لازم‌اند، lazy نمی‌شوند)
 import Navbar from "./components/Navbar";
+import Toaster from "./components/Toaster";
 import Footer from "./components/Footer";
 import Loading from "./components/Loading";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -122,14 +122,7 @@ function App() {
 
         <Footer />
 
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          rtl={true}
-          newestOnTop
-          transition={Slide}
-        />
+        <Toaster />
       </div>
       </CartProvider>
     </AuthProvider>

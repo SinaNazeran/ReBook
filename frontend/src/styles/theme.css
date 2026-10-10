@@ -468,28 +468,7 @@ textarea.form-control {
     --bs-nav-tabs-border-color: var(--rb-rule);
 }
 
-.Toastify .Toastify__toast {
-    border-radius: var(--bs-border-radius-lg);
-    box-shadow: var(--rb-shadow-overlay);
-}
-
-/* Slide (در App.jsx) از همان لبه‌ای که toast رویش می‌نشیند وارد و خارج می‌شود؛ ۵۰۰ms پیش‌فرض برای پیام وضعیت کُند است */
-.Toastify .Toastify--animate {
-    animation-duration: 300ms;
-    animation-timing-function: var(--rb-ease-out);
-}
-
-/* حرکت کم: فقط محو شدن، بی‌جابه‌جایی */
-@media (prefers-reduced-motion: reduce) {
-    .Toastify--animate[class*="Toastify__slide-enter"] {
-        animation-name: rb-fade-in;
-    }
-
-    .Toastify--animate[class*="Toastify__slide-exit"] {
-        animation-name: rb-fade-out;
-    }
-}
-
+/* toastها در App.css بخش ۱۸ */
 @keyframes rb-fade-in {
     from { opacity: 0; }
 }

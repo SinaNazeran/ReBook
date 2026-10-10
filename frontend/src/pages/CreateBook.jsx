@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Alert, InputGroup } from 'react-bootstrap';
 import Form from '../components/Form';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toast';
 import { FiUpload, FiTrash2 } from 'react-icons/fi';
 import { bookAPI, getErrorMessage } from '../services/api';
 import BookCard from '../components/BookCard';

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Accordion } from 'react-bootstrap';
 import Form from '../components/Form';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toast';
 import { notificationAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
 import StatusMark from '../components/StatusMark';

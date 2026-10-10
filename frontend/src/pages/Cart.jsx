@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toast';
 import Form from '../components/Form';
 import { cartAPI, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/useAuth.js';

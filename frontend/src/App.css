@@ -3088,3 +3088,167 @@ body:has(main > .series-paper) .site-footer {
 .contact-aside {
   padding-block-start: 0.25rem;
 }
+
+/* ==========================================================================
+   ۱۸. toastها (components/Toaster.jsx، زمان و نقش در utils/toast.js)
+   react-toastify بعد از این فایل لود می‌شود، پس قاعده‌ها با .Toastify جلو می‌آیند.
+   رنگ هر نوع در --t-*: ink نشانه و نوار زمان، deep متن روی ته‌رنگ، tint ته‌رنگ، line لبه
+   ========================================================================== */
+.Toastify {
+  --toastify-toast-width: 22.5rem;
+  /* این دو در :root خود react-toastify از offset ساخته می‌شوند، پس مستقیم تنظیم می‌شوند */
+  --toastify-toast-left: max(1.5rem, env(safe-area-inset-left));
+  --toastify-toast-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  --toastify-color-light: var(--rb-surface);
+  --toastify-text-color-light: var(--rb-ink);
+  --toastify-color-progress-bgo: 0.14;
+}
+.Toastify .Toastify__toast--success {
+  --t-ink: var(--rb-success);
+  --t-deep: var(--bs-success-text-emphasis);
+  --t-tint: var(--bs-success-bg-subtle);
+  --t-line: var(--bs-success-border-subtle);
+}
+.Toastify .Toastify__toast--error {
+  --t-ink: var(--rb-danger);
+  --t-deep: var(--bs-danger-text-emphasis);
+  --t-tint: var(--bs-danger-bg-subtle);
+  --t-line: var(--bs-danger-border-subtle);
+}
+.Toastify .Toastify__toast--warning {
+  --t-ink: var(--rb-warning);
+  --t-deep: var(--bs-warning-text-emphasis);
+  --t-tint: var(--bs-warning-bg-subtle);
+  --t-line: var(--bs-warning-border-subtle);
+}
+.Toastify .Toastify__toast--info {
+  --t-ink: var(--rb-info);
+  --t-deep: var(--bs-info-text-emphasis);
+  --t-tint: var(--bs-info-bg-subtle);
+  --t-line: var(--bs-info-border-subtle);
+}
+
+.Toastify .Toastify__toast {
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-height: 0;
+  margin-bottom: 0.75rem;
+  padding: 1rem 1rem 1.125rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius-lg);
+  /* لبه‌ی بالا یک نوار چاپی به رنگ نوع، مثل نوار مجموعه روی جلد */
+  background-image: linear-gradient(var(--t-ink), var(--t-ink));
+  background-repeat: no-repeat;
+  background-size: 100% 4px;
+  box-shadow: var(--rb-shadow-overlay);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+/* متن پیام گره‌ی متنی بی‌پوشش است؛ نشانه‌ی ۳۲ پیکسلی کمی بالا می‌رود تا وسطش با سطر اول یکی شود.
+   نشانه جدا zoom نمی‌شود (پیش‌فرض از ۳۰٪)؛ خود toast بالا می‌آید */
+.Toastify .Toastify__toast-icon {
+  width: auto;
+  margin-block: -0.2rem;
+  margin-inline-end: 0;
+}
+.Toastify .Toastify--animate-icon {
+  animation: none;
+}
+.rb-toast-icon {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: var(--bs-border-radius);
+  background-color: var(--t-tint);
+  color: var(--t-deep);
+  font-size: 1.125rem;
+}
+/* ۴۴ پیکسل برای انگشت، با حاشیه‌ی منفی تا گوشه‌ی toast شلوغ نشود */
+.rb-toast-close {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  margin-block: -0.5rem;
+  margin-inline: auto -0.5rem;
+  border: 0;
+  border-radius: var(--bs-border-radius);
+  background: transparent;
+  color: var(--rb-ink-muted);
+  font-size: 1.125rem;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.rb-toast-close:hover {
+  background-color: var(--rb-surface-sunken);
+  color: var(--rb-ink);
+}
+.rb-toast-close:focus-visible {
+  outline: 2px solid var(--rb-focus);
+  outline-offset: -2px;
+}
+/* hideProgressBar (Toaster.jsx) نوار را aria-hidden می‌کند (برچسب ثابت انگلیسی «notification timer» دارد)
+   اما همچنان زمان را می‌شمارد؛ این‌جا دوباره دیده می‌شود */
+.Toastify .Toastify__progress-bar--wrp,
+.Toastify .Toastify__progress-bar--wrp[data-hidden="true"] {
+  height: 3px;
+  opacity: 1;
+}
+.Toastify .Toastify__progress-bar,
+.Toastify .Toastify__progress-bar--bg {
+  background: var(--t-ink);
+}
+.Toastify .Toastify__progress-bar {
+  opacity: 1;
+}
+
+/* حرکت: کمی از پایین بالا می‌آید، خروج کوتاه‌تر. با حرکت کمتر فقط محو */
+.Toastify .rb-toast-in {
+  animation: rb-toast-in 260ms var(--rb-ease-out) both;
+}
+.Toastify .rb-toast-out {
+  animation: rb-toast-out 180ms var(--rb-ease-out) both;
+}
+@keyframes rb-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.97);
+  }
+}
+@keyframes rb-toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.97);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .Toastify .rb-toast-in {
+    animation-name: rb-fade-in;
+  }
+  .Toastify .rb-toast-out {
+    animation-name: rb-fade-out;
+  }
+}
+
+/* موبایل: react-toastify زیر ۴۸۰px toast را لبه‌به‌لبه و بی‌گوشه می‌کند؛ این‌جا با حاشیه‌ی صفحه و گوشه می‌ماند */
+@media (max-width: 575.98px) {
+  .Toastify .Toastify__toast-container {
+    inset-inline: 0.75rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    width: auto;
+    transform: none;
+  }
+  .Toastify .Toastify__toast {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    border-radius: var(--bs-border-radius-lg);
+  }
+}
+/* نوار ثابت خرید (کتاب، سبد) زیر lg: toast بالای آن می‌نشیند، نه رویش */
+@media (max-width: 991.98px) {
+  body:has(.buy-bar) .Toastify .Toastify__toast-container {
+    bottom: calc(5.25rem + env(safe-area-inset-bottom));
+  }
+}

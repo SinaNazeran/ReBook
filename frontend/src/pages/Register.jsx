@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import Form from '../components/Form';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toast';
 import { useAuth } from '../context/useAuth.js';
 import { getErrorMessage } from '../services/api';
 import PasswordField from '../components/PasswordField';

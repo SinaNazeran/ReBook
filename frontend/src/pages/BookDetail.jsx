@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toast';
 import { FiHeart, FiShoppingCart } from 'react-icons/fi';
 import { bookAPI, orderAPI, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/useAuth.js';

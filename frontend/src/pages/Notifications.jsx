@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toast';
 import { FiShoppingBag, FiCreditCard, FiCheckSquare, FiXCircle, FiInfo } from 'react-icons/fi';
 import { notificationAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';

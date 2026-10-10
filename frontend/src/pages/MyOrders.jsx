@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Tabs, Tab, Button } from 'react-bootstrap';
 import { Link, useSearchParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toast';
 import { orderAPI, getErrorMessage } from '../services/api';
 import Loading from '../components/Loading';
 import OrderList from '../components/OrderList';

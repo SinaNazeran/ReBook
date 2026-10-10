@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toast';
 import { bookAPI, getErrorMessage } from '../services/api';
 import BookCard from '../components/BookCard';
 import Loading from '../components/Loading';

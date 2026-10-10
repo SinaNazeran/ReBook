@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Container, Row, Col, Form, Button, InputGroup, Offcanvas } from 'react-bootstrap';
 import { Link, useSearchParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toast';
 import { bookAPI, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/useAuth.js';
 import BookCard, { BookCardSkeleton } from '../components/BookCard';
