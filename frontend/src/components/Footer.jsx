@@ -1,6 +1,7 @@
 import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import BrandMark from './BrandMark';
+import { useAuth } from '../context/useAuth.js';
 
 // سال جاری به تقویم شمسی، بدون نیاز به کتابخانه‌ی جانبی
 function getCurrentPersianYear() {
@@ -9,8 +10,11 @@ function getCurrentPersianYear() {
   );
 }
 
-// ایمیل، تلفن و شبکه‌های اجتماعی قبلی جانگهدار بودند (PRODUCT.md)؛ تنها کانال واقعی تماس، فرم «تماس با ما» و تیکت پشتیبانی است
+// ایمیل، تلفن و شبکه‌های اجتماعی قبلی جانگهدار بودند (PRODUCT.md)؛ تنها کانال واقعی تماس، فرم «تماس با ما» و تیکت پشتیبانی است.
+// هر کس یک راه می‌بیند: مهمان «تماس با ما»، کاربر واردشده «پشتیبانی» (که پاسخ‌ها هم همان‌جاست)
 function Footer() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <footer className="site-footer mt-5">
       {/* کلید مجموعه‌ها، مثل نوار رنگ‌های پشت جلد کتاب جیبی: هشت مرکب کنار هم */}
@@ -37,13 +41,10 @@ function Footer() {
               <Link to="/create-book">فروش کتاب</Link>
             </li>
             <li>
-              <Link to="/support">پشتیبانی</Link>
-            </li>
-            <li>
               <Link to="/about">درباره‌ی ما</Link>
             </li>
             <li>
-              <Link to="/contact">تماس با ما</Link>
+              {isAuthenticated ? <Link to="/support">پشتیبانی</Link> : <Link to="/contact">تماس با ما</Link>}
             </li>
           </ul>
         </nav>

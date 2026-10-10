@@ -227,6 +227,10 @@ The footer gets «درباره‌ی ما» (`/about`) and «تماس با ما»
 - `DESIGN.md`: Cart Ledger, Checkout, Contact form, About sections.
 - `.claude/REDESIGN-GUIDE.md`: a progress entry with commits, shots and gotchas.
 
+## Amendment (2026-10-10, owner)
+
+Support and Contact overlapped for logged-in users (two forms creating the same ticket). `/contact` is now guest-only: logged-in users are redirected to `/support`, where their tickets and replies live, and the footer shows «تماس با ما» or «پشتیبانی» by login state.
+
 ## Open items for the owner
 
 - Confirm the copy, in particular the guest Contact success message (true only if someone answers by email) and `CONDITION_NOTES`, which About now repeats.

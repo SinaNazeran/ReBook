@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import Form from '../components/Form';
 import Loading from '../components/Loading';
@@ -12,20 +12,18 @@ const FIELD_ORDER = ['name', 'email', 'subject', 'message'];
 const EMPTY_FORM = { name: '', email: '', subject: '', message: '' };
 
 // همان قواعد سرور (ContactMessageSerializer)، تا خطای تایپی پیش از ارسال دیده شود و سهمیه‌ی ارسال را نخورد
-function validate(data, isGuest) {
+function validate(data) {
   const errors = {};
-  if (isGuest) {
-    if (!data.name.trim()) errors.name = 'نامت را بنویس تا بدانیم با چه کسی حرف می‌زنیم.';
-    if (!EMAIL_PATTERN.test(data.email.trim())) errors.email = 'یک ایمیل درست بنویس، مثل name@example.com.';
-  }
+  if (!data.name.trim()) errors.name = 'نامت را بنویس تا بدانیم با چه کسی حرف می‌زنیم.';
+  if (!EMAIL_PATTERN.test(data.email.trim())) errors.email = 'یک ایمیل درست بنویس، مثل name@example.com.';
   if (!data.subject.trim()) errors.subject = 'موضوع را در یک خط بنویس.';
   if (data.message.trim().length < MIN_MESSAGE) errors.message = 'پیامت را کمی کامل‌تر بنویس (دست‌کم ۱۰ حرف).';
   return errors;
 }
 
 /**
- * تماس با ما. مهمان: پیام در پنل مدیریت خوانده می‌شود (ContactMessage).
- * کاربر واردشده: پیام تیکت پشتیبانی می‌شود و پاسخ در «پشتیبانی» می‌آید.
+ * تماس با ما، فقط برای مهمان: پیام در پنل مدیریت خوانده می‌شود (ContactMessage).
+ * کاربر واردشده به «پشتیبانی» می‌رود؛ آنجا تیکت می‌فرستد و پاسخ را کنار تیکت‌هایش می‌بیند.
  * تلفن یا ایمیل عمومی نداریم و ساختگی هم نشان داده نمی‌شود (PRODUCT.md).
  */
 function Contact() {
@@ -34,7 +32,7 @@ function Contact() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [sent, setSent] = useState(null); // null | 'ticket' | 'message'
+  const [sent, setSent] = useState(false);
   // فرم جایش را به پیام «ثبت شد» می‌دهد؛ فوکوس به سرتیتر همان پیام می‌رود تا گم نشود
   const sentHeadingRef = useRef(null);
   useEffect(() => {
@@ -49,8 +47,7 @@ function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isGuest = !isAuthenticated;
-    const errors = validate(formData, isGuest);
+    const errors = validate(formData);
     const firstError = FIELD_ORDER.find((name) => errors[name]);
     if (firstError) {
       setFieldErrors(errors);
@@ -60,15 +57,11 @@ function Contact() {
 
     setSubmitting(true);
     setError('');
-    const payload = { subject: formData.subject.trim(), message: formData.message.trim() };
     try {
-      if (isGuest) {
-        await notificationAPI.sendContactMessage({ ...payload, name: formData.name.trim(), email: formData.email.trim() });
-        setSent('message');
-      } else {
-        await notificationAPI.createTicket(payload);
-        setSent('ticket');
-      }
+      await notificationAPI.sendContactMessage(
+        Object.fromEntries(FIELD_ORDER.map((name) => [name, formData[name].trim()])),
+      );
+      setSent(true);
       setFormData(EMPTY_FORM);
     } catch (err) {
       const data = err.response?.data;
@@ -87,6 +80,8 @@ function Contact() {
   };
 
   if (loading) return <Loading fullPage />;
+  // کاربر واردشده تیکت می‌فرستد تا پاسخ را همان‌جا ببیند؛ دو فرم برای یک کار نداریم
+  if (isAuthenticated) return <Navigate to="/support" replace />;
 
   const field = (name, label, props = {}) => (
     <Form.Group controlId={`contact-${name}`} className="mb-3">
@@ -112,11 +107,7 @@ function Contact() {
         <header className="ledger-header">
           <div>
             <h1 className="ledger-title">تماس با ما</h1>
-            <p className="sell-lead mt-2 mb-0">
-              {isAuthenticated
-                ? 'پیامت به‌صورت تیکت پشتیبانی ثبت می‌شود و پاسخ تیم ری‌بوک در صفحه‌ی «پشتیبانی» می‌آید.'
-                : 'سؤال، پیشنهاد یا مشکلی داری؟ بنویس؛ تیم ری‌بوک پیام‌ها را می‌خواند.'}
-            </p>
+            <p className="sell-lead mt-2 mb-0">سؤال، پیشنهاد یا مشکلی داری؟ بنویس؛ تیم ری‌بوک پیام‌ها را می‌خواند.</p>
           </div>
         </header>
 
@@ -127,14 +118,8 @@ function Contact() {
                 <h2 className="support-heading" tabIndex={-1} ref={sentHeadingRef}>
                   پیامت ثبت شد
                 </h2>
-                {sent === 'ticket' ? (
-                  <p>
-                    پاسخ تیم ری‌بوک در <Link to="/support">پشتیبانی</Link> می‌آید.
-                  </p>
-                ) : (
-                  <p>تیم ری‌بوک آن را می‌خواند. اگر پاسخی لازم باشد، به همین ایمیل فرستاده می‌شود.</p>
-                )}
-                <Button variant="outline-secondary" onClick={() => setSent(null)}>
+                <p>تیم ری‌بوک آن را می‌خواند. اگر پاسخی لازم باشد، به همین ایمیل فرستاده می‌شود.</p>
+                <Button variant="outline-secondary" onClick={() => setSent(false)}>
                   پیام دیگر
                 </Button>
               </div>
@@ -143,19 +128,15 @@ function Contact() {
                 <h2 id="contact-form-title" className="support-heading">
                   پیام تازه
                 </h2>
-                {!isAuthenticated && (
-                  <>
-                    {field('name', 'نام', { autoComplete: 'name', maxLength: 100 })}
-                    {field('email', 'ایمیل', {
-                      type: 'email',
-                      dir: 'ltr',
-                      className: 'latin-id',
-                      autoComplete: 'email',
-                      spellCheck: false,
-                      maxLength: 254,
-                    })}
-                  </>
-                )}
+                {field('name', 'نام', { autoComplete: 'name', maxLength: 100 })}
+                {field('email', 'ایمیل', {
+                  type: 'email',
+                  dir: 'ltr',
+                  className: 'latin-id',
+                  autoComplete: 'email',
+                  spellCheck: false,
+                  maxLength: 254,
+                })}
                 {field('subject', 'موضوع', { autoComplete: 'off', maxLength: 200 })}
                 {field('message', 'پیام', {
                   as: 'textarea',
@@ -182,9 +163,11 @@ function Contact() {
               </h2>
               <ul className="about-facts">
                 <li>
-                  برای مشکل سفارش یا پرداخت،{' '}
-                  {isAuthenticated ? <Link to="/support">پشتیبانی</Link> : 'پس از ورود، صفحه‌ی پشتیبانی'} بهترین راه است:
-                  پاسخ همان‌جا کنار تیکت‌هایت می‌آید.
+                  حساب داری؟{' '}
+                  <Link to="/login" state={{ from: { pathname: '/support' } }}>
+                    وارد شو
+                  </Link>{' '}
+                  و از «پشتیبانی» بنویس: پاسخ تیم همان‌جا کنار پیام‌هایت می‌آید. مشکل سفارش یا پرداخت هم بهتر است از همان‌جا گفته شود.
                 </li>
                 <li>شماره‌ی سفارش یا نام کتاب را بنویس تا زودتر پیدایش کنیم.</li>
                 <li>ری‌بوک فعلاً تلفن و ایمیل عمومی ندارد؛ همین فرم راه رسیدن به تیم است.</li>
