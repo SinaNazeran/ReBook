@@ -16,6 +16,18 @@ const TYPE_ICON = {
   system: FiInfo,
 };
 
+// پیوندهای زیر اعلانی که به یک کتاب اشاره دارد
+const bookLinks = ({ notification_type: type, book }) => {
+  if (!book) return [];
+  if (type === 'book_approved') return [{ to: `/books/${book}`, label: 'دیدن آگهی' }];
+  if (type === 'book_rejected')
+    return [
+      { to: `/books/${book}/edit`, label: 'ویرایش آگهی' },
+      { to: '/support', label: 'پشتیبانی' },
+    ];
+  return [];
+};
+
 const formatDate = (value) =>
   new Date(value).toLocaleDateString('fa-IR', { month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -116,8 +128,9 @@ function Notifications() {
             {notifications.map((notification) => {
               const Icon = TYPE_ICON[notification.notification_type] ?? FiInfo;
               const unread = !notification.is_read;
+              const links = bookLinks(notification);
               return (
-                <li key={notification.id}>
+                <li key={notification.id} className={unread ? 'is-unread' : undefined}>
                   <button
                     type="button"
                     className={`notice${unread ? ' is-unread' : ''}`}
@@ -137,6 +150,15 @@ function Notifications() {
                     <span className="notice-date">{formatDate(notification.created_at)}</span>
                     {unread && <span className="notice-dot" aria-hidden="true" />}
                   </button>
+                  {links.length > 0 && (
+                    <p className="notice-links">
+                      {links.map((link) => (
+                        <Link key={link.to} to={link.to} onClick={() => handleMarkRead(notification)}>
+                          {link.label}
+                        </Link>
+                      ))}
+                    </p>
+                  )}
                 </li>
               );
             })}

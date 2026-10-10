@@ -2364,6 +2364,28 @@
   background-color: var(--rb-ink);
 }
 
+/* پیوندهای اعلانِ کتاب: زیر متن، هم‌راستا با ستون متن (آیکن 2.25rem + فاصله 1rem) */
+.notice:has(+ .notice-links) {
+  padding-block-end: 0.25rem;
+}
+
+.notice-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  margin: 0;
+  padding-block-end: 0.75rem;
+  padding-inline: calc(1rem + 2.25rem + 1rem) 1.75rem;
+  font-size: 0.9375rem;
+}
+
+.notice-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  font-weight: 500;
+}
+
 @media (max-width: 575.98px) {
   .notice {
     grid-template-columns: 2.25rem minmax(0, 1fr);
@@ -2826,8 +2848,8 @@ body:has(main > .series-paper) .site-footer {
   border-bottom-color: var(--rb-accent);
 }
 
-/* اعلان خوانده‌نشده: نشان زعفرانی و کاغذ زعفرانی کم‌رنگ */
-.notice.is-unread {
+/* اعلان خوانده‌نشده: نشان زعفرانی و کاغذ زعفرانی کم‌رنگ (روی li تا پیوندهای زیرش هم بگیرد) */
+.notice-list > li.is-unread {
   background-color: color-mix(in oklab, var(--rb-accent) 12%, var(--rb-surface));
 }
 

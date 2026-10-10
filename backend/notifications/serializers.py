@@ -11,10 +11,11 @@ class NotificationSerializer(serializers.ModelSerializer):
             "title",
             "message",
             "notification_type",
+            "book",
             "is_read",
             "created_at",
         )
-        read_only_fields = ("id", "title", "message", "notification_type", "created_at")
+        read_only_fields = ("id", "title", "message", "notification_type", "book", "created_at")
 
 
 class SupportTicketSerializer(serializers.ModelSerializer):
