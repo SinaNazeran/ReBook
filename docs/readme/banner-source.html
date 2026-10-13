@@ -1,55 +1,32 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ReBook · README banner</title>
-  <style>
-    @font-face { font-family: Lalezar; src: url('../../frontend/node_modules/@fontsource/lalezar/files/lalezar-arabic-400-normal.woff2') format('woff2'); font-weight: 400; }
-    @font-face { font-family: Vazirmatn; src: url('../../frontend/node_modules/vazirmatn/misc/Farsi-Digits/fonts/webfonts/Vazirmatn-FD-Regular.woff2') format('woff2'); font-weight: 400; }
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #F5F5F2; color: #1A1918; font-family: Vazirmatn, Tahoma, sans-serif; }
-    .banner { width: 1440px; height: 440px; position: relative; overflow: hidden; padding: 48px 64px; }
-    .colophon { display: flex; justify-content: space-between; align-items: center; font-size: 17px; color: #5C5B57; border-bottom: 1px solid #DEDDD6; padding-bottom: 17px; }
-    .edition { color: #326E51; }
-    .copy { position: absolute; inset-inline-start: 64px; top: 120px; }
-    .wordmark { display: flex; align-items: center; gap: 17px; color: #6E172C; }
-    .mark { width: 34px; height: 54px; }
-    h1 { font-family: Lalezar, Vazirmatn, sans-serif; font-weight: 400; font-size: 92px; line-height: 1.2; margin: 0; }
-    .lead { font-size: 29px; margin: 21px 0 0; line-height: 1.8; }
-    .caption { margin: 12px 0 0; color: #5C5B57; font-size: 19px; }
-    .shelf { position: absolute; left: 64px; bottom: 57px; display: flex; direction: ltr; align-items: flex-end; gap: 8px; }
-    .spine { position: relative; width: 48px; height: var(--height); background: var(--ink); border-radius: 3px 4px 0 0; }
-    .spine::before, .spine::after { content: ''; position: absolute; left: 6px; right: 6px; height: 5px; border-block: 1px solid #D8B65E; }
-    .spine::before { top: 18px; } .spine::after { bottom: 18px; }
-    .spine .label { position: absolute; top: 45px; bottom: 42px; width: 100%; display: flex; align-items: center; justify-content: center; }
-    .spine span { writing-mode: vertical-rl; font-family: Lalezar, sans-serif; color: #E6C77C; font-size: 19px; }
-    .shelf-rule { position: absolute; left: 64px; width: 440px; bottom: 52px; height: 2px; background: #6E172C; }
-    .series-rule { position: absolute; bottom: 0; right: 0; left: 0; height: 7px; background: linear-gradient(270deg,#7B4437 0 12.5%,#04556E 12.5% 25%,#553B01 25% 37.5%,#0E2375 37.5% 50%,#863066 50% 62.5%,#005318 62.5% 75%,#4C2C69 75% 87.5%,#1E3507 87.5% 100%); }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ری‌بوک — جلد چاپی مدرن</title>
+<style>
+@font-face{font-family:Lalezar;src:url('../../frontend/node_modules/@fontsource/lalezar/files/lalezar-arabic-400-normal.woff2');font-weight:400}
+@font-face{font-family:Vazirmatn;src:url('../../frontend/node_modules/vazirmatn/misc/Farsi-Digits/fonts/webfonts/Vazirmatn-FD-Regular.woff2');font-weight:400}
+@font-face{font-family:Vazirmatn;src:url('../../frontend/node_modules/vazirmatn/misc/Farsi-Digits/fonts/webfonts/Vazirmatn-FD-Medium.woff2');font-weight:500}
+*{box-sizing:border-box}body{margin:0;background:#480217;color:#F5F5F2;font-family:Vazirmatn,Tahoma,sans-serif}
+.poster{position:relative;width:1440px;height:560px;overflow:hidden;background:radial-gradient(ellipse at 27% 5%,#87394C 0,#6E172C 43%,#480217 100%)}
+.masthead{position:absolute;inset:36px 56px auto;display:flex;justify-content:flex-end;align-items:center;border-bottom:1px solid #F6C2C63D;padding-bottom:17px;font-size:17px;color:#E7C4C7}
+.latin{direction:ltr;font-size:17px}.copy{position:absolute;right:68px;top:113px;width:640px}.wordmark{display:flex;align-items:center;gap:22px}
+.mark{width:37px;height:59px;flex:none;color:#F6C2C6}h1{margin:0;font-family:Lalezar,Vazirmatn,sans-serif;font-weight:400;font-size:188px;line-height:1.04;letter-spacing:0;color:#F5F5F2}
+.lead{margin:14px 0 0;font-size:31px;line-height:1.75;white-space:nowrap}.lead span{color:#F6C2C6}
+/* Match the site's raised header button: 3px key edge, soft cast shadow,
+   1px top light and a 12% lighting gradient (App.css and depth.css). */
+.imprint{--key-edge:color-mix(in oklab,#448061 55%,#000);display:inline-flex;align-items:center;justify-content:center;min-height:62px;margin-top:22px;padding:12px 28px;background-color:#448061;background-image:linear-gradient(color-mix(in srgb,#FFFFFF 24%,transparent),color-mix(in srgb,#FFFFFF 24%,transparent)),linear-gradient(transparent,color-mix(in srgb,#000 12%,transparent));background-size:100% 1px,100% 100%;background-repeat:no-repeat;border:1px solid #448061;border-radius:4px;font-size:24px;font-weight:500;line-height:1.5;color:#FFFFFF;box-shadow:0 3px 0 var(--key-edge),0 6px 8px -3px color-mix(in srgb,#1A1918 35%,transparent)}
+.stage{position:absolute;left:60px;top:100px;width:610px;height:375px}.book{position:absolute;display:block;object-fit:fill;border-radius:2px 5px 5px 2px;box-shadow:0 30px 32px -15px #26000BCC,0 4px 7px #25030D80;outline:1px solid #FFFFFF30;outline-offset:-1px}
+.hafez{width:198px;height:318px;left:39px;top:12px;transform:rotate(-11deg);z-index:1}.owl{width:190px;height:298px;left:379px;top:14px;transform:rotate(10deg);z-index:2}.prince{width:217px;height:342px;left:205px;top:44px;transform:rotate(2deg);z-index:3}
+.rule{position:absolute;right:68px;bottom:70px;width:640px;height:1px;background:#F6C2C63D}.number{position:absolute;right:68px;bottom:22px;width:640px;font-size:22px;line-height:1.65;white-space:nowrap;color:#E7C4C7}
+/* Same eight inks, direction, proportions and 4px height as the header. */
+.edge{position:absolute;bottom:0;left:0;width:100%;height:4px;background:linear-gradient(270deg,#7B4437 0 12.5%,#04556E 12.5% 25%,#553B01 25% 37.5%,#0E2375 37.5% 50%,#863066 50% 62.5%,#005318 62.5% 75%,#4C2C69 75% 87.5%,#1E3507 87.5% 100%)}
+</style>
 </head>
-<body>
-  <main class="banner">
-    <div class="colophon"><span>بازارچهٔ کتاب‌های دست دوم</span><span class="edition" dir="ltr">ReBook / Persian · RTL</span></div>
-    <div class="copy">
-      <div class="wordmark">
-        <svg class="mark" viewBox="0 0 10 16" aria-hidden="true"><rect width="10" height="16" rx="1" fill="#6E172C"/><path d="M0 2.4h10v1H0zm0 10.2h10v1H0z" fill="#F5F5F2"/></svg>
-        <h1>ری‌بوک</h1>
-      </div>
-      <p class="lead">جایی برای دادن زندگی دوباره به کتاب‌ها.</p>
-      <p class="caption">کتاب بعدی‌ات را پیدا کن، کتاب‌هایی را که خواندی بفروش.</p>
-    </div>
-    <div class="shelf" aria-hidden="true">
-      <div class="spine" style="--ink:#005318;--height:207px"><div class="label"><span>زبان خارجی</span></div></div>
-      <div class="spine" style="--ink:#863066;--height:230px"><div class="label"><span>شعر و ادبیات</span></div></div>
-      <div class="spine" style="--ink:#0E2375;--height:215px"><div class="label"><span>کودک و نوجوان</span></div></div>
-      <div class="spine" style="--ink:#553B01;--height:238px"><div class="label"><span>فناوری</span></div></div>
-      <div class="spine" style="--ink:#04556E;--height:224px"><div class="label"><span>تاریخ و سیاست</span></div></div>
-      <div class="spine" style="--ink:#7B4437;--height:204px"><div class="label"><span>روانشناسی</span></div></div>
-      <div class="spine" style="--ink:#1E3507;--height:234px"><div class="label"><span>علم و دانشگاه</span></div></div>
-      <div class="spine" style="--ink:#4C2C69;--height:218px"><div class="label"><span>رمان و داستان</span></div></div>
-    </div>
-    <div class="shelf-rule"></div><div class="series-rule"></div>
-  </main>
-</body>
-</html>
+<body><main class="poster">
+<div class="masthead"><span class="latin">ReBook / Second-hand books</span></div>
+<div class="copy"><div class="wordmark"><svg class="mark" viewBox="0 0 10 16" aria-hidden="true"><rect width="10" height="16" rx="1" fill="currentColor"/><path d="M0 2.4h10v1H0zm0 10.2h10v1H0z" fill="#6E172C"/></svg><h1>ری‌بوک</h1></div>
+<p class="lead">جایی برای دادن <span>زندگی دوباره</span> به کتاب‌ها.</p><span class="imprint">خرید و فروش کتاب‌های دست دوم</span></div>
+<div class="stage"><img class="book hafez" src="brand-hafez.webp" alt="دیوان حافظ"><img class="book owl" src="brand-owl.webp" alt="بوف کور"><img class="book prince" src="brand-prince.webp" alt="شازده کوچولو"></div>
+<span class="rule"></span><span class="number">کتاب بعدی‌ات را پیدا کن، کتاب‌هایی را که خواندی بفروش.</span><div class="edge"></div>
+</main></body></html>

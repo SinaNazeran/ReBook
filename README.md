@@ -1,7 +1,7 @@
 <div dir="rtl">
 
 <p align="center">
-  <img src="docs/readme/banner.jpg" width="100%" alt="ری‌بوک — جایی برای دادن زندگی دوباره به کتاب‌ها؛ نشان عطف کتاب با رنگ‌های شرابی و سبز روی کاغذ روشن" />
+  <img src="docs/readme/banner.jpg" width="100%" alt="ری‌بوک — جایی برای دادن زندگی دوباره به کتاب‌ها؛ نام بزرگ ری‌بوک و جلدهای واقعی روی زمینهٔ شرابی با جزئیات سبز و صورتی" />
 </p>
 
 # ری‌بوک · ReBook
@@ -40,12 +40,57 @@
 
 ![سبد خرید چند کتاب در ری‌بوک](docs/readme/cart.jpg)
 
-<details>
-<summary><strong>نمای موبایل</strong></summary>
+**فروش کتاب و پیش‌نمایش زندهٔ آگهی** — مشخصات نسخه، دسته‌بندی، وضعیت ظاهری و قیمت:
 
-<p align="center"><img src="docs/readme/mobile.jpg" width="360" alt="نمای موبایل جزئیات کتاب با جلد، قیمت و وضعیت ظاهری" /></p>
+![فرم فروش کتاب و پیش‌نمایش آگهی](docs/readme/sell.jpg)
+
+<details>
+<summary><strong>ورود و ثبت‌نام</strong></summary>
+
+![صفحهٔ ورود](docs/readme/login.jpg)
+
+![صفحهٔ ثبت‌نام](docs/readme/register.jpg)
 
 </details>
+
+<details>
+<summary><strong>کتاب‌های من، معاملات و علاقه‌مندی‌ها</strong></summary>
+
+![کتاب‌های من](docs/readme/my-books.jpg)
+
+![معاملات من](docs/readme/orders.jpg)
+
+![علاقه‌مندی‌ها](docs/readme/wishlist.jpg)
+
+</details>
+
+<details>
+<summary><strong>پروفایل، اعلان‌ها و پشتیبانی</strong></summary>
+
+![پروفایل نمونه](docs/readme/profile.jpg)
+
+![اعلان نتیجهٔ بررسی آگهی](docs/readme/notifications.jpg)
+
+![تیکت پشتیبانی](docs/readme/support.jpg)
+
+</details>
+
+<details>
+<summary><strong>نمای موبایل: مرور، جزئیات، سبد و فروش</strong></summary>
+
+<img src="docs/readme/mobile-catalog.jpg" width="320" alt="فهرست کتاب‌ها در موبایل" />
+
+<img src="docs/readme/mobile-book-info.jpg" width="320" alt="جزئیات نسخه در موبایل" />
+
+<img src="docs/readme/mobile-cart.jpg" width="320" alt="سبد خرید در موبایل" />
+
+<img src="docs/readme/mobile-sell.jpg" width="320" alt="فروش کتاب در موبایل" />
+
+قاب‌های کامل و ادامهٔ فرم‌های بلند، همراه ورود، ثبت‌نام و سایر صفحات، در [گالری کامل](docs/readme/gallery.md) قرار دارند.
+
+</details>
+
+[مشاهدهٔ گالری کامل دسکتاپ و موبایل، شامل درباره و تماس](docs/readme/gallery.md)
 
 تصاویر از اجرای محلی پروژه گرفته شده‌اند. کتاب‌ها و قیمت‌های داخل تصاویر محتوای نمونه‌اند و همراه نصب تازه به‌صورت خودکار ایجاد نمی‌شوند. روش تهیه و به‌روزرسانی آن‌ها در [راهنمای تصاویر](docs/readme/ASSETS.md) آمده است.
 
