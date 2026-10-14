@@ -1,9 +1,12 @@
+import { useAuth } from '../../context/useAuth.js';
 import { useState, useRef, useEffect } from "react";
 import { bookAPI, getErrorMessage } from "../../services/api";
 import { toast } from "../../utils/toast";
 const MAX_PAGES_AT_ONCE = 10;
 const PAGE_SIZE = 12;
 export function useCatalogBooks(paramsKey, page, setSearchParams, setLoading, setLoadError) {
+  const { user } = useAuth();
+  const userId = user?.id;
   const [books, setBooks] = useState([]);
   const [count, setCount] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -17,7 +20,7 @@ export function useCatalogBooks(paramsKey, page, setSearchParams, setLoading, se
     let ignore = false;
     const filters = Object.fromEntries(new URLSearchParams(paramsKey));
     const loaded = loadedRef.current;
-    const appending = loaded.key === paramsKey && page === loaded.pages + 1;
+    const appending = loaded.key === paramsKey && loaded.userId === userId && page === loaded.pages + 1;
     // بارگذاری تازه (مثلاً لینک مستقیم به ?page=3): همهٔ صفحه‌ها تا page در یک درخواست
     const pages = appending ? page : Math.min(page, MAX_PAGES_AT_ONCE);
     const params = appending ? {
@@ -43,6 +46,7 @@ export function useCatalogBooks(paramsKey, page, setSearchParams, setLoading, se
       setHasMore(Boolean(response.data.next));
       loadedRef.current = {
         key: paramsKey,
+        userId,
         pages
       };
     }).catch(error => {
@@ -64,7 +68,7 @@ export function useCatalogBooks(paramsKey, page, setSearchParams, setLoading, se
     return () => {
       ignore = true;
     };
-  }, [paramsKey, page, reloadKey, setLoading, setLoadError]);
+  }, [paramsKey, page, userId, reloadKey, setLoading, setLoadError]);
   const gridRef = useRef(null);
   const focusFromRef = useRef(null);
   useEffect(() => {

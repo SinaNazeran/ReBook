@@ -19,11 +19,9 @@ class NotificationListView(generics.ListAPIView):
 
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
-    # کل فهرست یکجا؛ اگر کاربری صدها اعلان جمع کرد، صفحه‌بندی و «نمایش بیشتر» اضافه شود
-    pagination_class = None
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user)
+        return Notification.objects.filter(user=self.request.user).order_by("-created_at", "-id")
 
 
 class UnreadNotificationCountView(APIView):
@@ -76,10 +74,9 @@ class MySupportTicketsView(generics.ListAPIView):
 
     serializer_class = SupportTicketSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = None  # فهرست شخصی و کوچک
 
     def get_queryset(self):
-        return SupportTicket.objects.filter(user=self.request.user)
+        return SupportTicket.objects.filter(user=self.request.user).order_by("-created_at", "-id")
 
 
 # مهمان هم می‌فرستد و DRF برای مهمان CSRF را بررسی نمی‌کند؛ مثل LoginView صریح محافظت می‌شود

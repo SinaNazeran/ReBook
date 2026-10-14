@@ -1,4 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useUnreadCount } from '../components/navigation/useUnreadCount';
+import { usePagedList } from '../hooks/usePagedList';
+import LoadMore from '../components/LoadMore';
+import { useState } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { toast } from '../utils/toast';
@@ -32,34 +35,11 @@ const formatDate = (value) =>
   new Date(value).toLocaleDateString('fa-IR', { month: 'long', day: 'numeric', year: 'numeric' });
 
 function Notifications() {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [readVersion, setReadVersion] = useState(0);
+  const unreadCount = useUnreadCount(true, readVersion);
+  const list = usePagedList(notificationAPI.getNotifications);
+  const { items: notifications, setItems: setNotifications, loading, loadError, reload: handleRetry } = list;
 
-  useEffect(() => {
-    let ignore = false;
-    notificationAPI
-      .getNotifications()
-      .then((response) => {
-        if (!ignore) setNotifications(response.data.results ?? response.data);
-      })
-      .catch(() => {
-        if (!ignore) setLoadError(true);
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [reloadKey]);
-
-  const handleRetry = () => {
-    setLoadError(false);
-    setLoading(true);
-    setReloadKey((key) => key + 1);
-  };
 
   const setRead = (id, isRead) =>
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: isRead } : n)));
@@ -69,6 +49,7 @@ function Notifications() {
     setRead(notification.id, true); // خوش‌بینانه
     try {
       await notificationAPI.markAsRead(notification.id);
+      setReadVersion(version => version + 1);
     } catch (error) {
       setRead(notification.id, false);
       toast.error(getErrorMessage(error));
@@ -80,6 +61,8 @@ function Notifications() {
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     try {
       await notificationAPI.markAllAsRead();
+      setReadVersion(version => version + 1);
+      await list.refresh();
     } catch (error) {
       setNotifications(previous);
       toast.error(getErrorMessage(error));
@@ -88,7 +71,6 @@ function Notifications() {
 
   if (loading) return <Loading fullPage />;
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
     <div className="series-paper">
@@ -164,6 +146,7 @@ function Notifications() {
             })}
           </ul>
         )}
+        {!loadError && <LoadMore {...list} />}
       </Container>
     </div>
   );

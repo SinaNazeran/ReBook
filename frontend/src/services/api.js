@@ -144,9 +144,9 @@ export const bookAPI = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
   deleteBook: (id) => api.delete(`/books/${id}/delete/`),
-  getMyBooks: () => api.get("/books/my-books/"),
-  getCategories: () => api.get("/books/categories/"),
-  getWishlist: () => api.get("/books/wishlist/"),
+  getMyBooks: (params) => api.get("/books/my-books/", { params }),
+  getCategories: (params) => api.get("/books/categories/", { params }),
+  getWishlist: (params) => api.get("/books/wishlist/", { params }),
   toggleWishlist: (bookId) => api.post(`/books/${bookId}/wishlist-toggle/`),
 };
 
@@ -155,8 +155,8 @@ export const bookAPI = {
 // ============================================
 
 export const orderAPI = {
-  getMyOrders: () => api.get("/orders/my-orders/"), // تب «خریدهای من»
-  getMySales: () => api.get("/orders/my-sales/"), // تب «فروش‌های من»
+  getMyOrders: (params) => api.get("/orders/my-orders/", { params }), // تب «خریدهای من»
+  getMySales: (params) => api.get("/orders/my-sales/", { params }), // تب «فروش‌های من»
   payOrder: (orderId) => api.post(`/orders/${orderId}/pay/`),
   cancelOrder: (orderId) => api.post(`/orders/${orderId}/cancel/`), // خریدار یا فروشنده، فقط سفارش در انتظار پرداخت
 };
@@ -178,11 +178,11 @@ export const cartAPI = {
 // ============================================
 
 export const notificationAPI = {
-  getNotifications: () => api.get("/notifications/"),
+  getNotifications: (params) => api.get("/notifications/", { params }),
   getUnreadCount: () => api.get("/notifications/unread-count/"), // { count } برای نشان نوار بالا
   markAsRead: (id) => api.post(`/notifications/${id}/read/`),
   markAllAsRead: () => api.post("/notifications/read-all/"),
   createTicket: (data) => api.post("/notifications/support/create/", data),
-  getMyTickets: () => api.get("/notifications/support/"),
+  getMyTickets: (params) => api.get("/notifications/support/", { params }),
   sendContactMessage: (data) => api.post("/notifications/contact/", data), // فرم تماس مهمان
 };

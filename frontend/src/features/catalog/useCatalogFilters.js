@@ -1,6 +1,6 @@
+import { fetchCategories } from '../../utils/categories';
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { bookAPI } from "../../services/api";
 import { seriesInk } from "../../utils/series";
 const DEFAULT_ORDERING = '-created_at';
 export const CONDITION_OPTIONS = [{
@@ -61,8 +61,8 @@ export function useCatalogFilters(setLoading, setLoadError) {
   const ordering = searchParams.get('ordering') || DEFAULT_ORDERING;
   useEffect(() => {
     let ignore = false;
-    bookAPI.getCategories().then(response => {
-      if (!ignore) setCategories(response.data.results ?? response.data);
+    fetchCategories().then(categories => {
+      if (!ignore) setCategories(categories);
     }).catch(() => {});
     return () => {
       ignore = true;

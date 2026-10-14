@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { usePagedList } from '../hooks/usePagedList';
+import LoadMore from '../components/LoadMore';
+import { useState } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { toast } from '../utils/toast';
@@ -21,35 +23,10 @@ const LISTING_STATUS = {
 const formatDate = (value) => new Date(value).toLocaleDateString('fa-IR');
 
 function MyBooks() {
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
+  const list = usePagedList(bookAPI.getMyBooks);
+  const { items: books, count, loading, loadError, reload: handleRetry } = list;
   const [deletingId, setDeletingId] = useState(null);
 
-  useEffect(() => {
-    let ignore = false;
-    bookAPI
-      .getMyBooks()
-      .then((response) => {
-        if (!ignore) setBooks(response.data.results ?? response.data);
-      })
-      .catch(() => {
-        if (!ignore) setLoadError(true);
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [reloadKey]);
-
-  const handleRetry = () => {
-    setLoadError(false);
-    setLoading(true);
-    setReloadKey((key) => key + 1);
-  };
 
   const handleDelete = async (book) => {
     if (!window.confirm(`آگهی «${book.title}» حذف شود؟ این کار برگشت‌پذیر نیست.`)) return;
@@ -57,7 +34,7 @@ function MyBooks() {
     setDeletingId(book.id);
     try {
       await bookAPI.deleteBook(book.id);
-      setBooks((prev) => prev.filter((b) => b.id !== book.id));
+      handleRetry();
       toast.success('آگهی حذف شد.');
     } catch (error) {
       toast.error(getErrorMessage(error));
@@ -76,7 +53,7 @@ function MyBooks() {
           <h1 className="ledger-title">
             کتاب‌های من
             {!loadError && books.length > 0 && (
-              <span className="list-count">{books.length.toLocaleString('fa-IR')} آگهی</span>
+              <span className="list-count">{count.toLocaleString('fa-IR')} آگهی</span>
             )}
           </h1>
           <Link to="/create-book" className="btn btn-primary d-inline-flex align-items-center gap-2">
@@ -164,6 +141,7 @@ function MyBooks() {
             })}
           </ul>
         )}
+        {!loadError && <LoadMore {...list} />}
       </Container>
     </div>
   );

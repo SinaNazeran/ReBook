@@ -28,12 +28,9 @@ def visible_books(user):
 class CategoryListView(generics.ListAPIView):
     """لیست دسته‌بندی‌ها"""
 
-    queryset = Category.objects.all()
+    queryset = Category.objects.order_by("id")
     serializer_class = CategorySerializer
     permission_classes = [permissions.AllowAny]
-    # فهرست کوتاه و ثابتی است که فیلتر و فرم ثبت کتاب کاملش را لازم دارند؛
-    # با صفحه‌بندی پیش‌فرض (۱۲ مورد) دسته‌بندی‌های آخر هرگز در فهرست کشویی نمی‌آمدند
-    pagination_class = None
 
 
 class BookListView(generics.ListAPIView):
@@ -80,7 +77,12 @@ class BookListView(generics.ListAPIView):
         ordering = self.request.query_params.get("ordering")
         if ordering not in ALLOWED_ORDERINGS:
             ordering = "-created_at"
-        queryset = queryset.order_by(ordering)
+        queryset = queryset.order_by(ordering, "-id" if ordering.startswith("-") else "id")
+        if self.request.user.is_authenticated:
+            membership = Wishlist.objects.filter(user=self.request.user, book_id=models.OuterRef("pk"))
+            queryset = queryset.annotate(is_wishlisted=models.Exists(membership))
+        else:
+            queryset = queryset.annotate(is_wishlisted=models.Value(False, output_field=models.BooleanField()))
 
         return queryset
 
@@ -111,10 +113,9 @@ class MyBooksView(generics.ListAPIView):
 
     serializer_class = BookListSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = None  # فهرست شخصی و کوچک؛ صفحه‌ی MyBooks همه را یکجا نشان می‌دهد
 
     def get_queryset(self):
-        return Book.objects.filter(seller=self.request.user).select_related("seller", "category")
+        return Book.objects.filter(seller=self.request.user).select_related("seller", "category").order_by("-created_at", "-id")
 
 
 class BookUpdateView(generics.UpdateAPIView):
@@ -160,13 +161,11 @@ class WishlistView(generics.ListAPIView):
 
     serializer_class = WishlistSerializer
     permission_classes = [permissions.IsAuthenticated]
-    # فهرست شخصی؛ صفحه‌ی Wishlist و قلب‌های BookList هر دو به فهرست کامل نیاز دارند
-    pagination_class = None
 
     def get_queryset(self):
         return Wishlist.objects.filter(
             user=self.request.user, book__in=visible_books(self.request.user)
-        ).select_related("book__seller", "book__category")
+        ).select_related("book__seller", "book__category").order_by("-added_at", "-id")
 
 
 class WishlistToggleView(APIView):

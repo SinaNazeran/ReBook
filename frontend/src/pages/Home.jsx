@@ -1,3 +1,4 @@
+import { fetchCategories } from '../utils/categories';
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -50,10 +51,9 @@ function Home() {
   // فهرست دسته‌ها فقط راه میان‌بر است؛ اگر نیامد، هیرو بدون آن کامل است
   useEffect(() => {
     let ignore = false;
-    bookAPI
-      .getCategories()
-      .then((response) => {
-        if (!ignore) setShelves(response.data.filter((cat) => cat.parent === null));
+    fetchCategories()
+      .then((categories) => {
+        if (!ignore) setShelves(categories.filter((cat) => cat.parent === null));
       })
       .catch(() => {});
     return () => {

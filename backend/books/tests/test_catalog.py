@@ -69,12 +69,14 @@ class BookListCategoryFilterTests(APITestCase):
 
 
 class CategoryListTests(APITestCase):
-    def test_all_categories_are_returned_without_pagination(self):
+    def test_categories_are_paginated_without_hiding_remaining_rows(self):
         # فهرست کشویی دسته‌بندی‌ها باید کامل باشد، نه فقط ۱۲ مورد اول
         Category.objects.bulk_create(Category(name=f"c{i}", slug=f"c{i}") for i in range(15))
         response = self.client.get("/api/books/categories/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 15)
+        self.assertEqual(response.data["count"], 15)
+        self.assertEqual(len(response.data["results"]), 12)
+        self.assertEqual(len(self.client.get("/api/books/categories/", {"page": 2}).data["results"]), 3)
 
 
 
@@ -89,9 +91,9 @@ class PersonalBookListsTests(APITestCase):
         Wishlist.objects.bulk_create(Wishlist(user=buyer, book=book) for book in books)
 
         self.client.force_authenticate(seller)
-        self.assertEqual(len(self.client.get("/api/books/my-books/").data), 15)
+        self.assertEqual(self.client.get("/api/books/my-books/").data["count"], 15)
         self.client.force_authenticate(buyer)
-        self.assertEqual(len(self.client.get("/api/books/wishlist/").data), 15)
+        self.assertEqual(self.client.get("/api/books/wishlist/").data["count"], 15)
 
 
 

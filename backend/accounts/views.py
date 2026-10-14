@@ -103,7 +103,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 class UserListView(generics.ListAPIView):
     """لیست کاربران (فقط ادمین)"""
 
-    queryset = User.objects.all()
+    queryset = User.objects.order_by("id")
     serializer_class = UserListSerializer
     permission_classes = [permissions.IsAdminUser]
 

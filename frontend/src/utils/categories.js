@@ -1,18 +1,25 @@
 import { useEffect, useState } from 'react';
 import { bookAPI } from '../services/api';
 
-// سربرگ و فوتر روی همه‌ی صفحه‌ها هستند؛ دسته‌ها یک بار گرفته و میان آن دو تقسیم می‌شوند.
-// Home و BookList هنوز درخواست خودشان را دارند؛ اگر لازم شد، آن‌ها هم از همین استفاده کنند
+// Share only a complete category tree; a failed page never becomes a cached partial tree.
 let request = null;
 
-function fetchCategories() {
-  request ??= bookAPI
-    .getCategories()
-    .then((response) => response.data.results ?? response.data)
-    .catch((error) => {
-      request = null; // بار بعد دوباره امتحان شود
-      throw error;
-    });
+export function fetchCategories() {
+  request ??= (async () => {
+    const categories = new Map();
+    let page = 1;
+    while (true) {
+      const { data } = await bookAPI.getCategories({ page, page_size: 120 });
+      data.results.forEach(category => categories.set(category.id, category));
+      if (!data.next) return [...categories.values()];
+      const next = Number(new URL(data.next, window.location.origin).searchParams.get('page'));
+      if (!Number.isSafeInteger(next) || next <= page) throw new Error('Invalid category continuation');
+      page = next;
+    }
+  })().catch(error => {
+    request = null;
+    throw error;
+  });
   return request;
 }
 

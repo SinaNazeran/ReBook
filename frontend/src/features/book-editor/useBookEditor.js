@@ -1,3 +1,4 @@
+import { fetchCategories } from '../../utils/categories';
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.js";
 import { useState, useEffect } from "react";
@@ -51,8 +52,8 @@ export function useBookEditor() {
   } = useCoverUpload(clearFieldError, setFieldErrors);
   useEffect(() => {
     let ignore = false;
-    bookAPI.getCategories().then(response => {
-      if (!ignore) setCategories(response.data.results ?? response.data);
+    fetchCategories().then(categories => {
+      if (!ignore) setCategories(categories);
     }).catch(() => {
       // بدون دسته‌بندی هم می‌شود ثبت کرد؛ فقط فهرست خالی می‌ماند
     });

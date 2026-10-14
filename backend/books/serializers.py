@@ -29,6 +29,7 @@ class BookListSerializer(serializers.ModelSerializer):
     )
     # شناسه‌ی دسته‌بندی سطح اول؛ کارت کتاب رنگ «مجموعه» را از آن می‌گیرد
     category_root = serializers.SerializerMethodField()
+    is_wishlisted = serializers.BooleanField(read_only=True, default=False)
 
     class Meta:
         model = Book
@@ -44,6 +45,7 @@ class BookListSerializer(serializers.ModelSerializer):
             "seller_name",
             "category_name",
             "category_root",
+            "is_wishlisted",
             "created_at",
         )
 

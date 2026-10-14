@@ -169,9 +169,9 @@ class PersonalOrderListsTests(APITestCase):
             for _ in range(15)
         )
         self.client.force_authenticate(buyer)
-        self.assertEqual(len(self.client.get("/api/orders/my-orders/").data), 15)
+        self.assertEqual(self.client.get("/api/orders/my-orders/").data["count"], 15)
         self.client.force_authenticate(seller)
-        self.assertEqual(len(self.client.get("/api/orders/my-sales/").data), 15)
+        self.assertEqual(self.client.get("/api/orders/my-sales/").data["count"], 15)
 
     def test_sales_show_buyer_username_but_no_contact_details(self):
         seller = User.objects.create_user(username="seller", password="pass")
@@ -181,6 +181,6 @@ class PersonalOrderListsTests(APITestCase):
         book = Book.objects.create(title="b", author="a", price=100, seller=seller, status="approved")
         Order.objects.create(buyer=buyer, book=book, total_price=100, shipping_address="x")
         self.client.force_authenticate(seller)
-        sale = self.client.get("/api/orders/my-sales/").data[0]
+        sale = self.client.get("/api/orders/my-sales/").data["results"][0]
         self.assertEqual(sale["buyer_detail"], {"id": buyer.pk, "username": "buyer"})
 

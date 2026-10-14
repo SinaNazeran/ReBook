@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils import timezone
 
 from accounts.models import User
 from books.models import Book
@@ -61,8 +62,15 @@ class AdminReviewNotificationTests(TestCase):
 
     def test_rejected_book_approved_later_gets_a_second_notice(self):
         self.save_in_list("rejected")
+        self.assertEqual([(kind, book_id) for kind, book_id, _ in self.notices()],
+                         [("book_rejected", self.book.pk)])
         self.save_in_list("approved")
-        self.assertEqual([n[0] for n in self.notices()], ["book_approved", "book_rejected"])
+        # Exercise a tied clock explicitly: notice creation must not depend on ordering.
+        Notification.objects.filter(book=self.book).update(created_at=timezone.now())
+        self.assertCountEqual([(kind, book_id) for kind, book_id, _ in self.notices()],
+                              [("book_rejected", self.book.pk), ("book_approved", self.book.pk)])
+        self.book.refresh_from_db()
+        self.assertEqual(self.book.status, "approved")
 
     def test_saving_without_a_status_change_sends_nothing(self):
         Book.objects.filter(pk=self.book.pk).update(status="approved")

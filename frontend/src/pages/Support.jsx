@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { usePagedList } from '../hooks/usePagedList';
+import LoadMore from '../components/LoadMore';
+import { useState } from 'react';
 import { Container, Row, Col, Button, Accordion } from 'react-bootstrap';
 import Form from '../components/Form';
 import { toast } from '../utils/toast';
@@ -17,37 +19,12 @@ const formatDate = (value) =>
   new Date(value).toLocaleDateString('fa-IR', { month: 'long', day: 'numeric', year: 'numeric' });
 
 function Support() {
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
+  const list = usePagedList(notificationAPI.getMyTickets);
+  const { items: tickets, loading, loadError, reload: handleRetry } = list;
   const [formData, setFormData] = useState({ subject: '', message: '' });
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    let ignore = false;
-    notificationAPI
-      .getMyTickets()
-      .then((response) => {
-        if (!ignore) setTickets(response.data.results ?? response.data);
-      })
-      .catch(() => {
-        if (!ignore) setLoadError(true);
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [reloadKey]);
-
-  const handleRetry = () => {
-    setLoadError(false);
-    setLoading(true);
-    setReloadKey((key) => key + 1);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,13 +46,13 @@ function Support() {
 
     setSubmitting(true);
     try {
-      const response = await notificationAPI.createTicket({
+      await notificationAPI.createTicket({
         subject: formData.subject.trim(),
         message: formData.message.trim(),
       });
       toast.success('پیامت رسید؛ پاسخ را همین‌جا می‌بینی.');
       setFormData({ subject: '', message: '' });
-      setTickets((prev) => [response.data, ...prev]);
+      handleRetry();
     } catch (error) {
       const data = error.response?.data;
       if (data && typeof data === 'object' && (data.subject || data.message)) {
@@ -201,6 +178,7 @@ function Support() {
                   })}
                 </Accordion>
               )}
+              {!loadError && <LoadMore {...list} />}
             </section>
           </Col>
         </Row>

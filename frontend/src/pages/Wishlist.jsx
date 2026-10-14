@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { usePagedList } from '../hooks/usePagedList';
+import LoadMore from '../components/LoadMore';
+import { useRef } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { toast } from '../utils/toast';
@@ -8,50 +10,31 @@ import Loading from '../components/Loading';
 import EmptyShelf from '../components/EmptyShelf';
 
 function Wishlist() {
-  const [wishlist, setWishlist] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
+  const list = usePagedList(bookAPI.getWishlist);
+  const { items: wishlist, setItems: setWishlist, count, loading, loadError } = list;
+  const revision = useRef(0);
+  const handleRetry = () => { revision.current++; list.reload(); };
 
-  useEffect(() => {
-    let ignore = false;
-    bookAPI
-      .getWishlist()
-      .then((response) => {
-        if (!ignore) setWishlist(response.data.results ?? response.data);
-      })
-      .catch(() => {
-        if (!ignore) setLoadError(true);
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [reloadKey]);
-
-  const handleRetry = () => {
-    setLoadError(false);
-    setLoading(true);
-    setReloadKey((key) => key + 1);
-  };
 
   // خوش‌بینانه: کارت فوراً می‌رود؛ اگر درخواست نشد، سر جایش برمی‌گردد
-  const handleRemove = useCallback(async (bookId) => {
-    let removed;
-    setWishlist((prev) => {
-      removed = prev.find((item) => item.book.id === bookId);
-      return prev.filter((item) => item.book.id !== bookId);
-    });
-
+  const handleRemove = async (bookId) => {
+    const version = revision.current;
+    const index = wishlist.findIndex(item => item.book.id === bookId);
+    const removed = wishlist[index];
+    setWishlist(prev => prev.filter(item => item.book.id !== bookId));
     try {
       await bookAPI.toggleWishlist(bookId);
+      handleRetry();
     } catch (error) {
-      if (removed) setWishlist((prev) => [removed, ...prev]);
+      if (version === revision.current && removed) setWishlist(current => {
+        if (current.some(item => item.id === removed.id)) return current;
+        const restored = [...current];
+        restored.splice(Math.min(index, restored.length), 0, removed);
+        return restored;
+      });
       toast.error(getErrorMessage(error));
     }
-  }, []);
+  };
 
   if (loading) return <Loading fullPage />;
 
@@ -63,7 +46,7 @@ function Wishlist() {
           <h1 className="ledger-title">
             علاقه‌مندی‌ها
             {!loadError && wishlist.length > 0 && (
-              <span className="list-count">{wishlist.length.toLocaleString('fa-IR')} کتاب</span>
+              <span className="list-count">{count.toLocaleString('fa-IR')} کتاب</span>
             )}
           </h1>
         </header>
@@ -97,6 +80,7 @@ function Wishlist() {
             </Row>
           </>
         )}
+        {!loadError && <LoadMore {...list} />}
       </Container>
     </div>
   );

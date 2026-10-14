@@ -72,5 +72,5 @@ class BookDetailVisibilityTests(APITestCase):
         approved = self.book("approved")
         self.client.post(f"/api/books/{approved.pk}/wishlist-toggle/")
         Book.objects.filter(pk=approved.pk).update(status="rejected")
-        self.assertEqual(self.client.get("/api/books/wishlist/").data, [])
+        self.assertEqual(self.client.get("/api/books/wishlist/").data["results"], [])
 

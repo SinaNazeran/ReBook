@@ -23,7 +23,8 @@ class PersonalListsTests(APITestCase):
 
     def test_notifications_list_is_not_cut_at_one_page(self):
         response = self.client.get("/api/notifications/")
-        self.assertEqual(len(response.data), 15)
+        self.assertEqual(response.data["count"], 15)
+        self.assertEqual(len(response.data["results"]), 12)
 
     def test_unread_count_counts_only_own_unread(self):
         response = self.client.get("/api/notifications/unread-count/")
@@ -31,7 +32,8 @@ class PersonalListsTests(APITestCase):
 
     def test_support_tickets_list_is_not_cut_at_one_page(self):
         response = self.client.get("/api/notifications/support/")
-        self.assertEqual(len(response.data), 15)
+        self.assertEqual(response.data["count"], 15)
+        self.assertEqual(len(response.data["results"]), 12)
 
 
 class ContactMessageTests(APITestCase):

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { notificationAPI } from "../../services/api";
 const UNREAD_POLL_INTERVAL = 60000;
-export function useUnreadCount(isAuthenticated) {
+export function useUnreadCount(isAuthenticated, refreshKey = 0) {
   const [unreadCount, setUnreadCount] = useState(0);
   useEffect(() => {
     if (!isAuthenticated) {
@@ -25,6 +25,6 @@ export function useUnreadCount(isAuthenticated) {
       ignore = true;
       clearInterval(intervalId);
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, refreshKey]);
   return isAuthenticated ? unreadCount : 0;
 }

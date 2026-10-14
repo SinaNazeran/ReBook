@@ -58,7 +58,7 @@ function BookList() {
     isAuthenticated,
     displayedWishlistIds,
     handleToggleWishlist
-  } = useCatalogWishlist();
+  } = useCatalogWishlist(books);
   return <div className="series-paper" style={{
     '--series': activeRoot ? seriesInk(activeRoot.id) : undefined
   }}>
