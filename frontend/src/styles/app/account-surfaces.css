@@ -1,0 +1,165 @@
+/* ==========================================================================
+   ۱۴. صفحه‌های حساب، فروش، ورود و ۴۰۴ در همان جهان رنگی
+   ========================================================================== */
+
+/* تیتر صفحه‌ها به لاله‌زار (یک وزن، بی‌ضخیم‌سازی مصنوعی) */
+.ledger-title,
+.sell-title,
+.auth-title,
+.not-found-title,
+.profile-username,
+.support-heading {
+  font-family: var(--rb-font-display);
+  font-weight: 400;
+  font-synthesis: none;
+  line-height: 1.35;
+}
+
+.ledger-title,
+.sell-title {
+  font-size: clamp(2rem, 1.35rem + 2.4vw, 3rem);
+}
+
+/* شمارنده‌ی کنار تیتر با حروف متن می‌ماند */
+.ledger-title .list-count {
+  font-family: var(--bs-body-font-family);
+}
+
+/* سرصفحه‌ی حساب: کلید هشت‌رنگ مجموعه‌ها بالای عنوان، مثل قفسه‌ای که همه‌ی مجموعه‌ها را دارد */
+.ledger-header::before {
+  content: "";
+  flex-basis: 100%;
+  order: -1;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--rb-series-rule);
+}
+
+/* ردیف‌ها کاغذ مجموعه‌ی کتاب خودشان را دارند؛ ستون‌های صفرعرضِ دو لبه (با فاصله‌ی ستون) جای حاشیه را می‌گیرند
+   تا ته‌رنگ ردیف تا لبه‌ی فهرست برسد */
+.ledger {
+  overflow: hidden;
+}
+
+.ledger-row {
+  background-color: color-mix(in oklab, var(--card-ink, var(--rb-ink-muted)) 6%, var(--rb-surface));
+}
+
+@media (min-width: 768px) {
+  .ledger {
+    grid-template-columns: 0 3rem minmax(0, 1fr) max-content max-content max-content 0;
+    padding-inline: 0;
+  }
+
+  .ledger-row {
+    grid-template-areas: ". thumb main amount status actions .";
+  }
+}
+
+.ledger-amount.price-tag {
+  justify-self: start;
+}
+
+/* زبانه‌ی فعال «معاملات من»: خط زعفرانی */
+.ledger-tabs {
+  --bs-nav-underline-border-width: 3px;
+}
+
+.ledger-tabs .nav-link.active {
+  border-bottom-color: var(--rb-accent);
+}
+
+/* اعلان خوانده‌نشده: نشان زعفرانی و کاغذ زعفرانی کم‌رنگ (روی li تا پیوندهای زیرش هم بگیرد) */
+.notice-list > li.is-unread {
+  background-color: color-mix(in oklab, var(--rb-accent) 12%, var(--rb-surface));
+}
+
+.notice.is-unread .notice-icon {
+  background-color: var(--rb-accent);
+  color: var(--rb-ink);
+}
+
+.notice-dot {
+  background-color: var(--rb-accent-deep);
+}
+
+/* کارت پروفایل و فرم پشتیبانی و پنل ورود و خلاصه‌ی سبد: کلید مجموعه‌ها در لبه‌ی بالا */
+.profile-card,
+.cart-summary,
+.support-form,
+.auth-panel {
+  overflow: hidden;
+  background-image: var(--rb-series-rule);
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: 100% 6px;
+}
+
+.profile-card {
+  padding-top: calc(1.5rem + 6px);
+}
+
+.support-form {
+  padding-top: calc(1.25rem + 6px);
+}
+
+.auth-panel {
+  padding-top: calc(1.75rem + 6px);
+}
+
+.profile-avatar {
+  background-color: var(--rb-accent-paper);
+  color: var(--rb-accent-deep);
+  box-shadow: 0 0 0 3px var(--rb-surface), 0 0 0 5px var(--rb-accent);
+}
+
+.profile-username {
+  font-size: 1.5rem;
+}
+
+.support-heading {
+  font-size: 1.375rem;
+}
+
+.auth-title {
+  font-size: 2.25rem;
+  margin-bottom: 1.25rem;
+}
+
+/* نقش تزیینی زیر عنوان پنل */
+.auth-title::after,
+.sell-header::after {
+  content: "";
+  display: block;
+  width: 9rem;
+  height: 12px;
+  margin-top: 0.5rem;
+  background-color: var(--series, var(--rb-accent-deep));
+  -webkit-mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
+  mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
+}
+
+/* ورود و ثبت‌نام روی برگه‌ی زعفرانی‌اند (--series زعفرانی روشن)؛ نقش زیر عنوان زعفرانی تیره می‌ماند */
+.auth-title::after {
+  background-color: var(--rb-accent-deep);
+}
+
+.sell-header::after {
+  width: 12rem;
+  margin-top: 1.25rem;
+}
+
+/* ۴۰۴: کتابِ گم‌شده با جلد رنگی؛ برگه‌اش کاغذ مجموعه‌ی ۶ است (NotFound.jsx) */
+.not-found-title {
+  font-size: clamp(2rem, 1.4rem + 2vw, 2.75rem);
+}
+
+/* فرم فروش: کاغذ صفحه رنگ دسته‌ی انتخاب‌شده را می‌گیرد؛ درجه‌ی انتخاب‌شده کاغذ زعفرانی */
+.sell-section {
+  border-top-color: color-mix(in oklab, var(--series, var(--rb-ink-muted)) 30%, var(--rb-ground));
+}
+
+.condition-option:has(:checked) {
+  background-color: color-mix(in oklab, var(--rb-accent) 22%, var(--rb-surface));
+}
+

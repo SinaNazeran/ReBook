@@ -27,6 +27,7 @@ skills-lock.json
 /PRODUCT.md
 /DESIGN.md
 .impeccable/
+/PRODUCTION_CHECKLIST.md
 
 # Local browser snapshots
 .playwright-mcp/

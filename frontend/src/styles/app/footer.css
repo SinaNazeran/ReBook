@@ -1,0 +1,146 @@
+/* ==========================================================================
+   ۱۳. فوتر
+   ========================================================================== */
+.site-footer {
+  background-color: var(--rb-footer);
+  color: var(--rb-on-footer-muted);
+}
+
+/* کاغذ رنگی صفحه تا فوتر می‌رسد: main ستونی می‌شود و کاغذ جای باقی‌مانده را پر می‌کند، بی فاصله‌ی خنثی بالای فوتر */
+main:has(> .series-paper) {
+  display: flex;
+  flex-direction: column;
+}
+
+main > .series-paper {
+  flex: 1 0 auto;
+}
+
+body:has(main > .series-paper) .site-footer {
+  margin-top: 0 !important;
+}
+
+.series-rule {
+  display: flex;
+  height: 6px;
+}
+
+.series-rule > span {
+  flex: 1;
+}
+
+/* برند | مجموعه‌ها | خرید و فروش | ری‌بوک در دسکتاپ، دو ستون در تبلت، یک ستون در موبایل؛ سطر پایانی زیر خط مویی */
+.site-footer-inner {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 3rem;
+  padding-block: 3rem 1.5rem;
+}
+
+/* موبایل: برند و مجموعه‌ها تمام‌عرض، دو ستون کوتاه («خرید و فروش» و «ری‌بوک») کنار هم */
+@media (max-width: 767.98px) {
+  .site-footer-brand,
+  .site-footer-series-col {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 992px) {
+  .site-footer-inner {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.site-footer :focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+}
+
+.site-footer-heading {
+  margin: 0 0 0.5rem;
+  color: var(--rb-on-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* هشت مجموعه در دو ستون، هر کدام با زبانه‌ی مرکب رقیق‌شده (بخش ۱)؛ نوار رنگی بالای فوتر حالا به جایی می‌رسد */
+.site-footer-series {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer-series a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 2.75rem;
+  color: var(--rb-on-footer-muted);
+  text-decoration: none;
+}
+
+.site-footer-series a:hover {
+  color: var(--rb-on-ink);
+}
+
+.site-footer-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 1.5rem;
+  color: var(--rb-on-ink);
+  text-decoration: none;
+}
+
+.site-footer-links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  color: var(--rb-on-footer-muted);
+  text-decoration: none;
+}
+
+.site-footer-links a:hover {
+  color: var(--rb-on-ink);
+}
+
+/* سطر پایانی: سال و نام، و «بازگشت به بالا» در انتهای سطر */
+.site-footer-bottom {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--rb-on-ink) 15%, transparent);
+  font-size: 0.875rem;
+}
+
+.site-footer-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-block-size: 2.75rem;
+  margin-inline-start: auto;
+  padding-inline: 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--rb-on-ink) 35%, transparent);
+  border-radius: var(--bs-border-radius);
+  background: transparent;
+  color: var(--rb-on-ink);
+}
+
+.site-footer-top:hover {
+  background-color: rgb(255 255 255 / 0.1);
+}
+

@@ -1,0 +1,66 @@
+/* ==========================================================================
+   ۱۱. پشتیبانی (Support)
+   ========================================================================== */
+.support-heading {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+}
+
+.support-form {
+  padding: 1.25rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+.ticket-list {
+  --bs-accordion-border-color: var(--rb-rule);
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-focus) 35%, transparent);
+  --bs-accordion-active-bg: var(--rb-surface-sunken);
+  --bs-accordion-active-color: var(--rb-ink);
+}
+
+.ticket-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  width: 100%;
+  margin-inline-end: 1rem;
+}
+
+.ticket-subject {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-weight: var(--rb-font-weight-ui);
+}
+
+.ticket-date {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+.ticket-message {
+  max-width: 70ch;
+  white-space: pre-line;
+}
+
+.ticket-reply {
+  padding: 0.875rem 1rem;
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface-sunken);
+}
+
+.ticket-reply .ticket-message {
+  margin: 0;
+}
+
+.ticket-reply-label {
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: var(--rb-font-weight-ui);
+}
+

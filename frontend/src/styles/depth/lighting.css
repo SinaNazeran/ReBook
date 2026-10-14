@@ -1,0 +1,63 @@
+/* ==========================================================================
+   ۱۱. نور: گرادیان فقط نورِ همان یک چراغ بالا را نشان می‌دهد؛ یک رنگ، روشن بالا.
+   رنگ توکن روشن‌ترین نقطه‌ی هر گرادیانی است که متن سفید دارد (فقط رو به پایین تیره می‌شود)، پس کنتراست از توکن کمتر نمی‌شود.
+   رنگ‌های معنادار (مجموعه، وضعیت، برچسب قیمت) و جلدهای عکس‌دار تخت می‌مانند. میز، عطف و سربرگ بالاتر در همین فایل‌اند
+   ========================================================================== */
+:root {
+    --g-lamp: 100%;
+    --g-desk-top: 2%;
+    --g-desk-bottom: 22%;
+    --g-hero-edge: 12%;   /* متن کم‌رنگ هیرو در لبه ۴٫۸:۱ */
+    --g-header: 26%;
+    --g-footer: 32%;
+    --g-spine: 40%;
+    --g-cover-spine: 36%;
+    --g-cover-bottom: 28%;
+}
+
+/* هیرو: همان چراغ روی کاغذ گلی؛ وسط بالا روشن، گوشه‌ها کمی در سایه */
+.hero-stage {
+    background-image:
+        radial-gradient(ellipse 75% 65% at 50% 0, color-mix(in srgb, #FFFFFF 55%, transparent), transparent 70%),
+        radial-gradient(ellipse 110% 90% at 50% 35%, transparent 60%, color-mix(in srgb, var(--rb-ink) var(--g-hero-edge), transparent));
+}
+
+/* کلید اصلی: لبه‌ی بالای روشن (نور به آن می‌خورد) و پایین تیره‌تر؛ با فشار، کلید از نور بیرون می‌رود.
+   شدتش ثابت است: پایین تیره‌تر کنتراست دکمه‌های متن‌تیره را پایین می‌آورد */
+.btn-primary {
+    background-image:
+        linear-gradient(color-mix(in srgb, #FFFFFF 24%, transparent), color-mix(in srgb, #FFFFFF 24%, transparent)),
+        linear-gradient(transparent, color-mix(in srgb, #000 12%, transparent));
+    background-size: 100% 1px, 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.btn-primary:active,
+.btn-primary:disabled {
+    background-image: none;
+}
+
+.site-footer {
+    background-image: linear-gradient(transparent, color-mix(in srgb, #000 var(--g-footer), transparent));
+}
+
+/* جلد ساده یک جلد چاپی است: عطف (سمت راست کتاب فارسی) در سایه و پایین جلد کمی دورتر از نور */
+.plain-cover {
+    background-image:
+        linear-gradient(to left, color-mix(in srgb, #000 var(--g-cover-spine), transparent), transparent 9%),
+        linear-gradient(transparent 35%, color-mix(in srgb, #000 var(--g-cover-bottom), transparent));
+}
+
+/* کنتراست بیشتر: همه‌چیز به رنگ تخت توکن برمی‌گردد. «شفافیت کمتر» شامل نمی‌شود: این گرادیان‌ها نورند، نه سطح نیمه‌شفاف
+   (ویندوز با Transparency effects خاموش و Chrome بی‌سر هم reduce گزارش می‌کنند) */
+@media (prefers-contrast: more) {
+    main,
+    .hero-stage,
+    .btn-primary,
+    .site-navbar,
+    .site-footer,
+    .spine,
+    .plain-cover {
+        background-image: none;
+    }
+}

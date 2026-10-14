@@ -1,0 +1,47 @@
+/* ==========================================================================
+   ۴. نشان وضعیت (StatusMark): شکل آیکن جدا از رنگ وضعیت را می‌گوید
+   ========================================================================== */
+.status-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--mark-border);
+  border-radius: 2px;
+  background-color: var(--mark-bg);
+  color: var(--mark-text);
+  font-size: 0.8125rem;
+  font-weight: var(--rb-font-weight-ui);
+  white-space: nowrap;
+}
+
+.status-mark.is-waiting {
+  --mark-bg: var(--bs-warning-bg-subtle);
+  --mark-border: var(--bs-warning-border-subtle);
+  --mark-text: var(--bs-warning-text-emphasis);
+}
+
+.status-mark.is-done {
+  --mark-bg: var(--bs-success-bg-subtle);
+  --mark-border: var(--bs-success-border-subtle);
+  --mark-text: var(--bs-success-text-emphasis);
+}
+
+.status-mark.is-closed {
+  --mark-bg: var(--bs-danger-bg-subtle);
+  --mark-border: var(--bs-danger-border-subtle);
+  --mark-text: var(--bs-danger-text-emphasis);
+}
+
+.status-mark.is-moving {
+  --mark-bg: var(--bs-info-bg-subtle);
+  --mark-border: var(--bs-info-border-subtle);
+  --mark-text: var(--bs-info-text-emphasis);
+}
+
+.status-mark.is-sold {
+  --mark-bg: var(--rb-surface-sunken);
+  --mark-border: var(--rb-rule);
+  --mark-text: var(--rb-ink);
+}
+

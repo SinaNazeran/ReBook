@@ -1,0 +1,271 @@
+/* ==========================================================================
+   ۲. کارت کتاب (BookCard) — جلد، نوار مجموعه، و ردیف ثابت واقعیت‌ها.
+   کارت حاشیه و سایه ندارد؛ جلد و نوار مرکب مجموعه خودِ کارت‌اند.
+   داخل کارت فقط یک اندازه‌ی متن؛ رتبه با وزن، رنگ و خط مویی ساخته می‌شود.
+   ========================================================================== */
+/* کاغذ کارت با ته‌رنگ مرکب مجموعه‌ی خود کتاب: قفسه موزاییکی از کاغذهای رنگی می‌شود */
+.book-card {
+  --card-ink: var(--rb-ink-muted);
+  border: 0;
+  overflow: hidden;
+  background-color: color-mix(in oklab, var(--card-ink) var(--rb-card-tint), var(--rb-surface));
+  font-size: 0.9375rem;
+}
+
+.book-card-new {
+  position: absolute;
+  inset-block-start: 0.625rem;
+  inset-inline-start: 0.625rem;
+  z-index: 2;
+}
+
+/* کل کارت یک لینک است (stretched-link عنوان)؛ حلقه‌ی فوکوس دور کل کارت */
+.book-card:has(.stretched-link:focus-visible) {
+  outline: 2px solid var(--rb-focus);
+  outline-offset: 2px;
+}
+
+.book-card .stretched-link:focus-visible {
+  outline: none;
+}
+
+.book-card .card-img-top {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
+
+.book-card img.card-img-top {
+  display: block;
+  object-fit: cover;
+  background-color: var(--rb-surface-sunken);
+}
+
+/* کتاب بی‌عکس (PlainCover): جلد تایپوگرافیک در مرکب مجموعه با قاب خطی داخلی، مثل جلد کتاب جیبی.
+   container تا عنوان با پهنای خودِ جلد اندازه بگیرد (کارت باریک یا ستون صفحه‌ی جزئیات) */
+.plain-cover {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background-color: var(--cover-ink);
+  color: var(--rb-on-ink);
+  box-shadow:
+    inset 0 0 0 0.5rem var(--cover-ink),
+    inset 0 0 0 calc(0.5rem + 1px) color-mix(in srgb, var(--rb-on-ink) 55%, transparent);
+}
+
+.plain-cover-title {
+  font-family: var(--rb-font-display);
+  font-size: clamp(1.375rem, 10cqi, 2.5rem);
+  font-weight: 400;
+  font-synthesis: none;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.plain-cover-author {
+  font-size: clamp(0.875rem, 5cqi, 1.125rem);
+}
+
+/* بالای جلد: نام مجموعه روی خط مویی، مثل سرعنوان مجموعه روی جلد کتاب جیبی */
+.plain-cover-series {
+  margin-bottom: auto;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--rb-on-ink) 45%, transparent);
+  font-size: clamp(0.6875rem, 4.5cqi, 0.875rem);
+  font-weight: var(--rb-font-weight-ui);
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* پایین جلد: سطر ناشر زیر خط مویی */
+.plain-cover-imprint {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--rb-on-ink) 45%, transparent);
+  color: var(--rb-on-ink); /* سفید کامل: مرکب‌های مجموعه با سفید ۴٫۶ تا ۴٫۸:۱ دارند، سفید ۸۵٪ به ۴٫۱ می‌رسید */
+  font-size: clamp(0.6875rem, 4cqi, 0.8125rem);
+  font-weight: var(--rb-font-weight-ui);
+  line-height: 1.5;
+}
+
+/* نوار مجموعه: نوار چاپی در مرکب مجموعه با نام دسته، مثل نوار رنگی روی جلد کتاب جیبی.
+   کتاب بی‌دسته همان خط ۴px بی‌نوشته را می‌گیرد. */
+.book-card-band {
+  min-height: 4px;
+  background-color: var(--card-ink);
+}
+
+.book-card-band:has(.book-card-series) {
+  padding: 0.3125rem 0.875rem 0.375rem;
+}
+
+.book-card-series {
+  display: block;
+  overflow: hidden;
+  color: var(--rb-on-ink);
+  font-size: 0.8125rem;
+  font-weight: var(--rb-font-weight-ui);
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* لولای جلد: عکس جلد شیء کتاب است؛ خط تای عطف کنار لبه‌ی صحافی (کتاب فارسی از راست صحافی می‌شود، یعنی inline-start).
+   دو خط مویی تخت، نه سایه: یکی تیره، یکی روشن. جلد ساده قاب خودش را دارد و لولا نمی‌گیرد. */
+.book-cover-hinge {
+  position: relative;
+}
+
+.book-cover-hinge:has(img)::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0.4375rem;
+  width: 2px;
+  border-inline-start: 1px solid color-mix(in srgb, var(--rb-ink) 24%, transparent);
+  border-inline-end: 1px solid color-mix(in srgb, var(--rb-surface) 30%, transparent);
+  pointer-events: none;
+}
+
+.book-card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0.875rem 0.875rem;
+}
+
+/* ردیف واقعیت‌ها با margin-top:auto ته کارت هم‌قد می‌نشیند، پس عنوان جای خالی رزرو نمی‌کند */
+.book-card-title {
+  margin: 0 0 0.25rem;
+  font-size: inherit;
+  font-weight: 700;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-card-title a {
+  color: var(--rb-ink);
+  text-decoration: none;
+}
+
+.book-card-meta {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0.75rem;
+  color: var(--rb-ink-muted);
+  line-height: 1.6;
+}
+
+.book-card-meta > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-card-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.75rem;
+  margin-top: auto;
+  padding-top: 0.625rem;
+  border-top: 1px solid color-mix(in oklab, var(--card-ink) 18%, var(--rb-surface));
+}
+
+.condition-measure {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--rb-ink-muted);
+  white-space: nowrap;
+}
+
+.condition-steps {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.condition-steps > span {
+  width: 0.375rem;
+  height: 0.75rem;
+  border-radius: 1px;
+  background-color: var(--rb-rule);
+}
+
+.condition-steps > .is-filled {
+  background-color: var(--rb-ink);
+}
+
+/* قیمت به حاشیه‌ی انتهایی کارت چسبیده و ارقامش هم‌عرض‌اند */
+.book-card-price {
+  margin-inline-start: auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.book-card-currency {
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+/* کارت تازه (جای اسکلت، یا ردیف «نمایش بیشتر») کوتاه محو می‌آید تا جای نتایج تازه دیده شود؛ فقط opacity، پس در حرکت کم هم می‌ماند */
+.book-card {
+  transition: opacity var(--rb-duration) var(--rb-ease-out);
+}
+
+@starting-style {
+  .book-card {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .book-card {
+    transition: opacity var(--rb-duration) var(--rb-ease-out), transform var(--rb-duration) var(--rb-ease-out);
+  }
+
+  .wishlist-toggle-btn {
+    transition: transform 160ms var(--rb-ease-out);
+  }
+
+  .wishlist-toggle-btn:active {
+    transform: scale(0.92);
+  }
+}
+
+/* دکمه‌ی علاقه‌مندی روی جلد: ۳۶px دیداری، ناحیه‌ی لمس ۴۴px با ::before */
+.wishlist-toggle-btn {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-end: 0.5rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--rb-surface) 92%, transparent);
+  box-shadow: var(--rb-shadow-raised);
+}
+
+.wishlist-toggle-btn::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+

@@ -1,0 +1,184 @@
+/* ==========================================================================
+   عمق «صحنه»: هر صفحه برگه‌ای شناور روی میزی به رنگ مجموعه،
+   با لبه‌ی دو برگه‌ی زیرین؛ کارت‌ها و قاب‌ها روی برگه سایه می‌اندازند، دکمه‌ها مثل کلید چاپ فرو می‌روند.
+   نور از بالاست: همه‌ی سایه‌ها رو به پایین می‌افتند و رنگ مرکب خودِ شیء را می‌گیرند.
+   ========================================================================== */
+
+/* --- توکن‌ها: سایه با رنگ مرکب خودِ شیء (--shade) ته‌رنگ می‌گیرد، نه خاکستری خنثی --- */
+:root {
+    --d-lift: -10px;
+    --d-key: 3px;
+    --d-card:
+        0 1px 1px color-mix(in srgb, var(--shade) 12%, transparent),
+        0 4px 8px -2px color-mix(in srgb, var(--shade) 16%, transparent),
+        0 16px 28px -12px color-mix(in srgb, var(--shade) 34%, transparent);
+    --d-card-hover:
+        0 2px 4px color-mix(in srgb, var(--shade) 12%, transparent),
+        0 12px 20px -8px color-mix(in srgb, var(--shade) 22%, transparent),
+        0 36px 56px -20px color-mix(in srgb, var(--shade) 50%, transparent);
+    --d-panel:
+        0 1px 2px color-mix(in srgb, var(--shade) 10%, transparent),
+        0 18px 40px -18px color-mix(in srgb, var(--shade) 40%, transparent);
+    --d-cover:
+        0 3px 4px color-mix(in srgb, var(--shade) 24%, transparent),
+        0 18px 30px -10px color-mix(in srgb, var(--shade) 36%, transparent),
+        0 50px 80px -30px color-mix(in srgb, var(--shade) 60%, transparent);
+    --d-tab: 0 -4px 14px -6px color-mix(in srgb, var(--shade) 34%, transparent);
+    /* لبه‌های برگه‌های زیرین: دو برگه کمی پایین‌تر، مثل دسته‌ی کاغذ */
+    --d-sheet:
+        0 1px 2px color-mix(in srgb, var(--shade) 12%, transparent),
+        0 6px 0 -3px color-mix(in oklab, var(--sheet-paper) 94%, var(--rb-ink)),
+        0 6px 2px -2px color-mix(in srgb, var(--shade) 14%, transparent),
+        0 12px 0 -6px color-mix(in oklab, var(--sheet-paper) 88%, var(--rb-ink)),
+        0 12px 3px -5px color-mix(in srgb, var(--shade) 14%, transparent),
+        0 30px 50px -24px color-mix(in srgb, var(--shade) 45%, transparent);
+}
+
+:root {
+    --shade: var(--rb-ink);
+    --sheet-paper: var(--rb-ground);
+}
+
+/* هر شیء رنگی سایه‌اش را از مرکب خودش می‌گیرد */
+.book-card,
+.detail-cover {
+    --shade: color-mix(in oklab, var(--card-ink) 40%, var(--rb-ink));
+}
+
+.series-paper {
+    --shade: color-mix(in oklab, var(--series, var(--rb-ink)) 35%, var(--rb-ink));
+}
+
+/* ==========================================================================
+   ۱. سربرگ: میدان شرابی مات که رو به پایین کمی عمیق‌تر می‌شود (نور از بالا)، سایه‌اش به رنگ خودش.
+   شفافیت زمینه کنتراست متن سفید را زیر ۴٫۵ می‌برد
+   ========================================================================== */
+.site-navbar {
+    background-image: linear-gradient(transparent, color-mix(in srgb, #000 var(--g-header), transparent));
+    box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--rb-header-bar) 70%, transparent);
+}
+
+/* ==========================================================================
+   ۲. کارت کتاب: روی صفحه نشسته، با hover از قفسه بلند می‌شود
+   ========================================================================== */
+.book-card,
+.book-card-skeleton {
+    --bs-card-border-radius: var(--bs-border-radius-lg);
+    border-radius: var(--bs-border-radius-lg);
+    box-shadow: var(--d-card);
+}
+
+@media (hover: hover) {
+    .book-card:hover,
+    .book-card:focus-within {
+        transform: translateY(var(--d-lift)) scale(1.02);
+        box-shadow: var(--d-card-hover);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .book-card {
+        transition:
+            opacity var(--rb-duration) var(--rb-ease-out),
+            transform 260ms var(--rb-ease-out),
+            box-shadow 260ms var(--rb-ease-out);
+    }
+}
+
+/* ==========================================================================
+   ۳. دکمه‌ها مثل کلید چاپ: لبه‌ی زیرین پیداست، با فشار پایین می‌رود و لبه ناپدید می‌شود
+   ========================================================================== */
+.btn-primary { --key-edge: color-mix(in oklab, var(--rb-primary) 55%, #000); }
+.btn-danger { --key-edge: #5E120E; }
+.btn-secondary { --key-edge: var(--rb-field-border); }
+.btn-outline-primary { --key-edge: var(--rb-primary); }
+.btn-outline-secondary { --key-edge: var(--rb-field-border); }
+.btn-outline-danger { --key-edge: var(--rb-danger); }
+
+.btn[class*="btn-"]:not(.btn-link):not(.btn-close):not(.input-group > .btn) {
+    --key-shadow:
+        0 var(--d-key) 0 var(--key-edge, transparent),
+        0 calc(var(--d-key) + 3px) 8px -3px color-mix(in srgb, var(--rb-ink) 35%, transparent);
+    box-shadow: var(--key-shadow);
+}
+
+.btn[class*="btn-"]:not(.btn-link):not(.btn-close):not(.input-group > .btn):focus-visible {
+    box-shadow: var(--key-shadow), var(--bs-btn-focus-box-shadow);
+}
+
+.btn[class*="btn-"]:not(.btn-link):not(.btn-close):not(.input-group > .btn):active {
+    transform: none;
+    translate: 0 var(--d-key);
+    box-shadow: 0 0 0 var(--key-edge, transparent);
+}
+
+.btn:disabled,
+.btn.disabled {
+    box-shadow: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .btn {
+        transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease,
+            box-shadow 120ms var(--rb-ease-out), translate 120ms var(--rb-ease-out);
+    }
+}
+
+/* ==========================================================================
+   ۴. فیلدها در کاغذ فرو رفته‌اند
+   ========================================================================== */
+.form-control,
+.form-select {
+    box-shadow: inset 0 2px 3px color-mix(in srgb, var(--rb-ink) 9%, transparent);
+}
+
+.form-control:focus,
+.form-select:focus {
+    box-shadow:
+        inset 0 2px 3px color-mix(in srgb, var(--rb-ink) 9%, transparent),
+        0 0 0 3px var(--bs-focus-ring-color);
+}
+
+/* ==========================================================================
+   ۵. زبانه‌های مجموعه مثل زبانه‌ی کاغذی پوشه: هر زبانه لبه‌ی مرکبی دارد، زبانه‌ی فعال بالاتر می‌آید
+   ========================================================================== */
+.series-tabs {
+    padding: 0.75rem 0.5rem 0;
+    border-bottom: 0;
+    box-shadow: inset 0 -1px 0 var(--rb-rule);
+}
+
+.series-tabs-list {
+    align-items: flex-end;
+    gap: 0.375rem;
+}
+
+.series-tab {
+    padding: 0.375rem 0.875rem 0.25rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    background-color: color-mix(in oklab, var(--series-ink) 6%, var(--rb-surface));
+    box-shadow: inset 0 3px 0 var(--series-ink), var(--d-tab);
+}
+
+.series-tab[aria-current="page"] {
+    padding-block: 0.625rem 0.375rem;
+    background-color: var(--rb-surface);
+    box-shadow: inset 0 5px 0 var(--series-ink), var(--d-tab);
+}
+
+.series-tab[aria-current="page"]::after {
+    display: none;
+}
+
+@media (hover: hover) {
+    .series-tab:not([aria-current="page"]):hover {
+        translate: 0 -3px;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .series-tab {
+        transition: translate 180ms var(--rb-ease-out), color 150ms ease;
+    }
+}
+

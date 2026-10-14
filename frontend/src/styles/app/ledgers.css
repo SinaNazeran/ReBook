@@ -1,0 +1,167 @@
+/* ==========================================================================
+   ۵. ردیف‌های «کتاب‌های من» و «معاملات من» (به‌جای جدول)
+   هر ردیف: جلد کوچک، نام و جزئیات، مبلغ، وضعیت، اقدام. در موبایل دو ردیفه می‌شود.
+   ========================================================================== */
+.ledger-page {
+  padding-block: 2rem 3.5rem;
+}
+
+.ledger-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ledger-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+}
+
+.ledger-tabs {
+  margin-bottom: 1.25rem;
+}
+
+.ledger {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+.ledger-row {
+  display: grid;
+  grid-template-areas: "thumb main amount status actions";
+  align-items: center;
+  gap: 0.25rem 1.25rem;
+  padding: 0.875rem 1rem;
+}
+
+/* ستون‌ها روی خود فهرست تعریف می‌شوند و ردیف‌ها subgrid می‌گیرند تا مبلغ، وضعیت و اقدام در همه‌ی ردیف‌ها هم‌تراز باشند */
+@media (min-width: 768px) {
+  .ledger {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr) max-content max-content max-content;
+    column-gap: 1.25rem;
+    padding-inline: 1rem;
+  }
+
+  /* padding روی ردیفِ subgrid به ستون‌های لبه اضافه می‌شود و جلد را روی فاصله می‌برد؛ پس روی خود فهرست است */
+  .ledger-row {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    padding-inline: 0;
+  }
+}
+
+.ledger-row + .ledger-row {
+  border-top: 1px solid var(--rb-rule);
+}
+
+.cover-thumb {
+  grid-area: thumb;
+  display: block;
+  width: 3rem;
+  aspect-ratio: 3 / 4;
+  border-radius: 2px;
+  object-fit: cover;
+  background-color: var(--rb-surface-sunken);
+}
+
+.ledger-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ledger-name {
+  overflow: hidden;
+  color: var(--rb-ink);
+  font-weight: 700;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ledger-name:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.ledger-meta,
+.ledger-note {
+  font-size: 0.875rem;
+  color: var(--rb-ink-muted);
+}
+
+.ledger-code {
+  color: var(--rb-ink);
+  font-variant-numeric: tabular-nums;
+  user-select: all;
+}
+
+.ledger-amount {
+  grid-area: amount;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ledger-status {
+  grid-area: status;
+}
+
+.ledger-actions {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.ledger-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: var(--rb-touch-target);
+  height: var(--rb-touch-target);
+  padding: 0;
+}
+
+/* موبایل: جلد کنار نام؛ مبلغ و وضعیت زیرش؛ اقدام‌ها تمام‌عرض */
+@media (max-width: 767.98px) {
+  .ledger-row {
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      "thumb main main"
+      "thumb amount status"
+      "actions actions actions";
+    align-items: start;
+    gap: 0.5rem 0.875rem;
+  }
+
+  .ledger-name {
+    white-space: normal;
+  }
+
+  .ledger-status {
+    justify-self: end;
+  }
+
+  .ledger-actions {
+    justify-content: flex-start;
+  }
+
+  .ledger-actions:empty {
+    display: none;
+  }
+}
+

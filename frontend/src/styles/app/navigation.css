@@ -1,0 +1,283 @@
+/* ==========================================================================
+   App.css — استایل‌های سطح Layout اپلیکیشن «ری‌بوک»
+   نکته: رنگ، فونت و متغیرهای برند در src/styles/theme.css تعریف شده‌اند.
+   این فایل فقط شامل چیدمان و رفتار بصری کامپوننت‌های خاص است،
+   نه تعریف رنگ خام یا فونت.
+   ========================================================================== */
+
+/* ==========================================================================
+   ۱. نوار ناوبری
+   ========================================================================== */
+/* سربرگ تیره: میدان شرابی عمیق، متن سفید، نوار هشت‌رنگ مجموعه‌ها لبه‌ی پایین (قرینه‌ی فوتر).
+   theme.css رنگ پیوند را روی خودِ .nav-link می‌گذارد، پس متغیر navbar به پیوندها نمی‌رسد و جدا تنظیم می‌شود */
+.site-navbar {
+  --bs-navbar-color: #FFFFFF;
+  --bs-navbar-hover-color: #FFFFFF;
+  --bs-navbar-active-color: #FFFFFF;
+  --bs-navbar-brand-color: #FFFFFF;
+  --bs-navbar-brand-hover-color: #FFFFFF;
+  --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  background-color: var(--rb-header-bar);
+}
+
+.site-navbar::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 4px;
+  background: var(--rb-series-rule);
+}
+
+.site-navbar .nav-link {
+  --bs-nav-link-color: #FFFFFF;
+  --bs-nav-link-hover-color: #FFFFFF;
+}
+
+.site-navbar :focus-visible {
+  outline-color: #FFFFFF;
+}
+
+/* دکمه‌ی اصلی سربرگ سبز روشن‌تر از دکمه‌های صفحه است تا روی میدان شرابی دیده شود (۳٫۴۸:۱) */
+.site-navbar .btn-primary {
+  --bs-btn-bg: var(--rb-header-btn);
+  --bs-btn-border-color: var(--rb-header-btn);
+  --bs-btn-hover-bg: color-mix(in oklab, var(--rb-header-btn) 85%, #FFFFFF);
+  --bs-btn-hover-border-color: color-mix(in oklab, var(--rb-header-btn) 85%, #FFFFFF);
+  --bs-btn-active-bg: var(--rb-header-btn);
+  --bs-btn-active-border-color: var(--rb-header-btn);
+  --key-edge: color-mix(in oklab, var(--rb-header-btn) 55%, #000);
+}
+
+.site-navbar .btn-outline-primary {
+  --bs-btn-color: #FFFFFF;
+  --bs-btn-border-color: color-mix(in srgb, #FFFFFF 70%, transparent);
+  --bs-btn-hover-color: var(--rb-ink);
+  --bs-btn-hover-bg: #FFFFFF;
+  --bs-btn-hover-border-color: #FFFFFF;
+  --bs-btn-active-color: var(--rb-ink);
+  --bs-btn-active-bg: #FFFFFF;
+  --bs-btn-active-border-color: #FFFFFF;
+  --key-edge: color-mix(in srgb, #FFFFFF 45%, transparent);
+}
+
+.navbar-brand {
+  font-size: 1.625rem;
+  color: #FFFFFF;
+}
+
+/* نشان برند (BrandMark.jsx): برچسب شرابی عطف با دو نوار کاغذی، مثل نشان ناشر روی کتاب جیبی */
+.brand-mark {
+  flex: none;
+  width: 0.55em;
+  height: 0.88em;
+}
+
+.brand-mark-spine {
+  fill: var(--rb-brand-red);
+}
+
+.brand-mark-band {
+  fill: var(--rb-surface);
+}
+
+/* روی میدان‌های شرابی (سربرگ، فوتر) عطف شرابی گم می‌شد: عطف گلی، نوارها هم‌رنگ میدان */
+.site-navbar .brand-mark-spine,
+.site-footer .brand-mark-spine {
+  fill: var(--rb-accent);
+}
+
+.site-navbar .brand-mark-band {
+  fill: var(--rb-header-bar);
+}
+
+.site-footer .brand-mark-band {
+  fill: var(--rb-footer);
+}
+
+.brand-mark.is-mono .brand-mark-spine {
+  fill: currentColor;
+}
+
+.brand-mark.is-mono .brand-mark-band {
+  fill: var(--cover-ink, var(--rb-ink));
+}
+
+/* دکمه‌ی منوی موبایل: پیش‌فرض بوت‌استرپ ۳۸px ارتفاع دارد */
+.site-navbar .navbar-toggler {
+  min-height: var(--rb-touch-target);
+}
+
+.nav-search {
+  max-width: 380px;
+}
+
+.nav-user-name {
+  max-width: 100px;
+}
+
+.nav-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--rb-accent);
+  color: var(--rb-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.site-navbar .nav-link.active {
+  color: #FFFFFF;
+  text-decoration-color: var(--rb-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.6em;
+}
+
+/* سمت پایان سه گروه دارد: آیکن‌ها | فروش کتاب | حساب. فاصله‌ی میان گروه‌ها از فاصله‌ی درون گروه بیشتر است.
+   سمت آغاز: برند با فاصله، سپس «کتاب‌ها» و «مجموعه‌ها» هم‌خط */
+@media (min-width: 992px) {
+  .site-navbar .nav-actions {
+    gap: 1rem;
+  }
+
+  .site-navbar .navbar-brand {
+    margin-inline-end: 1.5rem;
+  }
+
+  .site-navbar .navbar-nav .nav-link {
+    padding-inline: 0.75rem;
+  }
+}
+
+.nav-icons {
+  align-items: center;
+  gap: 0.125rem;
+}
+
+/* آیکن سربرگ (سبد، اعلان‌ها): ۴۴px، سفید روی میدان تیره؛ شمار روی نشان رز با حلقه‌ای به رنگ میدان */
+.nav-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--bs-border-radius);
+  color: #fff;
+  font-size: 1.25rem;
+}
+
+.nav-icon:hover {
+  background-color: rgb(255 255 255 / 0.12);
+  color: #fff;
+}
+
+.site-navbar .nav-icon:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.nav-icon-count {
+  position: absolute;
+  inset-block-start: 0.3rem;
+  inset-inline-end: 0.15rem;
+  min-inline-size: 1.125rem;
+  padding-inline: 0.25rem;
+  border-radius: 999px;
+  background-color: var(--rb-accent);
+  color: var(--rb-ink);
+  box-shadow: 0 0 0 2px var(--rb-header-bar);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.125rem;
+  text-align: center;
+}
+
+/* زیر ۳۶۰ پیکسل سبد و فروش کنار هم جا نمی‌شوند؛ فروش به منو می‌رود و سبد بیرون می‌ماند */
+@media (max-width: 359.98px) {
+  .nav-sell-mobile {
+    display: none !important;
+  }
+
+  .site-navbar .nav-sell-desktop {
+    display: flex !important;
+  }
+}
+
+/* نشان مجموعه روی میدان تیره (سربرگ و فوتر): مرکب‌ها تیره‌اند، پس رقیق‌شده با سفید تا دیده شوند */
+.site-navbar .series-index-mark,
+.site-footer .series-index-mark {
+  background-color: color-mix(in oklab, var(--series-ink) 45%, #FFFFFF);
+}
+
+/* منوی «مجموعه‌ها» (دسکتاپ): برگه‌ی سفید با هشت مجموعه در دو ستون، هر کدام با زبانه‌ی مرکب خودش */
+.series-menu .dropdown-menu {
+  min-inline-size: 26rem;
+  padding: 0.75rem;
+}
+
+.series-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.125rem 0.5rem;
+}
+
+.site-navbar .series-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-block-size: 2.75rem;
+  border-radius: var(--bs-border-radius);
+}
+
+.site-navbar .series-menu .series-index-mark {
+  background-color: var(--series-ink);
+}
+
+/* مجموعه‌ی جاری: زبانه‌ی پهن‌تر (حالت است، نه حرکت؛ hover در بخش ۱ب) */
+.series-menu-item[aria-current] .series-index-mark {
+  width: 8px;
+}
+
+.series-menu-item[aria-current] {
+  font-weight: 700;
+}
+
+.series-menu-all {
+  font-weight: 500;
+}
+
+/* مجموعه‌ها در منوی تاشونده‌ی موبایل: دو ستون، هر ردیف ۴۴px */
+.nav-series-mobile {
+  margin-block: 0.25rem 0.5rem;
+}
+
+.nav-series-title {
+  margin: 0.5rem 0 0.25rem;
+  color: rgb(255 255 255 / 0.75);
+  font-size: 0.875rem;
+}
+
+.nav-series-mobile ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-series-mobile a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 2.75rem;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+

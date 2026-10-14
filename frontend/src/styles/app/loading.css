@@ -1,0 +1,18 @@
+/* ==========================================================================
+   ۹. صفحه لودینگ
+   ========================================================================== */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+/* حالت تمام‌صفحه — برای استفاده به‌عنوان Suspense fallback در سطح Route */
+/* کل صفحه را می‌گیرد تا فوتر زیر لودینگ دیده نشود و با رسیدن صفحه نپرد؛
+   padding اسپینر را همان‌جای قبلی (وسط ۶۰vh بالایی) نگه می‌دارد */
+.loading-container.loading-fullpage {
+  min-height: 100vh;
+  padding-bottom: 40vh;
+}
+

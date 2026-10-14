@@ -1,0 +1,183 @@
+/* ==========================================================================
+   ۱ب. حرکت hover سربرگ و فوتر
+   فقط transform و opacity جابه‌جا می‌شوند، ۱۵۰ تا ۲۵۰ میلی‌ثانیه با --rb-ease-out؛ رنگ‌ها با ease.
+   حرکت فقط برای اشاره‌گر واقعی (لمس hover کاذب می‌سازد) و فقط بی «حرکت کمتر»؛ با «حرکت کمتر» تغییر رنگ و شفافیت می‌ماند.
+   «جلو» در RTL به سمت چپ است، پس translateX منفی؛ transform معادل منطقی ندارد و سایت همیشه RTL است.
+   ========================================================================== */
+
+/* خط زیر پیوندهای سربرگ (دسکتاپ): از وسط باز می‌شود؛ پیوند فعال و منوی باز همان خط را کامل دارند.
+   ::before، چون ::after فلش dropdown بوت‌استرپ است. حساب کاربری خط نمی‌گیرد (آواتارش واکنش می‌دهد) */
+@media (min-width: 992px) {
+  .site-navbar .navbar-nav .nav-link {
+    position: relative;
+  }
+
+  .site-navbar .navbar-nav .nav-link::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0.75rem;
+    inset-block-end: 0.15rem;
+    height: 2px;
+    border-radius: 1px;
+    background-color: var(--rb-accent);
+    opacity: 0;
+    transform: scaleX(0);
+    transition: transform 220ms var(--rb-ease-out), opacity 150ms ease;
+  }
+
+  .site-navbar .nav-actions .nav-link::before {
+    content: none;
+  }
+
+  .site-navbar .navbar-nav .nav-link.active {
+    text-decoration: none;
+  }
+
+  .site-navbar .navbar-nav .nav-link.active::before,
+  .site-navbar .navbar-nav .show > .nav-link::before,
+  .site-navbar .navbar-nav .nav-link:focus-visible::before {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* فلش منوها با باز شدن می‌چرخد (حالت، نه تزیین) */
+.site-navbar .dropdown-toggle::after {
+  transition: transform 200ms var(--rb-ease-out);
+}
+
+.site-navbar .show > .dropdown-toggle::after {
+  transform: rotate(180deg);
+}
+
+/* هر مجموعه در منو روی کاغذ مرکب خودش روشن می‌شود */
+.site-navbar .series-menu-item {
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.site-navbar .series-menu-item:hover,
+.site-navbar .series-menu-item:focus-visible {
+  background-color: color-mix(in oklab, var(--series-ink) 10%, var(--rb-surface));
+  color: var(--rb-ink);
+}
+
+/* زیرخط پیوندهای ستونی فوتر هم از وسط باز می‌شود، به رنگ خود پیوند */
+.site-footer-links a {
+  position: relative;
+  transition: color 150ms ease;
+}
+
+.site-footer-links a::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0.55rem;
+  height: 1px;
+  background-color: currentColor;
+  opacity: 0;
+  transform: scaleX(0);
+  transition: transform 220ms var(--rb-ease-out), opacity 150ms ease;
+}
+
+.site-footer-links a:focus-visible::after {
+  opacity: 1;
+  transform: none;
+}
+
+.site-footer-series a {
+  transition: color 150ms ease;
+}
+
+.site-footer-top {
+  transition: background-color 150ms ease, border-color 150ms ease, transform 160ms var(--rb-ease-out);
+}
+
+.site-footer-top:hover {
+  border-color: color-mix(in srgb, var(--rb-on-ink) 70%, transparent);
+}
+
+/* نام مجموعه inline است و transform روی جعبه‌ی inline اثر ندارد */
+.series-link-label {
+  display: inline-block;
+}
+
+/* اجزایی که جابه‌جا می‌شوند؛ بی hover هم انتقالشان آماده است تا برگشت نرم باشد */
+.brand-mark,
+.nav-icon svg,
+.site-navbar .btn-primary svg,
+.nav-avatar,
+.series-link-label,
+.series-index-mark,
+.site-footer-top svg {
+  transition: transform 220ms var(--rb-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-navbar .navbar-nav .nav-link:hover::before,
+  .site-footer-links a:hover::after {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  /* نشان برند مثل کتابی که از قفسه بیرون کشیده می‌شود (همان حرکت عطف‌های صفحه‌ی اصلی) */
+  .navbar-brand:hover .brand-mark,
+  .site-footer-name:hover .brand-mark {
+    transform: translateY(-3px) rotate(-4deg);
+  }
+
+  /* سبد کمی بالا می‌آید؛ زنگ اعلان‌ها از بالا تاب می‌خورد */
+  .nav-icon:hover svg {
+    transform: translateY(-2px);
+  }
+
+  .nav-bell svg {
+    transform-origin: 50% 8%;
+  }
+
+  .nav-bell:hover svg {
+    transform: rotate(-14deg);
+  }
+
+  .nav-icon:active svg {
+    transform: scale(0.9);
+  }
+
+  /* «+» فروش کتاب یک ربع می‌چرخد */
+  .site-navbar .btn-primary:hover svg {
+    transform: rotate(90deg);
+  }
+
+  .site-navbar .dropdown-toggle:hover .nav-avatar {
+    transform: scale(1.1);
+  }
+
+  /* مجموعه‌ها (منو و فوتر): زبانه‌ی مرکب بلندتر و نام کمی رو به جلو */
+  .series-menu-item:hover .series-index-mark,
+  .site-footer-series a:hover .series-index-mark {
+    transform: scaleY(1.3);
+  }
+
+  .series-menu-item:hover .series-link-label,
+  .site-footer-series a:hover .series-link-label {
+    transform: translateX(-3px);
+  }
+
+  .site-footer-top:hover svg {
+    transform: translateY(-3px);
+  }
+
+  .site-footer-top:active {
+    transform: scale(0.97);
+  }
+}
+
+/* با «حرکت کمتر» خط‌ها بی کشیدگی، فقط با شفافیت ظاهر می‌شوند */
+@media (prefers-reduced-motion: reduce) {
+  .site-navbar .navbar-nav .nav-link::before,
+  .site-footer-links a::after {
+    transform: none;
+  }
+}
+

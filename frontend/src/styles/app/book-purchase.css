@@ -1,0 +1,174 @@
+/* شناسنامه‌ی کتاب: قاب دوخطی چاپی (دو خط مویی با سایه‌ی درونی، همان شیوه‌ی قاب جلد ساده)،
+   سرعنوان میان دو خط، و نقطه‌چین از برچسب تا مقدار */
+.colophon {
+  max-width: 34rem;
+  padding: 1.5rem 1.75rem 1.75rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+  box-shadow:
+    inset 0 0 0 5px var(--rb-surface),
+    inset 0 0 0 6px var(--rb-rule);
+}
+
+.colophon-title {
+  margin-bottom: 0.25rem;
+  font-size: 1.375rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.colophon-ornament {
+  margin-bottom: 1.125rem;
+}
+
+.colophon-list {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 0.375rem 0.5rem;
+  margin: 0;
+}
+
+.colophon-list dt {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+.colophon-list dt::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px dotted var(--rb-field-border);
+}
+
+.colophon-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* نوار خرید چسبان موبایل: قیمت و اقدام اصلی همیشه در دسترس */
+.buy-bar {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 1020;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--rb-rule);
+  background-color: var(--rb-surface);
+}
+
+.buy-bar .buy-price {
+  font-size: 1.25rem;
+}
+
+/* نوار چسبان نباید ته فوتر را بپوشاند */
+@media (max-width: 991.98px) {
+  body:has(.buy-bar) .site-footer {
+    padding-bottom: calc(1.5rem + 4.5rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* رسید خرید آزمایشی */
+.purchase-summary {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.purchase-summary dt {
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+.purchase-summary dd {
+  margin: 0;
+}
+
+.purchase-price {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.purchase-note {
+  font-size: 0.875rem;
+  color: var(--rb-ink-muted);
+}
+
+/* برچسب اکس‌لیبریس: قاب دوخطی در مرکب مجموعه‌ی کتاب روی کاغذ رنگی همان مجموعه */
+.bookplate {
+  margin-bottom: 1rem;
+  padding: 1.25rem 1.25rem 1.375rem;
+  border: 2px solid var(--series);
+  border-radius: 2px;
+  background-color: color-mix(in oklab, var(--series) 8%, var(--rb-surface));
+  text-align: center; /* قاب دوخطی درونی و سایه در depth.css */
+}
+
+.bookplate-title {
+  margin-bottom: 0.25rem;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  color: var(--series);
+}
+
+.bookplate .ornament-rule {
+  margin-inline: 15%;
+  margin-bottom: 0.75rem;
+}
+
+.bookplate-book {
+  margin: 0;
+  font-size: 1.625rem;
+  line-height: 1.35;
+}
+
+.bookplate-author {
+  margin: 0.125rem 0 0;
+  color: var(--rb-ink-muted);
+}
+
+.bookplate-note {
+  color: var(--rb-ink-muted);
+}
+
+.receipt-code {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 1rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface-sunken);
+}
+
+.receipt-code-label {
+  color: var(--rb-ink-muted);
+}
+
+.receipt-code-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  user-select: all;
+}
+
+/* لحظه‌ی امضایی خرید: رسید جای فرم را می‌گیرد و کد پیگیری مثل نمونه‌ی چاپی صفحه‌ی خانه از تاری به وضوح می‌رسد.
+   یک‌بار در هر خرید دیده می‌شود، پس جای کمی زمان بیشتر دارد. */
+.purchase-receipt {
+  animation: rb-fade-in 240ms var(--rb-ease-out) both;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .purchase-receipt .receipt-code-value {
+    animation: hero-focus 560ms var(--rb-ease-out) 420ms backwards; /* بعد از نشستن برچسب (depth.css) */
+  }
+}
+

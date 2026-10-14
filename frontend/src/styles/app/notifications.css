@@ -1,0 +1,122 @@
+/* ==========================================================================
+   ۱۰. اعلان‌ها (Notifications)
+   خوانده‌نشده با وزن عنوان و یک نشان مربعی مرکب دیده می‌شود، نه با پس‌زمینه‌ی رنگی
+   ========================================================================== */
+.notice-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+.notice-list > li + li {
+  border-top: 1px solid var(--rb-rule);
+}
+
+.notice {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.25rem 1rem;
+  width: 100%;
+  padding-block: 1rem;
+  padding-inline: 1rem 1.75rem;
+  border: 0;
+  background: none;
+  color: var(--rb-ink-muted);
+  text-align: start;
+}
+
+.notice:focus-visible {
+  outline: 2px solid var(--rb-focus);
+  outline-offset: -2px;
+}
+
+.notice[aria-disabled="true"] {
+  cursor: default;
+}
+
+.notice-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background-color: var(--rb-surface-sunken);
+  color: var(--rb-ink-muted);
+}
+
+.notice-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.notice-title {
+  color: var(--rb-ink);
+}
+
+.notice-message {
+  font-size: 0.9375rem;
+}
+
+.notice-date {
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.notice.is-unread .notice-title {
+  font-weight: 700;
+}
+
+.notice.is-unread .notice-icon {
+  background-color: var(--rb-ink);
+  color: var(--rb-on-ink);
+}
+
+/* نشان «تازه»: مربع کوچک مرکب در لبه‌ی انتهایی ردیف */
+.notice-dot {
+  position: absolute;
+  inset-block-start: 1.5rem;
+  inset-inline-end: 0.75rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 1px;
+  background-color: var(--rb-ink);
+}
+
+/* پیوندهای اعلانِ کتاب: زیر متن، هم‌راستا با ستون متن (آیکن 2.25rem + فاصله 1rem) */
+.notice:has(+ .notice-links) {
+  padding-block-end: 0.25rem;
+}
+
+.notice-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  margin: 0;
+  padding-block-end: 0.75rem;
+  padding-inline: calc(1rem + 2.25rem + 1rem) 1.75rem;
+  font-size: 0.9375rem;
+}
+
+.notice-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  font-weight: 500;
+}
+
+@media (max-width: 575.98px) {
+  .notice {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+  }
+
+  .notice-date {
+    grid-column: 2;
+  }
+}
+

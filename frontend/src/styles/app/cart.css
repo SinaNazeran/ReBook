@@ -1,0 +1,46 @@
+/* ==========================================================================
+   ۱۶. سبد خرید
+   ========================================================================== */
+
+/* رسید چند کتابی: نام‌ها زیر هم، کوچک‌تر از رسید تک‌کتابی */
+.bookplate-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bookplate-list .bookplate-book {
+  margin: 0;
+  font-size: 1.375rem;
+  line-height: 1.6;
+}
+
+/* خلاصه‌ی سبد کنار فهرست؛ روی دسکتاپ با اسکرول همراه می‌ماند. ۶px بالا جای نوار مجموعه‌هاست (بخش ۱۴) */
+.cart-summary {
+  padding: calc(1.25rem + 6px) 1.25rem 1.25rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+@media (min-width: 992px) {
+  .cart-summary {
+    position: sticky;
+    inset-block-start: 6.5rem;
+  }
+}
+
+.cart-summary-note {
+  color: var(--rb-ink-muted);
+  font-size: 0.875rem;
+}
+
+.cart-unavailable {
+  margin-block-start: 2rem;
+}
+
+.cart-receipt {
+  max-inline-size: 34rem;
+  margin-inline: auto;
+}
+

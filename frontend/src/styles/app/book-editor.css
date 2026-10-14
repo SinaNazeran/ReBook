@@ -1,0 +1,184 @@
+/* ==========================================================================
+   ۷د. فرم فروش کتاب (CreateBook)
+   بخش‌ها با خط مویی جدا می‌شوند، نه کارت؛ پیش‌نمایش همان BookCard فهرست است.
+   ========================================================================== */
+.sell-page {
+  padding-block: 2rem 3.5rem;
+}
+
+.sell-header {
+  max-width: 44rem;
+  margin-bottom: 2rem;
+}
+
+.sell-title {
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+}
+
+.sell-lead {
+  margin: 0;
+  font-size: 1.0625rem;
+  color: var(--rb-ink-muted);
+}
+
+.sell-section {
+  margin: 0 0 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rb-rule);
+}
+
+.sell-section > legend {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: var(--rb-heading-line-height);
+}
+
+.sell-optional {
+  font-weight: 400;
+  color: var(--rb-ink-muted);
+}
+
+.sell-error {
+  margin: 0.375rem 0 0;
+  font-size: 0.875rem;
+  color: var(--rb-danger);
+}
+
+/* پنج درجه به‌صورت فهرست انتخابی: مقیاس، نام و معنای هر درجه کنار هم */
+.condition-options {
+  display: grid;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+}
+
+.condition-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  min-height: var(--rb-touch-target);
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+
+.condition-option + .condition-option {
+  border-top: 1px solid var(--rb-rule);
+}
+
+.condition-option .form-check-input {
+  flex: none;
+  margin-top: 0.3rem;
+}
+
+.condition-option:has(:checked) {
+  background-color: var(--rb-surface-sunken);
+}
+
+.condition-option-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.125rem 1rem;
+}
+
+.condition-option .condition-measure {
+  min-width: 7.5rem;
+  color: var(--rb-ink);
+  font-weight: var(--rb-font-weight-ui);
+}
+
+.condition-option-note {
+  font-size: 0.875rem;
+  color: var(--rb-ink-muted);
+}
+
+.sell-price {
+  max-width: 20rem;
+}
+
+.cover-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1.25rem;
+  border: 1px dashed var(--rb-field-border);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+  color: var(--rb-ink-muted);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--rb-duration) var(--rb-ease-out), background-color var(--rb-duration) var(--rb-ease-out);
+}
+
+.cover-dropzone > span:first-of-type {
+  color: var(--rb-ink);
+}
+
+.cover-dropzone:hover,
+.cover-dropzone.is-dragging {
+  border-color: var(--rb-primary);
+  background-color: var(--rb-surface-sunken);
+}
+
+.cover-dropzone.is-invalid {
+  border-color: var(--rb-danger);
+}
+
+.cover-dropzone-hint {
+  font-size: 0.875rem;
+}
+
+/* ورودی فایل پنهان است؛ فوکوس صفحه‌کلید روی ناحیه‌ی قابل‌دیدن نشان داده می‌شود */
+.cover-field:has(#cover_image:focus-visible) .cover-dropzone,
+.cover-field:has(#cover_image:focus-visible) .cover-picked-actions label {
+  outline: 2px solid var(--rb-focus);
+  outline-offset: 2px;
+}
+
+.cover-picked {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.cover-picked img {
+  max-width: 9rem;
+  max-height: 12rem;
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface-sunken);
+}
+
+.cover-picked-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sell-submit {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rb-rule);
+}
+
+@media (max-width: 575.98px) {
+  .sell-submit .btn {
+    width: 100%;
+  }
+}
+
+.sell-preview {
+  position: sticky;
+  inset-block-start: 5.5rem;
+  max-width: 17rem;
+}
+
+.sell-preview-caption {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: var(--rb-font-weight-ui);
+  color: var(--rb-ink-muted);
+}
+

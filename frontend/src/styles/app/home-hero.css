@@ -1,0 +1,159 @@
+/* ==========================================================================
+   ۷. صفحه اصلی
+   روی همان کاغذ زمینه، بدون پنل رنگی: جلدها تنها سطح‌های تمام‌رنگ‌اند.
+   ========================================================================== */
+/* هیرو روی کاغذ زعفرانی: تنها جای صفحه‌ی اصلی که کاغذ رنگ دوم را می‌گیرد */
+.home-hero {
+  background-color: var(--rb-accent-paper);
+}
+
+/* هیروی تمام‌صفحه: ارتفاع پنجره منهای نوار ناوبری چسبان (--rb-nav-h را HomeHero.jsx اندازه می‌گیرد).
+   صحنه همان عنصری است که GSAP پین می‌کند، پس زمینه‌ی خودش را دارد. «باند» زیرش طول اسکرولِ صحنه است */
+.hero-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100svh - var(--rb-nav-h, 4.625rem));
+  padding-block: 2rem;
+  overflow: clip;
+  background-color: var(--rb-accent-paper);
+}
+
+.hero-runway {
+  height: 170svh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-runway {
+    display: none;
+  }
+}
+
+/* بخش بعد مثل برگه روی هیروی پین‌شده بالا می‌آید: زمینه‌ی مات، لایه‌ی بالاتر، لبه‌ی گرد و سایه‌ی رو به بالا */
+.home-hero ~ section {
+  position: relative;
+  z-index: 1;
+  background-color: var(--rb-ground);
+}
+
+.home-hero + section {
+  border-start-start-radius: 1.5rem;
+  border-start-end-radius: 1.5rem;
+  box-shadow: 0 -18px 40px rgb(26 25 24 / 0.1);
+}
+
+.hero-inner {
+  position: relative;
+}
+
+/* پرواز در قفسه: جلدها در فضای سه‌بعدی معلق‌اند؛ جای ایستا از متغیرهای خود جلد می‌آید و با حرکت، موتور JS هر فریم آن را می‌نویسد */
+.hero-depth {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  perspective: 900px;
+}
+
+.depth-world {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.hero-depth .depth-item {
+  --depth-w: clamp(5.25rem, 16vw, 16rem);
+  position: absolute;
+  inset: 0;
+  width: var(--depth-w);
+  height: calc(var(--depth-w) * 4 / 3 + 6px);
+  margin: auto;
+  opacity: var(--o);
+  transform: translate3d(calc(var(--x) * 1vw), calc(var(--y) * 1vh), calc(var(--z) * 1px)) rotate(var(--tilt));
+  box-shadow: 0 24px 40px -20px rgb(26 25 24 / 0.4);
+  transition: none;
+}
+
+.home-hero .hero-inner {
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* تیتر روی مه کاغذ می‌نشیند تا جلدهای دور پشتش خوانایی را نشکنند */
+.depth-copy {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 48rem;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.depth-copy::before {
+  content: "";
+  position: absolute;
+  inset: -6% -4%;
+  z-index: -1;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--rb-accent-paper) 85%, transparent) 45%, transparent);
+}
+
+.depth-copy .home-hero-title {
+  font-size: clamp(2.25rem, 1rem + 4.5vw, 4.75rem);
+}
+
+.depth-copy .home-hero-lead {
+  margin-inline: auto;
+}
+
+/* تیتر به لاله‌زار، اندازه‌ی پوستری */
+.home-hero-title {
+  margin-bottom: 1.25rem;
+  font-size: clamp(2.25rem, 1.2rem + 4vw, 4.25rem);
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.home-hero-lead {
+  max-width: 34rem;
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+  color: var(--rb-ink-muted);
+}
+
+.shelf-book {
+  display: block;
+  border-radius: var(--bs-border-radius);
+  outline: 3px solid var(--rb-accent-paper);
+  overflow: hidden;
+  background-color: var(--rb-surface);
+  text-decoration: none;
+}
+
+.shelf-book:focus-visible {
+  outline: 2px solid var(--rb-focus);
+  outline-offset: 2px;
+}
+
+.shelf-cover {
+  display: block;
+  aspect-ratio: 3 / 4;
+}
+
+.shelf-cover > img,
+.shelf-cover > .plain-cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shelf-band {
+  display: block;
+  height: 6px;
+  background-color: var(--card-ink);
+}
+

@@ -1,0 +1,194 @@
+/* ==========================================================================
+   ری‌بوک (ReBook) — Design Tokens · جهان بصری «مجموعه‌ی جیبی»
+   الهام از کتاب‌های جیبی تهران: چاپ تخت روی کاغذ بی‌روکش، هر دسته‌بندی یک مرکب،
+   جلد کتاب تنها سطح تمام‌رنگ صفحه.
+   متغیرهای بوت‌استرپ اینجا بازتعریف می‌شوند تا کامپوننت‌های react-bootstrap
+   بدون کلاس اضافه همین جهان را بگیرند.
+   ========================================================================== */
+
+:root {
+    /* --- کاغذ و مرکب --- */
+    --rb-ground: #F5F5F2;          /* زمینه‌ی صفحه: خنثای روشن، نه کرم */
+    --rb-surface: #FFFFFF;         /* کاغذ کارت و پنل */
+    --rb-surface-sunken: #ECEBE6;  /* جای خالی جلد، اعلان خوانده‌نشده، بخش متمایز */
+    --rb-ink: #1A1918;             /* متن و اقدام اصلی؛ سیاه خالص نیست */
+    --rb-ink-hover: #3A3835;
+
+    /* پالت «سبز و شرابی». شرابی تیره (L۰٫۳۶) و سبز میانه (L۰٫۴۹) با روشنایی هم جدا شده‌اند،
+       وگرنه برای کوررنگی قرمز-سبز یک رنگ دیده می‌شدند (ΔE ۳ → ۱۲). متن بدنه مرکب می‌ماند */
+    --rb-primary: #326E51;                    /* سبز بطری: اقدام اصلی (دکمه، کنترل تیک‌خورده، زبانه‌ی فعال، پیوند)؛ متن سفید ۶٫۰:۱ */
+    --rb-primary-hover: #226043;
+    --rb-on-primary: #FFFFFF;
+    --rb-brand: #6E172C;                      /* شرابی: تیتر نمایشی، نام برند، خط قفسه، فوتر؛ متن سفید ۱۱٫۵:۱ */
+    --rb-link: var(--rb-primary);
+    --rb-footer: var(--rb-brand);
+    --rb-on-footer-muted: #E7C4C7;            /* متن ثانویه روی فوتر شرابی، ۷٫۲:۱ */
+    /* سربرگ: میدان شرابی عمیق‌تر از فوتر تا دکمه‌ی سبز روشن‌تر رویش ≥ ۳:۱ جدا بماند (۳٫۴۸:۱) */
+    --rb-header-bar: #480217;
+    --rb-header-btn: #448061;                 /* متن سفید ۴٫۶۶:۱ */
+    --rb-ink-muted: #5C5B57;       /* متن ثانویه؛ ۶٫۲:۱ روی زمینه */
+    --rb-on-ink: #FFFFFF;
+    --rb-on-ink-muted: #B9B8B1;    /* متن ثانویه روی سطح مرکبی (فوتر) */
+    --rb-rule: #DEDDD6;            /* خط مویی جداکننده */
+    --rb-field-border: #8E8D86;    /* مرز فیلد فرم؛ ۳٫۳:۱ برای تشخیص کنترل */
+    --rb-placeholder: #6E6D68;
+    --rb-brand-red: var(--rb-brand); /* عطف نشان برند؛ روی میدان‌های شرابی (سربرگ، فوتر) عطف به رنگ تأکید می‌رود */
+    --rb-focus: var(--rb-primary); /* حلقه‌ی فوکوس سبز (۵٫۵:۱ روی زمینه)؛ روی سربرگ تیره سفید */
+
+    /* --- معنایی --- */
+    --rb-success: #2E7A4F;
+    --rb-danger: #B3261E;
+    --rb-warning: #C98A0E;         /* همیشه با متن مرکبی */
+    --rb-info: #2B5C8A;
+
+    /* --- مرکب مجموعه‌ها: یکی برای هر دسته‌بندی سطح اول (بر اساس شناسه، در BookCard)، زیرشاخه‌ها مرکب والد را می‌گیرند.
+       نوار و خط چاپی، جلد ساده، و «کاغذ رنگی»: کاغذ صفحه و کارت با ته‌رنگ مرکب مجموعه‌ی خودش (--series) --- */
+    /* تیره، مثل پارچه و چرم جلد: L ۰٫۳۰ تا ۰٫۴۵، متن سفید ۷٫۷ تا ۱۳٫۹:۱؛ همسایه‌ها برای کوررنگی ΔE ≥ ۸٫۹ */
+    --rb-series-1: #7B4437;
+    --rb-series-2: #04556E;
+    --rb-series-3: #553B01;
+    --rb-series-4: #0E2375;
+    --rb-series-5: #863066;
+    --rb-series-6: #005318;
+    --rb-series-7: #4C2C69;
+    --rb-series-8: #1E3507;
+
+    /* کاغذ رنگی: درصد مرکب مجموعه در کاغذ. متن مرکب و مرکب کم‌رنگ روی هر دو بالای ۵:۱ می‌ماند */
+    --rb-paper-tint: 12%;       /* کاغذ صفحه (مخلوط با زمینه) */
+    --rb-card-tint: 7%;         /* کاغذ کارت (مخلوط با سفید) */
+
+    /* --- گلی: رنگ تأکید روشن. برچسب قیمت، نشان «تازه»، کاغذ هیرو و عطف نشان برند روی میدان شرابی؛ همیشه با متن مرکبی (۱۱٫۲:۱).
+       نه اقدام اصلی (سبز است) و نه هشدار --- */
+    --rb-accent: #F6C2C6;
+    --rb-gilt: #D8B65E;                 /* طلاکوب عطف‌های کلاسیک: خطوط و برآمدگی‌ها */
+    --rb-gilt-bright: #E6C77C;          /* حروف طلا مستقیم روی چرم عطف: ۴٫۷۱:۱ به بالا روی هر هشت مرکب (#D8B65E روی سه مرکب زیر ۴٫۵ است) */
+    --rb-accent-deep: var(--rb-brand);  /* خط دور برچسب */
+    --rb-accent-paper: color-mix(in oklab, var(--rb-accent) 24%, var(--rb-surface));
+
+    /* --- حروف نمایشی: لاله‌زار (پوستر و جلد چاپی ایرانی) فقط برای تیترهای بزرگ، نام برند و جلد ساده؛
+       فقط زیرمجموعه‌ی عربی بارگذاری می‌شود، پس رقم و حرف لاتین به وزیرمتن FD برمی‌گردند (رقم فارسی می‌ماند) --- */
+    --rb-font-display: "Lalezar", "Vazirmatn FD", Tahoma, sans-serif;
+
+    /* کلید مجموعه‌ها به‌صورت یک نوار: هشت مرکب کنار هم، از سمت شروع (راست) */
+    --rb-series-rule: linear-gradient(270deg,
+        var(--rb-series-1) 0 12.5%, var(--rb-series-2) 12.5% 25%, var(--rb-series-3) 25% 37.5%, var(--rb-series-4) 37.5% 50%,
+        var(--rb-series-5) 50% 62.5%, var(--rb-series-6) 62.5% 75%, var(--rb-series-7) 75% 87.5%, var(--rb-series-8) 87.5% 100%);
+
+    /* نقش نوار تزیینی (خط، لوزی، دو نقطه) برای mask؛ .ornament-rule و تیترها از آن استفاده می‌کنند */
+    --rb-ornament-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 12'%3E%3Cpath d='M0 5.5h32v1H0z'/%3E%3Cpath d='M16 1.5l4.5 4.5-4.5 4.5-4.5-4.5z'/%3E%3Ccircle cx='4.5' cy='6' r='1.6'/%3E%3Ccircle cx='27.5' cy='6' r='1.6'/%3E%3C/svg%3E");
+
+    /* --- لایه‌های شناور (منو، مودال، toast)؛ عمق صفحه (میز، برگه، کارت، کلید) در depth.css است --- */
+    --rb-shadow-overlay: 0 12px 32px -12px rgba(26, 25, 24, 0.22), 0 2px 6px rgba(26, 25, 24, 0.06);
+    --rb-shadow-raised: 0 6px 16px -8px rgba(26, 25, 24, 0.18);
+
+    /* --- اندازه‌ها --- */
+    --rb-touch-target: 2.75rem;    /* ۴۴px */
+    --rb-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --rb-duration: 200ms;
+
+    /* --- بازتعریف بوت‌استرپ 5.3 --- */
+    --bs-primary: var(--rb-primary);
+    --bs-primary-rgb: 50, 110, 81;
+    --bs-primary-text-emphasis: var(--rb-primary);
+    --bs-primary-bg-subtle: var(--rb-surface-sunken);
+    --bs-primary-border-subtle: var(--rb-rule);
+
+    --bs-secondary: var(--rb-ink-muted);
+    --bs-secondary-rgb: 92, 91, 87;
+
+    --bs-success: var(--rb-success);
+    --bs-success-rgb: 46, 122, 79;
+    --bs-success-text-emphasis: #1E5235;
+    --bs-success-bg-subtle: #E3F0E8;
+    --bs-success-border-subtle: #B9D8C5;
+
+    --bs-danger: var(--rb-danger);
+    --bs-danger-rgb: 179, 38, 30;
+    --bs-danger-text-emphasis: #7E1B15;
+    --bs-danger-bg-subtle: #F8E4E2;
+    --bs-danger-border-subtle: #EBBDB9;
+
+    --bs-warning: var(--rb-warning);
+    --bs-warning-rgb: 201, 138, 14;
+    --bs-warning-text-emphasis: #5E4106;
+    --bs-warning-bg-subtle: #FBF0D9;
+    --bs-warning-border-subtle: #EED49B;
+
+    --bs-info: var(--rb-info);
+    --bs-info-rgb: 43, 92, 138;
+    --bs-info-text-emphasis: #1D3F5F;
+    --bs-info-bg-subtle: #E2ECF5;
+    --bs-info-border-subtle: #B8CDE1;
+
+    --bs-body-bg: var(--rb-ground);
+    --bs-body-bg-rgb: 245, 245, 242;
+    --bs-body-color: var(--rb-ink);
+    --bs-body-color-rgb: 26, 25, 24;
+    --bs-emphasis-color: var(--rb-ink);
+    --bs-secondary-color: var(--rb-ink-muted);
+    --bs-secondary-bg: var(--rb-surface-sunken);
+    --bs-tertiary-bg: var(--rb-ground);
+    --bs-border-color: var(--rb-rule);
+    --bs-heading-color: inherit;
+
+    --bs-link-color: var(--rb-link);
+    --bs-link-color-rgb: 50, 110, 81;
+    --bs-link-hover-color: var(--rb-primary-hover);
+    --bs-link-hover-color-rgb: 34, 96, 67;
+    --bs-link-decoration: underline;
+
+    --bs-focus-ring-color: color-mix(in srgb, var(--rb-focus) 35%, transparent);
+
+    /* گوشه‌های کوچک و تقریباً چهارگوش، مثل کتاب جیبی؛ شعاع داخلی کارت از --bs-card-inner-border-radius هم‌مرکز می‌ماند */
+    --bs-border-radius: 0.25rem;
+    --bs-border-radius-sm: 0.125rem;
+    --bs-border-radius-lg: 0.375rem;
+    --bs-border-radius-xl: 0.5rem;
+
+    --bs-box-shadow: var(--rb-shadow-overlay);
+    --bs-box-shadow-sm: none;      /* سایه‌ی کارت‌ها از توکن‌های depth.css می‌آید، نه shadow-sm */
+    --bs-box-shadow-lg: var(--rb-shadow-overlay);
+
+    /* --- تایپوگرافی ---
+     فقط سه وزن: ۴۰۰ متن، ۵۰۰ برچسب و کنترل، ۷۰۰ عنوان. وزن زیر ۴۰۰ در اندازه‌ی کوچک فارسی خیلی نازک می‌شود.
+     --bs-font-sans-serif (نه فقط body) تا tooltip و popover بوت‌استرپ هم وزیرمتن بگیرند.
+     Tahoma فال‌بک فارسیِ ویندوز تا پیش از لود فونت است. letter-spacing هرگز تنظیم نشود: حروف فارسی متصل‌اند. */
+    --bs-font-sans-serif: "Vazirmatn FD", Tahoma, sans-serif;
+    --bs-body-line-height: 1.8;
+    --rb-heading-line-height: 1.35;
+    --rb-font-weight-ui: 500;
+
+    accent-color: var(--rb-primary);
+    caret-color: var(--rb-focus);
+}
+
+/* ==========================================================================
+   سطوح مرورگر: انتخاب متن، اسکرول‌بار، زیرخط، فوکوس
+   ========================================================================== */
+::selection {
+    background-color: color-mix(in srgb, var(--rb-focus) 18%, transparent);
+    color: var(--rb-ink);
+}
+
+/* اسکرول‌بار بومی مرورگر، فقط رنگش: شرابیِ برند ۷۵٪ در زمینه (۵٫۵۹:۱)، قاب صفحه مثل سربرگ و فوتر و آرام‌تر از جلدها.
+   ارث می‌رسد، پس ردیف‌های افقی هم همین رنگ‌اند. با «کنتراست بیشتر» شرابی کامل (۱۰٫۵:۱) */
+html {
+    scrollbar-color: color-mix(in srgb, var(--rb-brand) 75%, var(--rb-ground)) var(--rb-ground);
+}
+
+@media (prefers-contrast: more) {
+    html {
+        scrollbar-color: var(--rb-brand) var(--rb-ground);
+    }
+}
+
+a {
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: 1px;
+}
+
+:focus-visible {
+    outline: 2px solid var(--rb-focus);
+    outline-offset: 2px;
+}
+

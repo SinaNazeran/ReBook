@@ -1,0 +1,17 @@
+/* ==========================================================================
+   ۱۵. رنگ برند در تیترهای نمایشی؛ متن بدنه مرکب می‌ماند. پیش‌فرض --rb-brand همان مرکب است
+   ========================================================================== */
+.home-hero-title,
+.home-section-title,
+.list-title,
+.detail-title,
+.ledger-title,
+.sell-title,
+.auth-title,
+.not-found-title,
+.colophon-title,
+.support-heading,
+.profile-username {
+  color: var(--rb-brand);
+}
+

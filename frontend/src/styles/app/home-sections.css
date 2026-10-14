@@ -1,0 +1,285 @@
+/* مجموعه‌ها مثل عطف کتاب‌ها روی قفسه: هر دسته یک عطف تمام‌رنگ، نام عمودی به لاله‌زار،
+   دو نوار کاغذی بالا و پایین مثل نشان برند؛ قدها کمی متفاوت، مثل قفسه‌ی واقعی */
+.series-key {
+  padding-block: 3rem 2.5rem;
+}
+
+.series-spines {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 3px solid var(--rb-brand);
+}
+
+/* عطف‌ها کتاب‌های کلاسیک صحافی‌شده‌اند: چرم به رنگ مجموعه با سر گرد، برآمدگی‌های عرضی با خط طلا،
+   و عنوان طلاکوب مستقیم روی چرم (بی برچسب و قاب). پهناها کمی فرق دارند، مثل قفسه‌ی واقعی؛ باقی قفسه جای خالی است */
+.series-spines > li {
+  flex: 0 0 clamp(5rem, 7vw, 6.5rem);
+  min-width: 0;
+}
+
+.series-spines > li:nth-child(4n + 2) { flex-basis: clamp(5.5rem, 7.8vw, 7.25rem); }
+.series-spines > li:nth-child(4n + 3) { flex-basis: clamp(4.5rem, 6.3vw, 5.75rem); }
+
+.spine {
+  position: relative;
+  display: block;
+  height: 15rem;
+  border-radius: 7px 7px 2px 2px;
+  background-color: var(--series-ink);
+  color: var(--rb-gilt-bright);
+  text-decoration: none;
+}
+
+.series-spines > li:nth-child(3n + 1) .spine { height: 14rem; }
+.series-spines > li:nth-child(3n + 2) .spine { height: 15.5rem; }
+
+/* دو خط طلا نزدیک سر و ته عطف */
+.spine::before,
+.spine::after {
+  content: "";
+  position: absolute;
+  inset-inline: 9%;
+  height: 5px;
+  border-block: 1px solid var(--rb-gilt);
+}
+
+.spine::before { top: 5%; }
+.spine::after { bottom: 5%; }
+
+.spine:hover {
+  color: var(--rb-gilt-bright);
+}
+
+.spine:focus-visible {
+  outline: 2px solid var(--rb-focus);
+  outline-offset: 2px;
+}
+
+/* جای عنوان بین برآمدگی بالا و برآمدگی‌های پایین؛ سطح خودش ندارد، عنوان روی خود چرم است */
+.spine-label {
+  position: absolute;
+  top: 19%;
+  bottom: 24%;
+  inset-inline: 13%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 0.5rem;
+}
+
+.spine-title {
+  max-height: 100%;
+  overflow: hidden;
+  font-size: clamp(1rem, 0.85rem + 0.45vw, 1.3rem);
+  line-height: 1.15;
+  text-align: center;
+  text-shadow: 0 1px 1px color-mix(in srgb, #000 45%, transparent);
+  text-wrap: balance; /* نام بلند دو سطر متوازن می‌شود، مثل عنوان دوسطری عطف */
+  writing-mode: vertical-rl;
+}
+
+@media (max-width: 767.98px) {
+  .series-spines {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .series-spines > li,
+  .series-spines > li:nth-child(n) {
+    flex: 0 0 4.25rem;
+  }
+
+  .series-spines > li:nth-child(4n + 2) { flex-basis: 4.75rem; }
+  .series-spines > li:nth-child(4n + 3) { flex-basis: 3.875rem; }
+
+  .spine,
+  .series-spines > li:nth-child(n) .spine {
+    height: 12rem;
+  }
+}
+
+.home-ornament {
+  margin-bottom: 2rem;
+  color: var(--rb-accent-deep);
+}
+
+.home-latest {
+  padding-block: 1rem 3.5rem;
+}
+
+.home-section-title {
+  margin: 0;
+  font-size: clamp(1.625rem, 1.2rem + 1.4vw, 2.25rem);
+  line-height: 1.35;
+}
+
+.home-more-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: var(--rb-touch-target);
+  font-weight: var(--rb-font-weight-ui);
+  color: var(--rb-ink);
+  white-space: nowrap;
+}
+
+/* اسکلت کارت: همان قد و قواره‌ی BookCard تا با آمدن داده چیزی جابه‌جا نشود */
+.book-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 0.875rem;
+  border-radius: var(--bs-border-radius);
+  overflow: hidden;
+  background-color: var(--rb-surface);
+}
+
+.book-card-skeleton > span {
+  display: block;
+  background-color: var(--rb-surface-sunken);
+}
+
+/* هم‌قد نوار مجموعه‌ی کارت (یک سطر ۰٫۸۱۲۵rem با ارتفاع خط ۱٫۵ + فاصله‌ی بالا و پایین) */
+.book-card-skeleton-cover {
+  aspect-ratio: 3 / 4;
+  border-bottom: calc(0.8125rem * 1.5 + 0.6875rem) solid var(--rb-rule);
+}
+
+.book-card-skeleton-line {
+  height: 0.75rem;
+  margin-inline: 0.875rem;
+  border-radius: 2px;
+}
+
+.book-card-skeleton-line.is-short {
+  width: 45%;
+}
+
+.list-state {
+  padding: 2.5rem 1.5rem;
+  border: 1px solid var(--rb-rule);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--rb-surface);
+  text-align: center;
+}
+
+.list-state p {
+  margin-bottom: 1rem;
+  color: var(--rb-ink-muted);
+}
+
+.list-state .empty-shelf {
+  display: block;
+  width: 10rem;
+  margin: 0 auto 1rem;
+}
+
+/* مسیر فروشنده: سه گام پشت‌سرهم روی یک خط مویی، نه سه کارت */
+.home-sell {
+  padding-block: 2.5rem 3.5rem;
+}
+
+.sell-steps {
+  display: grid;
+  gap: 1.5rem;
+  margin: 1.75rem 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.sell-step {
+  position: relative;
+  padding-inline-start: 1.5rem;
+}
+
+.sell-step::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0.55rem;
+  inset-inline-start: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 1px;
+  background-color: var(--rb-ink);
+}
+
+.sell-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  inset-block: 1.6rem -1.1rem;
+  inset-inline-start: calc(0.3125rem - 0.5px);
+  width: 1px;
+  background-color: var(--rb-rule);
+}
+
+.sell-step-title {
+  margin-bottom: 0.25rem;
+  font-size: 1.0625rem;
+}
+
+.sell-step-text {
+  max-width: 34ch;
+  margin: 0;
+  color: var(--rb-ink-muted);
+}
+
+@media (min-width: 768px) {
+  .sell-steps {
+    grid-template-columns: repeat(var(--steps, 3), minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  .sell-step {
+    padding-inline-start: 0;
+    padding-top: 1.75rem;
+  }
+
+  .sell-step::before {
+    inset-block-start: 0;
+  }
+
+  .sell-step:not(:last-child)::after {
+    inset-block: calc(0.3125rem - 0.5px) auto;
+    inset-inline: 1.25rem -1.5rem;
+    width: auto;
+    height: 1px;
+  }
+}
+
+/* حرکت هیرو با GSAP در HomeHero.jsx است (تیتر کلمه‌به‌کلمه، پرواز در قفسه) */
+.series-index-mark {
+  flex: none;
+  width: 4px;
+  height: 1.25rem;
+  background-color: var(--series-ink);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .book-card-skeleton > span {
+    animation: skeleton-pulse 1.4s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes hero-focus {
+  from {
+    filter: blur(5px);
+    opacity: 0.35;
+  }
+}
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes skeleton-pulse {
+  to {
+    opacity: 0.55;
+  }
+}
+
