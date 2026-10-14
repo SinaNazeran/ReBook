@@ -12,6 +12,7 @@ from books.views import visible_books
 from notifications.models import Notification
 from orders import cart
 from orders.models import Order, Transaction
+from orders.request_serializers import CheckoutRequestSerializer
 
 PERSIAN_DIGITS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
 
@@ -36,25 +37,14 @@ class CheckoutView(APIView):
 
     def post(self, request):
         user = request.user
-        address = str(request.data.get("shipping_address") or "").strip()
-        items = request.data.get("books") or []
-        if not isinstance(items, list) or len(items) > cart.MAX_ITEMS:
-            return Response({"detail": "سبد ارسال‌شده معتبر نیست."}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = CheckoutRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        address = serializer.validated_data["shipping_address"]
+        items = serializer.validated_data["books"]
         seen_prices = {}
-        try:
-            for item in items:
-                seen_prices.setdefault(int(item["id"]), int(item["price"]))
-        except (TypeError, ValueError, KeyError):
-            return Response({"detail": "سبد ارسال‌شده معتبر نیست."}, status=status.HTTP_400_BAD_REQUEST)
+        for item in items:
+            seen_prices.setdefault(item["id"], item["price"])
         ids = list(seen_prices)
-
-        if not ids:
-            return Response({"detail": "سبد خالی است."}, status=status.HTTP_400_BAD_REQUEST)
-        if not address:
-            return Response(
-                {"shipping_address": ["آدرس ارسال را بنویس تا فروشنده‌ها بدانند کتاب‌ها را کجا بفرستند."]},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
         in_cart = set(cart.get_ids(request))
         # درخواست تکراری پس از پاسخی که نرسید: همه‌ی این کتاب‌ها را خود همین خریدار پرداخت کرده و از سبد رفته‌اند

@@ -11,6 +11,7 @@ from orders.cart import merge_session_cart
 
 from .models import User
 from .serializers import (
+    LoginRequestSerializer,
     UserListSerializer,
     UserProfileSerializer,
     UserRegistrationSerializer,
@@ -60,14 +61,10 @@ class LoginView(APIView):
     throttle_scope = "auth"
 
     def post(self, request):
-        username = request.data.get("username")
-        password = request.data.get("password")
-
-        if not username or not password:
-            return Response(
-                {"detail": "نام کاربری و رمز عبور الزامی است."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        credentials = LoginRequestSerializer(data=request.data)
+        credentials.is_valid(raise_exception=True)
+        username = credentials.validated_data["username"]
+        password = credentials.validated_data["password"]
 
         user = authenticate(request, username=username, password=password)
 

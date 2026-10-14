@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Book, Category, Wishlist
+from .request_serializers import CatalogPriceSerializer
 from .serializers import (
     BookCreateSerializer,
     BookDetailSerializer,
@@ -63,13 +64,18 @@ class BookListView(generics.ListAPIView):
         if condition:
             queryset = queryset.filter(condition=condition)
 
-        # مقدار غیرعددی نادیده گرفته می‌شود (isdecimal ارقام فارسی را هم می‌پذیرد)
-        min_price = self.request.query_params.get("min_price", "")
-        max_price = self.request.query_params.get("max_price", "")
-        if min_price.isdecimal():
-            queryset = queryset.filter(price__gte=int(min_price))
-        if max_price.isdecimal():
-            queryset = queryset.filter(price__lte=int(max_price))
+        # فیلتر خالی یعنی بدون حد؛ مقدار نامعتبر پیش از تبدیل عدد و کوئری رد می‌شود.
+        price_params = {
+            key: self.request.query_params[key]
+            for key in ("min_price", "max_price")
+            if self.request.query_params.get(key, "") != ""
+        }
+        prices = CatalogPriceSerializer(data=price_params)
+        prices.is_valid(raise_exception=True)
+        if "min_price" in prices.validated_data:
+            queryset = queryset.filter(price__gte=prices.validated_data["min_price"])
+        if "max_price" in prices.validated_data:
+            queryset = queryset.filter(price__lte=prices.validated_data["max_price"])
 
         ordering = self.request.query_params.get("ordering")
         if ordering not in ALLOWED_ORDERINGS:

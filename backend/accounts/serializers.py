@@ -2,7 +2,14 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
+from config.serializer_fields import StrictCharField
+
 from .models import User
+
+
+class LoginRequestSerializer(serializers.Serializer):
+    username = StrictCharField(max_length=150)
+    password = StrictCharField(max_length=4096, trim_whitespace=False, write_only=True)
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

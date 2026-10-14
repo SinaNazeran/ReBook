@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from books.models import Book
 from books.views import visible_books
 from orders import cart
+from orders.request_serializers import CartAddSerializer
 
 
 @method_decorator(csrf_protect, name="dispatch")
@@ -22,9 +23,11 @@ class CartView(APIView):
         return Response(cart.cart_payload(request))
 
     def post(self, request):
+        serializer = CartAddSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         try:
-            book = visible_books(request.user).get(pk=request.data.get("book"))
-        except (Book.DoesNotExist, ValueError, TypeError):
+            book = visible_books(request.user).get(pk=serializer.validated_data["book"])
+        except Book.DoesNotExist:
             return Response({"detail": "کتاب یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
 
         ids = cart.get_ids(request)

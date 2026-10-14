@@ -26,10 +26,11 @@ class BookListOrderingTests(APITestCase):
         response = self.client.get("/api/books/", {"min_price": "150", "max_price": "۲۵۰"})
         self.assertEqual([b["price"] for b in response.data["results"]], [200])
 
-    def test_invalid_price_filters_are_ignored_instead_of_500(self):
+    def test_invalid_price_filters_are_rejected_instead_of_500(self):
         response = self.client.get("/api/books/", {"min_price": "abc", "max_price": "-5"})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["results"]), 3)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("min_price", response.data)
+        self.assertIn("max_price", response.data)
 
 
 
