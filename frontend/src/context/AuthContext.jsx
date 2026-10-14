@@ -25,7 +25,6 @@ export function AuthProvider({ children }) {
         }
       })
       .catch(() => {
-        // ✅ بدون پارامتر error (Optional Catch Binding)
         if (!ignore) {
           setUser(null);
         }

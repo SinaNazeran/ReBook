@@ -165,7 +165,7 @@ function CreateBook() {
   }, [editing, id, user?.id, reloadKey]);
 
   // بستن یا رفرش تب با فرم نیمه‌پر، آگهی را بی‌هشدار پاک می‌کرد
-  // ponytail: فقط beforeunload؛ رفتن با لینک‌های داخل برنامه هشدار نمی‌دهد (useBlocker به data router نیاز دارد)
+  // فقط beforeunload؛ رفتن با لینک‌های داخل برنامه هشدار نمی‌دهد (useBlocker به data router نیاز دارد)
   const isDirty = coverImage !== null || Object.keys(INITIAL_FORM).some((key) => formData[key] !== baseline[key]);
   useEffect(() => {
     if (!isDirty || loading) return undefined;

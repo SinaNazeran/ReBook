@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { bookAPI } from '../services/api';
 
 // سربرگ و فوتر روی همه‌ی صفحه‌ها هستند؛ دسته‌ها یک بار گرفته و میان آن دو تقسیم می‌شوند.
-// ponytail: Home و BookList هنوز درخواست خودشان را دارند؛ اگر لازم شد، آن‌ها هم از همین استفاده کنند
+// Home و BookList هنوز درخواست خودشان را دارند؛ اگر لازم شد، آن‌ها هم از همین استفاده کنند
 let request = null;
 
 function fetchCategories() {

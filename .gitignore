@@ -19,7 +19,7 @@ backend/media/
 .DS_Store
 Thumbs.db
 
-# Claude Code (local only, not published)
+# Local development tooling and notes
 .claude/
 /CLAUDE.md
 .agents/
@@ -28,5 +28,11 @@ skills-lock.json
 /DESIGN.md
 .impeccable/
 
-# Playwright MCP snapshots (from /smoke)
+# Local browser snapshots
 .playwright-mcp/
+
+# Local development tooling and notes
+.superpowers/
+docs/superpowers/
+.codex/
+AGENTS.md

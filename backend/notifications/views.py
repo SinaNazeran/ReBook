@@ -18,7 +18,7 @@ class NotificationListView(generics.ListAPIView):
 
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
-    # ponytail: کل فهرست یکجا؛ اگر کاربری صدها اعلان جمع کرد، صفحه‌بندی و «نمایش بیشتر» اضافه شود
+    # کل فهرست یکجا؛ اگر کاربری صدها اعلان جمع کرد، صفحه‌بندی و «نمایش بیشتر» اضافه شود
     pagination_class = None
 
     def get_queryset(self):
@@ -87,6 +87,6 @@ class ContactMessageCreateView(generics.CreateAPIView):
 
     serializer_class = ContactMessageSerializer
     permission_classes = [permissions.AllowAny]
-    # ponytail: فقط CSRF و محدودیت نرخ جلوی هرزنامه را می‌گیرد؛ اگر پیام بی‌ربط زیاد شد، فیلد تله (honeypot) اضافه شود
+    # فقط CSRF و محدودیت نرخ جلوی هرزنامه را می‌گیرد؛ اگر پیام بی‌ربط زیاد شد، فیلد تله (honeypot) اضافه شود
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = "contact"

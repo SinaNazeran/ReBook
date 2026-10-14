@@ -54,7 +54,7 @@ class BookListView(generics.ListAPIView):
         category = self.request.query_params.get("category", None)
         if category:
             # دسته‌بندی والد، کتاب‌های زیردسته‌هایش را هم شامل می‌شود
-            # ponytail: فقط یک سطح زیردسته؛ اگر درخت عمیق‌تر شد، شناسهٔ همهٔ نوادگان را جمع کنید
+            # فقط یک سطح زیردسته؛ اگر درخت عمیق‌تر شد، شناسهٔ همهٔ نوادگان را جمع کنید
             queryset = queryset.filter(
                 models.Q(category__slug=category) | models.Q(category__parent__slug=category)
             )

@@ -48,7 +48,7 @@ class BookListSerializer(serializers.ModelSerializer):
         )
 
     def get_category_root(self, obj):
-        # ponytail: فقط دو سطح (والد/زیرشاخه) داریم؛ اگر عمق بیشتر شد باید تا ریشه بالا رفت
+        # فقط دو سطح (والد/زیرشاخه) داریم؛ اگر عمق بیشتر شد باید تا ریشه بالا رفت
         if obj.category is None:
             return None
         return obj.category.parent_id or obj.category_id
