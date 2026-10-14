@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'config.rate_middleware.AdminLoginRateLimitMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -145,7 +146,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
 
 # REST Framework Configuration
+RATE_LIMIT_REDIS_URL = os.environ.get("RATE_LIMIT_REDIS_URL", "")
+RATE_LIMIT_PREFIX = os.environ.get("RATE_LIMIT_PREFIX", "rebook:rate:v1")
+RATE_LIMIT_ALLOW_LOCAL = DEBUG  # بدون Redis فقط محیط توسعه مجاز است.
+RATE_LIMIT_TRUSTED_PROXIES = [
+    value.strip() for value in os.environ.get("RATE_LIMIT_TRUSTED_PROXIES", "").split(",") if value.strip()
+]
+RATE_LIMIT_PROXY_COUNT = int(os.environ.get("RATE_LIMIT_PROXY_COUNT", "0"))
+RATE_LIMITS = {
+    "api_read": (120, 60), "api_write": (60, 60),
+    "auth": (10, 60), "cart": (60, 60), "contact": (10, 3600),
+    "uploads": (20, 3600), "support": (10, 3600), "payment": (20, 60),
+}
 REST_FRAMEWORK = {
+    "DEFAULT_THROTTLE_CLASSES": ["config.throttling.RedisRateThrottle"],
+    "NUM_PROXIES": 0,
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "accounts.authentication.SessionAuthenticationWith401",
     ],
@@ -155,8 +170,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "config.pagination.StandardPagination",
     "PAGE_SIZE": 12,
     "EXCEPTION_HANDLER": "config.exceptions.exception_handler",
-    # محدودیت برای هر IP (مهمان) یا کاربر: ورود/ثبت‌نام، سبد خرید (مهمان هم session می‌سازد)، پیام تماس
-    "DEFAULT_THROTTLE_RATES": {"auth": "10/min", "cart": "60/min", "contact": "10/hour"},
 }
 
 # CORS Configuration

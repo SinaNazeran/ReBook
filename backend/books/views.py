@@ -100,6 +100,7 @@ class BookCreateView(generics.CreateAPIView):
 
     serializer_class = BookCreateSerializer
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "uploads"
 
     def perform_create(self, serializer):
         serializer.save(seller=self.request.user)
@@ -121,6 +122,7 @@ class BookUpdateView(generics.UpdateAPIView):
 
     serializer_class = BookCreateSerializer
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "uploads"
 
     def get_queryset(self):
         # کتاب فروخته‌شده بخشی از سابقه سفارش خریدار است و نباید تغییر کند

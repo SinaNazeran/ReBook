@@ -2,8 +2,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from rest_framework import generics, permissions
 from rest_framework.response import Response
-from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
+
+from config.throttling import RedisRateThrottle
 
 from .models import Notification, SupportTicket
 from .serializers import (
@@ -67,6 +68,7 @@ class SupportTicketCreateView(generics.CreateAPIView):
 
     serializer_class = SupportTicketSerializer
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "support"
 
 
 class MySupportTicketsView(generics.ListAPIView):
@@ -88,5 +90,5 @@ class ContactMessageCreateView(generics.CreateAPIView):
     serializer_class = ContactMessageSerializer
     permission_classes = [permissions.AllowAny]
     # فقط CSRF و محدودیت نرخ جلوی هرزنامه را می‌گیرد؛ اگر پیام بی‌ربط زیاد شد، فیلد تله (honeypot) اضافه شود
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [RedisRateThrottle]
     throttle_scope = "contact"

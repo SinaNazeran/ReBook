@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from rest_framework.test import APITestCase
 
@@ -53,6 +54,7 @@ class FakePaymentTests(APITestCase):
 
 class OrderCreateTests(APITestCase):
     def setUp(self):
+        cache.clear()
         self.seller = User.objects.create_user(username="seller", password="pass")
         self.buyer = User.objects.create_user(username="buyer", password="pass")
 
@@ -78,6 +80,7 @@ class OrderCreateTests(APITestCase):
 
 class OnePendingOrderPerBookTests(APITestCase):
     def setUp(self):
+        cache.clear()
         self.seller = User.objects.create_user(username="seller", password="pass")
         self.buyer = User.objects.create_user(username="buyer", password="pass")
         self.other = User.objects.create_user(username="other", password="pass")
@@ -114,6 +117,7 @@ class OnePendingOrderPerBookTests(APITestCase):
 
 class OrderCancelTests(APITestCase):
     def setUp(self):
+        cache.clear()
         self.seller = User.objects.create_user(username="seller", password="pass")
         self.buyer = User.objects.create_user(username="buyer", password="pass")
         book = Book.objects.create(title="b", author="a", price=100, seller=self.seller, status="approved")

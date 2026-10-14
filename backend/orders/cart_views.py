@@ -2,11 +2,11 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from rest_framework import permissions, status
 from rest_framework.response import Response
-from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from books.models import Book
 from books.views import visible_books
+from config.throttling import RedisRateThrottle
 from orders import cart
 from orders.request_serializers import CartAddSerializer
 
@@ -16,7 +16,7 @@ class CartView(APIView):
     """سبد خرید؛ برای مهمان هم کار می‌کند"""
 
     permission_classes = [permissions.AllowAny]
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [RedisRateThrottle]
     throttle_scope = "cart"
 
     def get(self, request):
@@ -53,7 +53,7 @@ class CartItemView(APIView):
     """برداشتن یک نسخه از سبد"""
 
     permission_classes = [permissions.AllowAny]
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [RedisRateThrottle]
     throttle_scope = "cart"
 
     def delete(self, request, book_id):

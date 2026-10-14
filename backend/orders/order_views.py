@@ -19,6 +19,7 @@ class OrderCreateView(generics.CreateAPIView):
 
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "payment"
 
     def perform_create(self, serializer):
         # اگر دو خریدار هم‌زمان سفارش دهند، هر دو از validate_book رد می‌شوند
@@ -89,6 +90,7 @@ class FakePaymentView(APIView):
     """
 
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "payment"
 
     def post(self, request, order_id):
         try:
@@ -154,6 +156,7 @@ class OrderCancelView(APIView):
     """
 
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "payment"
 
     def post(self, request, order_id):
         user = request.user

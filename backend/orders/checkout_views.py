@@ -25,6 +25,7 @@ class CheckoutView(APIView):
     """
 
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "payment"
 
     @staticmethod
     def changed_message(book_id, book, in_cart):

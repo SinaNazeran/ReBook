@@ -4,9 +4,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
+from config.throttling import RedisRateThrottle
 from orders.cart import merge_session_cart
 
 from .models import User
@@ -27,7 +27,7 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer
     permission_classes = [permissions.AllowAny]
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [RedisRateThrottle]
     throttle_scope = "auth"
 
     def create(self, request, *args, **kwargs):
@@ -57,7 +57,7 @@ class LoginView(APIView):
 
     permission_classes = [permissions.AllowAny]
     # جلوگیری از حدس زدن رمز عبور (brute force)
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [RedisRateThrottle]
     throttle_scope = "auth"
 
     def post(self, request):
@@ -94,6 +94,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "uploads"
 
     def get_object(self):
         return self.request.user
