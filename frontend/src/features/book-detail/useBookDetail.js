@@ -15,6 +15,9 @@ export function useBookDetail() {
   } = useAuth();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadedId, setLoadedId] = useState(null);
+  const routeRef = useRef(null);
+  const requestRef = useRef(null);
   const [loadError, setLoadError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [wishlisted, setWishlisted] = useState(false);
@@ -35,34 +38,53 @@ export function useBookDetail() {
     focusCartLink.current = false;
     [...document.querySelectorAll('.buy-cart-link')].find(el => el.offsetParent !== null)?.focus();
   }, [isInCart]);
-  useEffect(() => {
-    let ignore = false;
-    bookAPI.getBook(id).then(response => {
-      if (!ignore) {
+  const loadBook = useCallback((scope, isRefresh = false) => {
+    if (!scope.active) return;
+    requestRef.current?.abort();
+    const controller = new AbortController();
+    requestRef.current = controller;
+    const isCurrent = () => scope.active && routeRef.current === scope &&
+      requestRef.current === controller && !controller.signal.aborted;
+
+    return bookAPI.getBook(scope.id, { signal: controller.signal }).then(response => {
+      if (isCurrent()) {
         setBook(response.data);
-        setWishlisted(response.data.is_wishlisted || false);
+        if (!isRefresh) setWishlisted(response.data.is_wishlisted || false);
+        setLoadError(null);
       }
     }).catch(error => {
-      if (!ignore) {
+      if (isCurrent() && !isRefresh) {
         setLoadError(error.response?.status === 404 ? 'not_found' : getErrorMessage(error));
       }
     }).finally(() => {
-      if (!ignore) {
+      if (isCurrent()) {
         setLoading(false);
+        setLoadedId(scope.id);
       }
     });
+  }, []);
+  useEffect(() => {
+    const scope = { id, active: true };
+    routeRef.current = scope;
+    loadBook(scope);
     return () => {
-      ignore = true;
+      scope.active = false;
+      if (routeRef.current === scope) {
+        requestRef.current?.abort();
+        requestRef.current = null;
+        routeRef.current = null;
+      }
     };
-  }, [id, reloadKey]);
+  }, [id, reloadKey, loadBook]);
   const handleRetry = () => {
     setLoadError(null);
     setLoading(true);
     setReloadKey(key => key + 1);
   };
   const refreshBook = useCallback(() => {
-    bookAPI.getBook(id).then(response => setBook(response.data)).catch(() => {});
-  }, [id]);
+    const scope = routeRef.current;
+    if (scope?.id === id) return loadBook(scope, true);
+  }, [id, loadBook]);
   return {
     navigate,
     location,
@@ -81,7 +103,7 @@ export function useBookDetail() {
     setBook,
     setCancelling,
     user,
-    loading,
+    loading: loading || loadedId !== id,
     loadError,
     payingOrderId,
     setPayingOrderId,

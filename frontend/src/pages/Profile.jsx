@@ -7,6 +7,7 @@ import { FiUser, FiCamera } from 'react-icons/fi';
 import { useAuth } from '../context/useAuth.js';
 import { getErrorMessage } from '../services/api';
 import { onlyDigits } from '../utils/digits';
+import { useFilePreview } from '../hooks/useFilePreview.js';
 
 // باید با سقف سرور (UserProfileSerializer.validate_avatar) یکی باشد
 const MAX_AVATAR_MB = 3;
@@ -22,8 +23,7 @@ function Profile() {
     phone: user?.phone || '',
     address: user?.address || '',
   });
-  const [avatarFile, setAvatarFile] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
+  const { file: avatarFile, preview: avatarPreview, selectFile, clearFile } = useFilePreview(user?.avatar || null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -54,10 +54,7 @@ function Profile() {
     }
 
     setFieldErrors((prev) => ({ ...prev, avatar: null }));
-    setAvatarFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => setAvatarPreview(reader.result);
-    reader.readAsDataURL(file);
+    selectFile(file);
   };
 
   const handleSubmit = async (e) => {
@@ -78,7 +75,7 @@ function Profile() {
       if (avatarFile) data.append('avatar', avatarFile);
 
       await updateUser(data);
-      setAvatarFile(null);
+      clearFile();
       toast.success('تغییرات ذخیره شد.');
     } catch (error) {
       const errorData = error.response?.data;

@@ -2,6 +2,7 @@
 // مبدأ کوچک شدن باید مرکز پنجره باشد، نه مرکز کل سند؛ اسکرول در آن لحظه قفل است، پس یک بار اندازه گرفتن کافی است.
 // پس‌زمینه‌ی تیره (backdrop) مستقیم به body اضافه می‌شود؛ همان لحظه را می‌گیریم.
 export function watchPushBack() {
+  const previousOrigin = document.documentElement.style.getPropertyValue('--push-y');
   const observer = new MutationObserver(() => {
     const main = document.getElementById('main');
     if (!main) return;
@@ -9,4 +10,9 @@ export function watchPushBack() {
     document.documentElement.style.setProperty('--push-y', `${y}px`);
   });
   observer.observe(document.body, { childList: true });
+  return () => {
+    observer.disconnect();
+    if (previousOrigin) document.documentElement.style.setProperty('--push-y', previousOrigin);
+    else document.documentElement.style.removeProperty('--push-y');
+  };
 }

@@ -27,11 +27,12 @@ export function useHeroMotion(heroRef, ready) {
     let cancelled = false;
     const mm = gsap.matchMedia();
     mm.add(MOTION_OK, context => {
+      let active = true;
       gsap.set(['.home-hero-title', '.home-hero-lead', '.home-hero-actions'], {
         autoAlpha: 0
       });
       document.fonts.ready.then(() => {
-        if (cancelled) return;
+        if (cancelled || !active) return;
         // انیمیشن‌های بعد از await با context.add در همان زمینه ثبت می‌شوند تا با بازگشت پاک شوند
         context.add(() => {
           const split = SplitText.create('.home-hero-title', {
@@ -64,6 +65,7 @@ export function useHeroMotion(heroRef, ready) {
           return withSafety(tl);
         });
       });
+      return () => { active = false; };
     }, heroRef);
     return () => {
       cancelled = true;
@@ -79,6 +81,7 @@ export function useHeroMotion(heroRef, ready) {
       finePointer: FINE_POINTER
     }, context => {
       if (!context.conditions.motion) return undefined;
+      let active = true;
       const hero = heroRef.current;
       const stage = hero.querySelector('.hero-stage');
       const runway = hero.querySelector('.hero-runway');
@@ -235,9 +238,13 @@ export function useHeroMotion(heroRef, ready) {
 
       // لاله‌زار ارتفاع تیتر و در نتیجه طول پین را عوض می‌کند
       document.fonts.ready.then(() => {
-        if (!cancelled) ScrollTrigger.refresh();
+        if (!cancelled && active) ScrollTrigger.refresh();
       });
-      return () => cleanups.forEach(fn => fn());
+      return () => {
+        active = false;
+        cleanups.forEach(fn => fn());
+        gsap.killTweensOf(look);
+      };
     }, heroRef);
     return () => {
       cancelled = true;

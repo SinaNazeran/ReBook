@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound";
+import { watchPushBack } from "./utils/pushBack.js";
 
 // صفحات به‌صورت Lazy — فقط زمانی لود می‌شوند که کاربر واقعاً به آن‌ها نیاز داشته باشد
 const Home = lazy(() => import("./pages/Home"));
@@ -34,6 +35,8 @@ const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 
 function App() {
+  useEffect(() => watchPushBack(), []);
+
   useEffect(() => {
     if (!window.requestIdleCallback) {
       const timer = setTimeout(loadBookDetail, 2000);

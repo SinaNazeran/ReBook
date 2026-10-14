@@ -42,6 +42,11 @@ function Cart() {
   useEffect(() => {
     if (error && status === 'ready') errorRef.current?.focus();
   }, [error, status]);
+  useEffect(() => {
+    if (step !== 'checkout' || receipt || status !== 'ready') return;
+    const frame = requestAnimationFrame(() => document.getElementById('shipping-address')?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [step, receipt, status]);
   const available = items.filter(item => item.available);
   const unavailable = items.filter(item => !item.available);
   const handleRemove = async bookId => {
@@ -58,8 +63,6 @@ function Cart() {
     setAddress(current => current || user?.address || '');
     setError('');
     setStep('checkout');
-    // پس از رندر مرحله‌ی پرداخت، فوکوس روی آدرس
-    requestAnimationFrame(() => document.getElementById('shipping-address')?.focus());
   };
   const handleCheckout = async e => {
     e.preventDefault();

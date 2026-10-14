@@ -133,7 +133,7 @@ export const authAPI = {
 
 export const bookAPI = {
   getBooks: (params) => api.get("/books/", { params }),
-  getBook: (id) => api.get(`/books/${id}/`),
+  getBook: (id, config) => api.get(`/books/${id}/`, config),
   createBook: (data) =>
     api.post("/books/create/", data, {
       headers: { "Content-Type": "multipart/form-data" },

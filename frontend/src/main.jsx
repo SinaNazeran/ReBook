@@ -24,10 +24,6 @@ import "./styles/depth.css";
 import "react-toastify/dist/ReactToastify.css";
 
 import App from "./App.jsx";
-import { watchPushBack } from "./utils/pushBack.js";
-
-watchPushBack();
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
