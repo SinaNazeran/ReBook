@@ -75,11 +75,25 @@ class CheckoutTests(APITestCase):
         self.assertIn("«c»", response.data["detail"])
         self.assertFalse(Order.objects.exists())
 
-    def test_book_back_in_review_is_named(self):
-        Book.objects.filter(pk=self.b.pk).update(status="pending")
-        response = self.checkout()
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("«b»", response.data["detail"])
+    def test_private_book_title_is_not_disclosed(self):
+        private_title = "عنوان خصوصی پس از ویرایش فروشنده"
+        for book_status in ("pending", "rejected"):
+            for in_cart in (True, False):
+                with self.subTest(status=book_status, in_cart=in_cart):
+                    Book.objects.filter(pk=self.b.pk).update(status=book_status, title=private_title)
+                    if in_cart:
+                        CartItem.objects.get_or_create(user=self.buyer, book=self.b)
+                    else:
+                        CartItem.objects.filter(user=self.buyer, book=self.b).delete()
+                    response = self.checkout()
+                    self.assertEqual(response.status_code, 400)
+                    self.assertIn("detail", response.data)
+                    self.assertNotIn(private_title, str(response.data))
+                    self.assertFalse(Order.objects.exists())
+                    self.assertFalse(Transaction.objects.exists())
+                    self.assertFalse(Notification.objects.exists())
+                    self.a.refresh_from_db()
+                    self.assertEqual(self.a.status, "approved")
 
     def test_swapped_prices_with_the_same_sum_are_rejected(self):
         Book.objects.filter(pk=self.a.pk).update(price=150)

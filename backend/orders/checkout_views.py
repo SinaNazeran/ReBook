@@ -27,12 +27,11 @@ class CheckoutView(APIView):
 
     @staticmethod
     def changed_message(book_id, book, in_cart):
-        """کتابی که دیگر در سبد نیست یا دیده نمی‌شود، با نامش؛ نام کتاب بیرون از سبد و دیده‌نشده فاش نمی‌شود"""
+        """نام کتاب فقط وقتی نمایش داده می‌شود که کاربر اجازهٔ دیدنش را دارد."""
         if book is not None:
             return f"«{book.title}» دیگر در سبدت نیست؛ دوباره نگاهش کن."
         if book_id in in_cart:
-            title = Book.objects.filter(pk=book_id).values_list("title", flat=True).first()
-            return f"«{title}» دیگر در دسترس نیست؛ دوباره نگاهش کن."
+            return "یکی از کتاب‌های سبدت دیگر در دسترس نیست؛ دوباره نگاهش کن."
         return "سبدت عوض شده است؛ دوباره نگاهش کن."
 
     def post(self, request):
