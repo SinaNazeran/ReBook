@@ -155,10 +155,8 @@ export const bookAPI = {
 // ============================================
 
 export const orderAPI = {
-  createOrder: (data) => api.post("/orders/create/", data),
   getMyOrders: () => api.get("/orders/my-orders/"), // تب «خریدهای من»
   getMySales: () => api.get("/orders/my-sales/"), // تب «فروش‌های من»
-  getOrder: (id) => api.get(`/orders/${id}/`),
   payOrder: (orderId) => api.post(`/orders/${orderId}/pay/`),
   cancelOrder: (orderId) => api.post(`/orders/${orderId}/cancel/`), // خریدار یا فروشنده، فقط سفارش در انتظار پرداخت
 };
@@ -188,5 +186,3 @@ export const notificationAPI = {
   getMyTickets: () => api.get("/notifications/support/"),
   sendContactMessage: (data) => api.post("/notifications/contact/", data), // فرم تماس مهمان
 };
-
-export default api;

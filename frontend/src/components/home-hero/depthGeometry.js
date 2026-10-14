@@ -1,9 +1,9 @@
 import { gsap } from "gsap";
 const clamp01 = gsap.utils.clamp(0, 1);
 export const DEPTH_PERSPECTIVE = 900;
-export const DEPTH_NEAR = -150;
-export const DEPTH_FAR = -2600;
-export const DEPTH_LOOP = 2900;
+const DEPTH_NEAR = -150;
+const DEPTH_FAR = -2600;
+const DEPTH_LOOP = 2900;
 export const DEPTH_TRAVEL = 3500;
 export const DEPTH_DRIFT = 40;
 export const depthSlot = (i, n) => {
