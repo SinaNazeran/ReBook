@@ -15,6 +15,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from config.security import security_settings
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,8 +34,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG") == "1"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
-# فقط هنگام استقرار روی HTTPS روشن شود (DJANGO_SECURE_COOKIES=1)؛ روی http محلی ورود را خراب می‌کند
-SESSION_COOKIE_SECURE = CSRF_COOKIE_SECURE = os.environ.get("DJANGO_SECURE_COOKIES") == "1"
+globals().update(security_settings(os.environ, DEBUG))
 
 
 # Application definition
@@ -58,7 +59,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'config.https_middleware.TrustedProxyHTTPSMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.csp.ContentSecurityPolicyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -171,16 +174,3 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 12,
     "EXCEPTION_HANDLER": "config.exceptions.exception_handler",
 }
-
-# CORS Configuration
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
-
-CORS_ALLOW_CREDENTIALS = True
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
