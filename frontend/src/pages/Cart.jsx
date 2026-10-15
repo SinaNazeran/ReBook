@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth.js";
 import { useCart } from "../context/useCart.js";
@@ -12,6 +13,7 @@ import { CartList } from "../features/cart/CartList.jsx";
 import Form from "../components/Form";
 const toman = value => Number(value).toLocaleString('fa-IR');
 function Cart() {
+  const { run } = useSubmissionGuard();
   const location = useLocation();
   const {
     user,
@@ -67,45 +69,47 @@ function Cart() {
   };
   const handleCheckout = async e => {
     e.preventDefault();
-    if (!address.trim()) {
-      setAddressError('آدرس ارسال را بنویس تا فروشنده‌ها بدانند کتاب‌ها را کجا بفرستند.');
-      document.getElementById('shipping-address')?.focus();
-      return;
-    }
-    setBusy(true);
-    setError('');
-    const books = available.map(item => item.book);
-    try {
-      const response = await cartAPI.checkout({
-        // قیمت هر کتاب همان که خریدار دید؛ سرور هر کدام را جدا می‌سنجد
-        books: books.map(book => ({
-          id: book.id,
-          price: book.price
-        })),
-        shipping_address: address.trim()
-      });
-      setReceipt({
-        books,
-        code: response.data.reference_code
-      });
-      refresh();
-    } catch (err) {
-      const data = err.response?.data;
-      if (data?.shipping_address) {
-        setAddressError(data.shipping_address[0]);
-      } else if (err.response?.status === 401) {
-        // نشست تمام شده؛ سبد حساب سر جایش است و پس از ورود دوباره دیده می‌شود
-        setError('نشستت تمام شده است. دوباره وارد شو؛ سبدت سر جایش است و می‌توانی پرداخت را تمام کنی.');
-        setStep('cart');
-      } else {
-        // سبد روی سرور عوض شده (یا session تمام شده)؛ سبد تازه دیده و دوباره تأیید می‌شود
-        setError(getErrorMessage(err));
-        setStep('cart');
-        refresh();
+    return run(async () => {
+      if (!address.trim()) {
+        setAddressError('آدرس ارسال را بنویس تا فروشنده‌ها بدانند کتاب‌ها را کجا بفرستند.');
+        document.getElementById('shipping-address')?.focus();
+        return;
       }
-    } finally {
-      setBusy(false);
-    }
+      setBusy(true);
+      setError('');
+      const books = available.map(item => item.book);
+      try {
+        const response = await cartAPI.checkout({
+          // قیمت هر کتاب همان که خریدار دید؛ سرور هر کدام را جدا می‌سنجد
+          books: books.map(book => ({
+            id: book.id,
+            price: book.price
+          })),
+          shipping_address: address.trim()
+        });
+        setReceipt({
+          books,
+          code: response.data.reference_code
+        });
+        refresh();
+      } catch (err) {
+        const data = err.response?.data;
+        if (data?.shipping_address) {
+          setAddressError(data.shipping_address[0]);
+        } else if (err.response?.status === 401) {
+          // نشست تمام شده؛ سبد حساب سر جایش است و پس از ورود دوباره دیده می‌شود
+          setError('نشستت تمام شده است. دوباره وارد شو؛ سبدت سر جایش است و می‌توانی پرداخت را تمام کنی.');
+          setStep('cart');
+        } else {
+          // سبد روی سرور عوض شده (یا session تمام شده)؛ سبد تازه دیده و دوباره تأیید می‌شود
+          setError(getErrorMessage(err));
+          setStep('cart');
+          refresh();
+        }
+      } finally {
+        setBusy(false);
+      }
+    });
   };
   if (authError) return null;
   if (receipt) {

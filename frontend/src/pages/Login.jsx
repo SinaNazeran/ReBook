@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { useState } from 'react';
 import { Container, Button, Alert } from 'react-bootstrap';
 import Form from '../components/Form';
@@ -9,6 +10,7 @@ import PasswordField from '../components/PasswordField';
 import { returnPath, returnReason } from '../utils/authReturn';
 
 function Login() {
+  const { run } = useSubmissionGuard();
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,22 +27,24 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.username.trim() || !formData.password) {
-      setError('نام کاربری و رمز را بنویس.');
-      return;
-    }
+    return run(async () => {
+      if (!formData.username.trim() || !formData.password) {
+        setError('نام کاربری و رمز را بنویس.');
+        return;
+      }
 
-    setLoading(true);
-    try {
-      await loginUser({ ...formData, username: formData.username.trim() });
-      toast.success('خوش آمدی!');
-      // به همان صفحه‌ای برمی‌گردد که کاربر را به ورود فرستاد (با پارامترهای آدرس)
-      navigate(returnPath(location), { replace: true });
-    } catch (err) {
-      setError(getErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
+      setLoading(true);
+      try {
+        await loginUser({ ...formData, username: formData.username.trim() });
+        toast.success('خوش آمدی!');
+        // به همان صفحه‌ای برمی‌گردد که کاربر را به ورود فرستاد (با پارامترهای آدرس)
+        navigate(returnPath(location), { replace: true });
+      } catch (err) {
+        setError(getErrorMessage(err));
+      } finally {
+        setLoading(false);
+      }
+    });
   };
 
   return (

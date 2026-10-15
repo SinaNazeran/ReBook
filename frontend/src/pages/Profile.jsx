@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { formatPersianDate as formatDate } from '../utils/locale';
 import { useState } from 'react';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
@@ -15,6 +16,7 @@ const MAX_AVATAR_MB = 3;
 const ACCEPTED_IMAGES = 'image/jpeg,image/png,image/webp';
 
 function Profile() {
+  const { run } = useSubmissionGuard();
   const { user, updateUser } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -60,36 +62,38 @@ function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setGeneralError('');
+    return run(async () => {
+      setGeneralError('');
 
-    if (formData.phone && !/^09\d{9}$/.test(formData.phone)) {
-      setFieldErrors({ phone: ['شماره‌ی موبایل ۱۱ رقم است و با ۰۹ شروع می‌شود.'] });
-      document.getElementById('phone')?.focus();
-      return;
-    }
-
-    setFieldErrors({});
-    setLoading(true);
-    try {
-      const data = new FormData();
-      Object.entries(formData).forEach(([key, value]) => data.append(key, value.trim()));
-      if (avatarFile) data.append('avatar', avatarFile);
-
-      await updateUser(data);
-      clearFile();
-      toast.success('تغییرات ذخیره شد.');
-    } catch (error) {
-      const errorData = error.response?.data;
-      if (errorData && typeof errorData === 'object' && !errorData.detail) {
-        setFieldErrors(errorData);
-        const first = ['first_name', 'last_name', 'email', 'phone', 'address'].find((key) => errorData[key]);
-        if (first) document.getElementById(first)?.focus();
-      } else {
-        setGeneralError(getErrorMessage(error));
+      if (formData.phone && !/^09\d{9}$/.test(formData.phone)) {
+        setFieldErrors({ phone: ['شماره‌ی موبایل ۱۱ رقم است و با ۰۹ شروع می‌شود.'] });
+        document.getElementById('phone')?.focus();
+        return;
       }
-    } finally {
-      setLoading(false);
-    }
+
+      setFieldErrors({});
+      setLoading(true);
+      try {
+        const data = new FormData();
+        Object.entries(formData).forEach(([key, value]) => data.append(key, value.trim()));
+        if (avatarFile) data.append('avatar', avatarFile);
+
+        await updateUser(data);
+        clearFile();
+        toast.success('تغییرات ذخیره شد.');
+      } catch (error) {
+        const errorData = error.response?.data;
+        if (errorData && typeof errorData === 'object' && !errorData.detail) {
+          setFieldErrors(errorData);
+          const first = ['first_name', 'last_name', 'email', 'phone', 'address'].find((key) => errorData[key]);
+          if (first) document.getElementById(first)?.focus();
+        } else {
+          setGeneralError(getErrorMessage(error));
+        }
+      } finally {
+        setLoading(false);
+      }
+    });
   };
 
   const joinDate = user?.created_at

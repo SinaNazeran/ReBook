@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../../hooks/useSubmissionGuard';
 import { useCategories } from '../../utils/categories';
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.js";
@@ -9,6 +10,7 @@ import { onlyDigits } from "../../utils/digits";
 import { toast } from "../../utils/toast";
 import { CONDITION_LABELS } from "../../utils/condition";
 export function useBookEditor() {
+  const { run } = useSubmissionGuard();
   const {
     id
   } = useParams();
@@ -127,59 +129,61 @@ export function useBookEditor() {
   };
   const handleSubmit = async e => {
     e.preventDefault();
-    setGeneralError('');
-    const errors = validate(formData);
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      focusFirstError(errors);
-      return;
-    }
-    setFieldErrors({});
-    setLoading(true);
-    try {
-      const data = new FormData();
-      const payload = {
-        ...formData,
-        isbn: normalizeIsbn(formData.isbn)
-      };
-      // در ویرایش، فیلد خالی هم فرستاده می‌شود تا مقدار قبلی (مثلاً انتشارات) پاک شود
-      Object.entries(payload).forEach(([key, value]) => {
-        if (value !== '' || editing) data.append(key, typeof value === 'string' ? value.trim() : value);
-      });
-      // جلد فقط اگر عکس تازه‌ای انتخاب شده باشد؛ وگرنه جلد فعلی می‌ماند
-      if (coverImage) data.append('cover_image', coverImage);
-      if (editing) {
-        await bookAPI.updateBook(id, data);
-        toast.success('تغییرات ذخیره شد و آگهی برای بررسی رفت.');
-      } else {
-        await bookAPI.createBook(data);
-        toast.success('آگهی ثبت شد و پس از بررسی در فهرست دیده می‌شود.');
+    return run(async () => {
+      setGeneralError('');
+      const errors = validate(formData);
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors);
+        focusFirstError(errors);
+        return;
       }
-      navigate('/my-books', {
-        replace: true
-      });
-    } catch (err) {
-      const errorData = err.response?.data;
-      if (errorData && typeof errorData === 'object' && !Array.isArray(errorData)) {
-        const {
-          nextFieldErrors,
-          nextGeneralError
-        } = normalizeServerErrors(errorData);
-        setFieldErrors(nextFieldErrors);
-        if (nextGeneralError) setGeneralError(nextGeneralError);
-        focusFirstError(nextFieldErrors);
-      } else {
-        setGeneralError(getErrorMessage(err));
-      }
-      if (!errorData || Object.keys(errorData).some(key => key === 'detail' || key === 'non_field_errors')) {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
+      setFieldErrors({});
+      setLoading(true);
+      try {
+        const data = new FormData();
+        const payload = {
+          ...formData,
+          isbn: normalizeIsbn(formData.isbn)
+        };
+        // در ویرایش، فیلد خالی هم فرستاده می‌شود تا مقدار قبلی (مثلاً انتشارات) پاک شود
+        Object.entries(payload).forEach(([key, value]) => {
+          if (value !== '' || editing) data.append(key, typeof value === 'string' ? value.trim() : value);
         });
+        // جلد فقط اگر عکس تازه‌ای انتخاب شده باشد؛ وگرنه جلد فعلی می‌ماند
+        if (coverImage) data.append('cover_image', coverImage);
+        if (editing) {
+          await bookAPI.updateBook(id, data);
+          toast.success('تغییرات ذخیره شد و آگهی برای بررسی رفت.');
+        } else {
+          await bookAPI.createBook(data);
+          toast.success('آگهی ثبت شد و پس از بررسی در فهرست دیده می‌شود.');
+        }
+        navigate('/my-books', {
+          replace: true
+        });
+      } catch (err) {
+        const errorData = err.response?.data;
+        if (errorData && typeof errorData === 'object' && !Array.isArray(errorData)) {
+          const {
+            nextFieldErrors,
+            nextGeneralError
+          } = normalizeServerErrors(errorData);
+          setFieldErrors(nextFieldErrors);
+          if (nextGeneralError) setGeneralError(nextGeneralError);
+          focusFirstError(nextFieldErrors);
+        } else {
+          setGeneralError(getErrorMessage(err));
+        }
+        if (!errorData || Object.keys(errorData).some(key => key === 'detail' || key === 'non_field_errors')) {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
+    });
   };
   const roots = categories.filter(cat => cat.parent === null);
   const selectedCategory = categories.find(cat => String(cat.id) === String(formData.category));

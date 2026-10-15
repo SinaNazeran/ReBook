@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../../hooks/useSubmissionGuard';
 import { toast } from "../../utils/toast";
 import { bookAPI, getErrorMessage, orderAPI } from "../../services/api";
 export function useBookActions({
@@ -19,6 +20,7 @@ export function useBookActions({
   setBook,
   setCancelling
 }) {
+  const { run, pending } = useSubmissionGuard();
   const goToLogin = () => {
     toast.info('برای ادامه وارد حساب کاربری‌ات شو.');
     navigate('/login', {
@@ -28,53 +30,59 @@ export function useBookActions({
     });
   };
   const handleWishlistToggle = async () => {
-    if (!isAuthenticated) {
-      goToLogin();
-      return;
-    }
-    const prevState = wishlisted;
-    setWishlisted(!prevState); // آپدیت خوش‌بینانه
-    try {
-      const response = await bookAPI.toggleWishlist(id);
-      setWishlisted(response.data.wishlisted);
-    } catch (error) {
-      setWishlisted(prevState);
-      toast.error(getErrorMessage(error));
-    }
+    return run(async () => {
+      if (!isAuthenticated) {
+        goToLogin();
+        return;
+      }
+      const prevState = wishlisted;
+      setWishlisted(!prevState); // آپدیت خوش‌بینانه
+      try {
+        const response = await bookAPI.toggleWishlist(id);
+        setWishlisted(response.data.wishlisted);
+      } catch (error) {
+        setWishlisted(prevState);
+        toast.error(getErrorMessage(error));
+      }
+    }, 'wishlist:' + id);
   };
   const handleAddToCart = async () => {
-    if (cartUnavailable) return;
-    setCartBusy(true);
-    try {
-      await addToCart(book.id);
-      focusCartLink.current = true;
-      setCartMessage('به سبد اضافه شد.');
-    } catch (error) {
-      if (error.code === 'ERR_SESSION_UNAVAILABLE') {
-        setCartMessage(error.message);
-        return;
+    return run(async () => {
+      if (cartUnavailable) return;
+      setCartBusy(true);
+      try {
+        await addToCart(book.id);
+        focusCartLink.current = true;
+        setCartMessage('به سبد اضافه شد.');
+      } catch (error) {
+        if (error.code === 'ERR_SESSION_UNAVAILABLE') {
+          setCartMessage(error.message);
+          return;
+        }
+        toast.error(getErrorMessage(error));
+        refreshBook();
+      } finally {
+        setCartBusy(false);
       }
-      toast.error(getErrorMessage(error));
-      refreshBook();
-    } finally {
-      setCartBusy(false);
-    }
+    }, 'cart:' + id);
   };
   const handleRemoveFromCart = async () => {
-    if (cartUnavailable) return;
-    setCartBusy(true);
-    try {
-      await removeFromCart(book.id);
-      setCartMessage('از سبد برداشته شد.');
-    } catch (error) {
-      if (error.code === 'ERR_SESSION_UNAVAILABLE') {
-        setCartMessage(error.message);
-        return;
+    return run(async () => {
+      if (cartUnavailable) return;
+      setCartBusy(true);
+      try {
+        await removeFromCart(book.id);
+        setCartMessage('از سبد برداشته شد.');
+      } catch (error) {
+        if (error.code === 'ERR_SESSION_UNAVAILABLE') {
+          setCartMessage(error.message);
+          return;
+        }
+        toast.error(getErrorMessage(error));
+      } finally {
+        setCartBusy(false);
       }
-      toast.error(getErrorMessage(error));
-    } finally {
-      setCartBusy(false);
-    }
+    }, 'cart:' + id);
   };
   const handlePaid = () => {
     setBoughtByMe(true);
@@ -85,24 +93,27 @@ export function useBookActions({
     }));
   };
   const handleCancelOrder = async () => {
-    // مثل «معاملات من»: لغو برگشت‌پذیر نیست
-    if (!window.confirm('این سفارش لغو شود؟ این کار برگشت‌پذیر نیست.')) return;
-    setCancelling(true);
-    try {
-      await orderAPI.cancelOrder(book.open_order.id);
-      setBook(prev => ({
-        ...prev,
-        open_order: null
-      }));
-      toast.success('سفارش لغو شد.');
-    } catch (error) {
-      toast.error(getErrorMessage(error));
-      refreshBook();
-    } finally {
-      setCancelling(false);
-    }
+    return run(async () => {
+      // مثل «معاملات من»: لغو برگشت‌پذیر نیست
+      if (!window.confirm('این سفارش لغو شود؟ این کار برگشت‌پذیر نیست.')) return;
+      setCancelling(true);
+      try {
+        await orderAPI.cancelOrder(book.open_order.id);
+        setBook(prev => ({
+          ...prev,
+          open_order: null
+        }));
+        toast.success('سفارش لغو شد.');
+      } catch (error) {
+        toast.error(getErrorMessage(error));
+        refreshBook();
+      } finally {
+        setCancelling(false);
+      }
+    }, 'cancel:' + id);
   };
   return {
+    wishlistBusy: pending.has('wishlist:' + id),
     handleWishlistToggle,
     handleAddToCart,
     handleRemoveFromCart,

@@ -16,6 +16,7 @@ export function BookPurchasePanel({
   isOwner,
   handleWishlistToggle,
   wishlisted,
+  wishlistBusy,
   cartMessage
 }) {
   return <section className="buy-panel" aria-label="خرید">
@@ -44,9 +45,9 @@ export function BookPurchasePanel({
                 {isInCart && <Button variant="link" className="buy-cart-remove" onClick={handleRemoveFromCart} disabled={cartBusy}>
                     حذف از سبد
                   </Button>}
-                {!isOwner && book.status === 'approved' && <Button variant="outline-secondary" onClick={handleWishlistToggle} aria-pressed={wishlisted} className="d-inline-flex align-items-center gap-2">
+                {!isOwner && book.status === 'approved' && <Button variant="outline-secondary" onClick={handleWishlistToggle} disabled={wishlistBusy} aria-busy={wishlistBusy} aria-pressed={wishlisted} className="d-inline-flex align-items-center gap-2">
                     <FiHeart aria-hidden="true" fill={wishlisted ? 'currentColor' : 'none'} />
-                    {wishlisted ? 'در علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
+                    {wishlistBusy ? 'در حال ثبت…' : wishlisted ? 'در علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
                   </Button>}
               </div>
               <p className="visually-hidden" role="status">

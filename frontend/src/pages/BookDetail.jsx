@@ -33,6 +33,7 @@ function BookDetail() {
     refreshBook
   } = detail;
   const {
+    wishlistBusy,
     handleWishlistToggle,
     handleAddToCart,
     handleRemoveFromCart,
@@ -128,7 +129,7 @@ function BookDetail() {
 
           <Col lg={8}>
 <BookDetails book={book} ink={ink} notesOpen={notesOpen} setNotesOpen={setNotesOpen}>
-<BookPurchasePanel price={price} book={book} status={status} primaryAction={primaryAction} canEdit={canEdit} canPay={canPay} handleCancelOrder={handleCancelOrder} cancelling={cancelling} isInCart={isInCart} handleRemoveFromCart={handleRemoveFromCart} cartBusy={cartBusy || cartUnavailable} isOwner={isOwner} handleWishlistToggle={handleWishlistToggle} wishlisted={wishlisted} cartMessage={cartMessage} />
+<BookPurchasePanel price={price} book={book} status={status} primaryAction={primaryAction} canEdit={canEdit} canPay={canPay} handleCancelOrder={handleCancelOrder} cancelling={cancelling} isInCart={isInCart} handleRemoveFromCart={handleRemoveFromCart} cartBusy={cartBusy || cartUnavailable} isOwner={isOwner} handleWishlistToggle={handleWishlistToggle} wishlisted={wishlisted} wishlistBusy={wishlistBusy} cartMessage={cartMessage} />
 </BookDetails>
           </Col>
         </Row>

@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { useState, useEffect, useRef } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
@@ -27,6 +28,7 @@ function validate(data) {
  * تلفن یا ایمیل عمومی نداریم و ساختگی هم نشان داده نمی‌شود.
  */
 function Contact() {
+  const { run } = useSubmissionGuard();
   const { isAuthenticated, loading } = useAuth();
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -47,36 +49,38 @@ function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const errors = validate(formData);
-    const firstError = FIELD_ORDER.find((name) => errors[name]);
-    if (firstError) {
-      setFieldErrors(errors);
-      document.getElementById(`contact-${firstError}`)?.focus();
-      return;
-    }
-
-    setSubmitting(true);
-    setError('');
-    try {
-      await notificationAPI.sendContactMessage(
-        Object.fromEntries(FIELD_ORDER.map((name) => [name, formData[name].trim()])),
-      );
-      setSent(true);
-      setFormData(EMPTY_FORM);
-    } catch (err) {
-      const data = err.response?.data;
-      const serverErrors =
-        data && typeof data === 'object'
-          ? Object.fromEntries(FIELD_ORDER.filter((name) => data[name]).map((name) => [name, data[name][0]]))
-          : {};
-      if (Object.keys(serverErrors).length) {
-        setFieldErrors(serverErrors);
-      } else {
-        setError(getErrorMessage(err));
+    return run(async () => {
+      const errors = validate(formData);
+      const firstError = FIELD_ORDER.find((name) => errors[name]);
+      if (firstError) {
+        setFieldErrors(errors);
+        document.getElementById(`contact-${firstError}`)?.focus();
+        return;
       }
-    } finally {
-      setSubmitting(false);
-    }
+
+      setSubmitting(true);
+      setError('');
+      try {
+        await notificationAPI.sendContactMessage(
+          Object.fromEntries(FIELD_ORDER.map((name) => [name, formData[name].trim()])),
+        );
+        setSent(true);
+        setFormData(EMPTY_FORM);
+      } catch (err) {
+        const data = err.response?.data;
+        const serverErrors =
+          data && typeof data === 'object'
+            ? Object.fromEntries(FIELD_ORDER.filter((name) => data[name]).map((name) => [name, data[name][0]]))
+            : {};
+        if (Object.keys(serverErrors).length) {
+          setFieldErrors(serverErrors);
+        } else {
+          setError(getErrorMessage(err));
+        }
+      } finally {
+        setSubmitting(false);
+      }
+    });
   };
 
   if (loading) return <Loading fullPage />;

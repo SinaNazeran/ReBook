@@ -13,6 +13,7 @@ export function CatalogResults({
   activeCategory,
   gridRef,
   displayedWishlistIds,
+  pendingWishlistIds,
   isAuthenticated,
   handleToggleWishlist,
   hasMore,
@@ -51,7 +52,7 @@ export function CatalogResults({
         }, (_, i) => <Col key={i} xs={6} md={4} lg={3}>
                       <BookCardSkeleton />
                     </Col>) : books.map(book => <Col key={book.id} xs={6} md={4} lg={3}>
-                      <BookCard book={book} isWishlisted={displayedWishlistIds.has(book.id)} onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined} />
+                      <BookCard book={book} isWishlisted={displayedWishlistIds.has(book.id)} wishlistBusy={pendingWishlistIds.has(book.id)} onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined} />
                     </Col>)}
             </Row>
             {!loading && hasMore && <div className="text-center mt-4">

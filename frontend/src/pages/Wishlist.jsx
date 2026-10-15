@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { usePagedList } from '../hooks/usePagedList';
 import LoadMore from '../components/LoadMore';
 import { useRef } from 'react';
@@ -10,6 +11,7 @@ import Loading from '../components/Loading';
 import EmptyShelf from '../components/EmptyShelf';
 
 function Wishlist() {
+  const { run, pending } = useSubmissionGuard();
   const list = usePagedList(bookAPI.getWishlist);
   const { items: wishlist, setItems: setWishlist, count, loading, loadError } = list;
   const revision = useRef(0);
@@ -18,22 +20,24 @@ function Wishlist() {
 
   // خوش‌بینانه: کارت فوراً می‌رود؛ اگر درخواست نشد، سر جایش برمی‌گردد
   const handleRemove = async (bookId) => {
-    const version = revision.current;
-    const index = wishlist.findIndex(item => item.book.id === bookId);
-    const removed = wishlist[index];
-    setWishlist(prev => prev.filter(item => item.book.id !== bookId));
-    try {
-      await bookAPI.toggleWishlist(bookId);
-      handleRetry();
-    } catch (error) {
-      if (version === revision.current && removed) setWishlist(current => {
-        if (current.some(item => item.id === removed.id)) return current;
-        const restored = [...current];
-        restored.splice(Math.min(index, restored.length), 0, removed);
-        return restored;
-      });
-      toast.error(getErrorMessage(error));
-    }
+    return run(async () => {
+      const version = revision.current;
+      const index = wishlist.findIndex(item => item.book.id === bookId);
+      const removed = wishlist[index];
+      setWishlist(prev => prev.filter(item => item.book.id !== bookId));
+      try {
+        await bookAPI.toggleWishlist(bookId);
+        handleRetry();
+      } catch (error) {
+        if (version === revision.current && removed) setWishlist(current => {
+          if (current.some(item => item.id === removed.id)) return current;
+          const restored = [...current];
+          restored.splice(Math.min(index, restored.length), 0, removed);
+          return restored;
+        });
+        toast.error(getErrorMessage(error));
+      }
+    }, bookId);
   };
 
   if (loading) return <Loading fullPage />;
@@ -51,6 +55,7 @@ function Wishlist() {
           </h1>
         </header>
 
+        {pending.size > 0 && <p role="status">در حال ثبت علاقه‌مندی…</p>}
         {loadError ? (
           <div className="list-state" role="alert">
             <p>علاقه‌مندی‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>

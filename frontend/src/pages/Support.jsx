@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { formatPersianDate as formatDate } from '../utils/locale';
 import { usePagedList } from '../hooks/usePagedList';
 import LoadMore from '../components/LoadMore';
@@ -17,6 +18,7 @@ const TICKET_STATUS = {
 };
 
 function Support() {
+  const { run } = useSubmissionGuard();
   const list = usePagedList(notificationAPI.getMyTickets);
   const { items: tickets, loading, loadError, reload: handleRetry } = list;
   const [formData, setFormData] = useState({ subject: '', message: '' });
@@ -32,35 +34,37 @@ function Support() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    return run(async () => {
 
-    const errors = {};
-    if (!formData.subject.trim()) errors.subject = 'موضوع را در یک خط بنویس.';
-    if (!formData.message.trim()) errors.message = 'پیامت را بنویس.';
-    if (errors.subject || errors.message) {
-      setFieldErrors(errors);
-      document.getElementById(errors.subject ? 'subject' : 'message')?.focus();
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      await notificationAPI.createTicket({
-        subject: formData.subject.trim(),
-        message: formData.message.trim(),
-      });
-      toast.success('پیامت رسید؛ پاسخ را همین‌جا می‌بینی.');
-      setFormData({ subject: '', message: '' });
-      handleRetry();
-    } catch (error) {
-      const data = error.response?.data;
-      if (data && typeof data === 'object' && (data.subject || data.message)) {
-        setFieldErrors({ subject: data.subject?.[0], message: data.message?.[0] });
-      } else {
-        toast.error(getErrorMessage(error));
+      const errors = {};
+      if (!formData.subject.trim()) errors.subject = 'موضوع را در یک خط بنویس.';
+      if (!formData.message.trim()) errors.message = 'پیامت را بنویس.';
+      if (errors.subject || errors.message) {
+        setFieldErrors(errors);
+        document.getElementById(errors.subject ? 'subject' : 'message')?.focus();
+        return;
       }
-    } finally {
-      setSubmitting(false);
-    }
+
+      setSubmitting(true);
+      try {
+        await notificationAPI.createTicket({
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+        });
+        toast.success('پیامت رسید؛ پاسخ را همین‌جا می‌بینی.');
+        setFormData({ subject: '', message: '' });
+        handleRetry();
+      } catch (error) {
+        const data = error.response?.data;
+        if (data && typeof data === 'object' && (data.subject || data.message)) {
+          setFieldErrors({ subject: data.subject?.[0], message: data.message?.[0] });
+        } else {
+          toast.error(getErrorMessage(error));
+        }
+      } finally {
+        setSubmitting(false);
+      }
+    });
   };
 
   if (loading) return <Loading fullPage />;

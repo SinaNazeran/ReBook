@@ -25,7 +25,7 @@ function formatPrice(price) {
  * @param {(bookId: number|string) => void} [onToggleWishlist] - در صورت پاس‌دادن،
  *   دکمه‌ی قلب روی کارت نمایش داده می‌شود.
  */
-function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
+function BookCard({ book, isWishlisted = false, onToggleWishlist, wishlistBusy = false }) {
   const coverRef = useRef(null);
   const navigate = useNavigate();
   const href = `/books/${book.id}`;
@@ -47,11 +47,14 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist }) {
           className="wishlist-toggle-btn"
           aria-label={isWishlisted ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
           aria-pressed={isWishlisted}
+          disabled={wishlistBusy}
+          aria-busy={wishlistBusy}
         >
-          <FiHeart
+          {wishlistBusy ? <span className="spinner-border spinner-border-sm" aria-hidden="true" /> : <FiHeart
             className={isWishlisted ? 'text-body' : 'text-muted'}
             fill={isWishlisted ? 'currentColor' : 'none'}
-          />
+          />}
+          {wishlistBusy && <span className="visually-hidden" role="status">در حال ثبت علاقه‌مندی…</span>}
         </button>
       )}
 

@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { formatPersianDate as formatDate } from '../utils/locale';
 import { useUnreadCount } from '../components/navigation/useUnreadCount';
 import UnreadStatus from '../components/navigation/UnreadStatus';
@@ -35,6 +36,8 @@ const bookLinks = ({ notification_type: type, book }) => {
 };
 
 function Notifications() {
+  const { run, pending } = useSubmissionGuard();
+  const reading = pending.size > 0;
   const [readVersion, setReadVersion] = useState(0);
   const { user } = useAuth();
   const unreadState = useUnreadCount(user?.id, readVersion);
@@ -47,28 +50,32 @@ function Notifications() {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: isRead } : n)));
 
   const handleMarkRead = async (notification) => {
-    if (notification.is_read) return;
-    setRead(notification.id, true); // خوش‌بینانه
-    try {
-      await notificationAPI.markAsRead(notification.id);
-      setReadVersion(version => version + 1);
-    } catch (error) {
-      setRead(notification.id, false);
-      toast.error(getErrorMessage(error));
-    }
+    return run(async () => {
+      if (notification.is_read) return;
+      setRead(notification.id, true); // خوش‌بینانه
+      try {
+        await notificationAPI.markAsRead(notification.id);
+        setReadVersion(version => version + 1);
+      } catch (error) {
+        setRead(notification.id, false);
+        toast.error(getErrorMessage(error));
+      }
+    });
   };
 
   const handleMarkAllRead = async () => {
-    const previous = notifications;
-    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-    try {
-      await notificationAPI.markAllAsRead();
-      setReadVersion(version => version + 1);
-      await list.refresh();
-    } catch (error) {
-      setNotifications(previous);
-      toast.error(getErrorMessage(error));
-    }
+    return run(async () => {
+      const previous = notifications;
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+      try {
+        await notificationAPI.markAllAsRead();
+        setReadVersion(version => version + 1);
+        await list.refresh();
+      } catch (error) {
+        setNotifications(previous);
+        toast.error(getErrorMessage(error));
+      }
+    });
   };
 
   if (loading) return <Loading fullPage />;
@@ -84,11 +91,12 @@ function Notifications() {
             {unreadCount > 0 && <span className="list-count">{unreadCount.toLocaleString('fa-IR')} خوانده‌نشده</span>}
           </h1>
           {unreadCount > 0 && (
-            <Button variant="outline-secondary" onClick={handleMarkAllRead}>
+            <Button variant="outline-secondary" onClick={handleMarkAllRead} disabled={reading} aria-busy={reading}>
               همه خوانده شد
             </Button>
           )}
         </header>
+        {reading && <p role="status">در حال ثبت وضعیت اعلان‌ها…</p>}
         <UnreadStatus state={unreadState} />
 
         {loadError ? (
@@ -120,7 +128,9 @@ function Notifications() {
                     type="button"
                     className={`notice${unread ? ' is-unread' : ''}`}
                     onClick={() => handleMarkRead(notification)}
-                    aria-disabled={!unread}
+                    disabled={reading}
+                    aria-busy={reading}
+                    aria-disabled={!unread || reading}
                   >
                     <span className="notice-icon" aria-hidden="true">
                       <Icon />

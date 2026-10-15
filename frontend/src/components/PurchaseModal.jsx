@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal, Button, Alert } from 'react-bootstrap';
@@ -15,6 +16,7 @@ import { orderAPI, getErrorMessage } from '../services/api';
  * @param {() => void} onStale - پس از پرداخت ناموفق (سفارش شاید لغو یا پرداخت شده باشد؛ صفحه وضعیت تازه را می‌گیرد)
  */
 function PurchaseModal({ show, onHide, book, existingOrderId, onPaid, onStale }) {
+  const { run } = useSubmissionGuard();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [trackingCode, setTrackingCode] = useState('');
@@ -25,18 +27,20 @@ function PurchaseModal({ show, onHide, book, existingOrderId, onPaid, onStale })
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setBusy(true);
-    setError('');
-    try {
-      const response = await orderAPI.payOrder(existingOrderId);
-      setTrackingCode(response.data.reference_code);
-      onPaid?.();
-    } catch (err) {
-      setError(getErrorMessage(err));
-      onStale?.();
-    } finally {
-      setBusy(false);
-    }
+    return run(async () => {
+      setBusy(true);
+      setError('');
+      try {
+        const response = await orderAPI.payOrder(existingOrderId);
+        setTrackingCode(response.data.reference_code);
+        onPaid?.();
+      } catch (err) {
+        setError(getErrorMessage(err));
+        onStale?.();
+      } finally {
+        setBusy(false);
+      }
+    });
   };
 
   // بستن در حین پرداخت مجاز نیست تا کاربر از نتیجه بی‌خبر نماند

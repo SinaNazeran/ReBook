@@ -59,6 +59,7 @@ function BookList() {
   const {
     isAuthenticated,
     displayedWishlistIds,
+    pendingWishlistIds,
     handleToggleWishlist
   } = useCatalogWishlist(books);
   return <div className="series-paper" style={{
@@ -114,7 +115,7 @@ function BookList() {
               </button>}
           </div>}
 
-<CatalogResults loadError={loadError} handleRetry={handleRetry} loading={loading} books={books} chips={chips} clearChips={clearChips} activeCategory={activeCategory} gridRef={gridRef} displayedWishlistIds={displayedWishlistIds} isAuthenticated={isAuthenticated} handleToggleWishlist={handleToggleWishlist} hasMore={hasMore} handleLoadMore={handleLoadMore} loadingMore={loadingMore} />
+<CatalogResults loadError={loadError} handleRetry={handleRetry} loading={loading} books={books} chips={chips} clearChips={clearChips} activeCategory={activeCategory} gridRef={gridRef} displayedWishlistIds={displayedWishlistIds} pendingWishlistIds={pendingWishlistIds} isAuthenticated={isAuthenticated} handleToggleWishlist={handleToggleWishlist} hasMore={hasMore} handleLoadMore={handleLoadMore} loadingMore={loadingMore} />
       </Container>
     </div>;
 }

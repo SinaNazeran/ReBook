@@ -1,3 +1,4 @@
+import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { useState } from 'react';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import Form from '../components/Form';
@@ -35,6 +36,7 @@ function validate(form) {
 }
 
 function Register() {
+  const { run } = useSubmissionGuard();
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [fieldErrors, setFieldErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
@@ -61,31 +63,33 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setGeneralError('');
+    return run(async () => {
+      setGeneralError('');
 
-    const errors = validate(formData);
-    if (Object.keys(errors).length > 0) {
-      showErrors(errors);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await registerUser({ ...formData, username: formData.username.trim(), email: formData.email.trim() });
-      toast.success('حسابت ساخته شد. خوش آمدی!');
-      navigate(returnPath(location), { replace: true });
-    } catch (err) {
-      const errorData = err.response?.data;
-      // خطای فیلدها کنار همان فیلد؛ detail یا non_field_errors (مثلاً محدودیت تعداد تلاش) بالای فرم
-      const fieldOnly = errorData && typeof errorData === 'object' && !errorData.detail && !errorData.non_field_errors;
-      if (fieldOnly) {
-        showErrors(errorData);
-      } else {
-        setGeneralError(getErrorMessage(err));
+      const errors = validate(formData);
+      if (Object.keys(errors).length > 0) {
+        showErrors(errors);
+        return;
       }
-    } finally {
-      setLoading(false);
-    }
+
+      setLoading(true);
+      try {
+        await registerUser({ ...formData, username: formData.username.trim(), email: formData.email.trim() });
+        toast.success('حسابت ساخته شد. خوش آمدی!');
+        navigate(returnPath(location), { replace: true });
+      } catch (err) {
+        const errorData = err.response?.data;
+        // خطای فیلدها کنار همان فیلد؛ detail یا non_field_errors (مثلاً محدودیت تعداد تلاش) بالای فرم
+        const fieldOnly = errorData && typeof errorData === 'object' && !errorData.detail && !errorData.non_field_errors;
+        if (fieldOnly) {
+          showErrors(errorData);
+        } else {
+          setGeneralError(getErrorMessage(err));
+        }
+      } finally {
+        setLoading(false);
+      }
+    });
   };
 
   const error = (name) => fieldErrors[name]?.[0];
