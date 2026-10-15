@@ -14,6 +14,11 @@ from orders.models import Order, Transaction
 from orders.serializers import OrderSerializer
 
 
+def order_display_queryset():
+    """Load the single-valued relations used by OrderSerializer in one query."""
+    return Order.objects.select_related("buyer", "book__seller", "book__category", "transaction")
+
+
 class OrderCreateView(generics.CreateAPIView):
     """ثبت سفارش جدید"""
 
@@ -54,7 +59,7 @@ class MyOrdersView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(buyer=self.request.user).order_by("-created_at", "-id")
+        return order_display_queryset().filter(buyer=self.request.user).order_by("-created_at", "-id")
 
 
 
@@ -65,7 +70,7 @@ class MySalesView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(book__seller=self.request.user).order_by("-created_at", "-id")
+        return order_display_queryset().filter(book__seller=self.request.user).order_by("-created_at", "-id")
 
 
 
@@ -77,7 +82,7 @@ class OrderDetailView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Order.objects.filter(models.Q(buyer=user) | models.Q(book__seller=user))
+        return order_display_queryset().filter(models.Q(buyer=user) | models.Q(book__seller=user))
 
 
 

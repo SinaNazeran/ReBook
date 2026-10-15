@@ -8,6 +8,7 @@ from .models import Book, Category, Wishlist
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "parent", "created_at")
+    list_select_related = ("parent",)
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
 
