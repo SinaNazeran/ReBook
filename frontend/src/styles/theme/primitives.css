@@ -1,0 +1,36 @@
+/* مقادیر مشترک؛ واحدهای px و rem عمداً جدا می‌مانند تا ظاهر و بزرگ‌نمایی تغییر نکند. */
+:root {
+    --rb-white: #FFFFFF;
+    --rb-black: #000000;
+    --rb-white-rgb: 255 255 255;
+    --rb-ink-rgb: 26 25 24;
+    --rb-danger-edge: #5E120E;
+    --rb-space-0-5: 0.125rem;
+    --rb-space-1: 0.25rem;
+    --rb-space-1-5: 0.375rem;
+    --rb-space-2: 0.5rem;
+    --rb-space-2-5: 0.625rem;
+    --rb-space-3: 0.75rem;
+    --rb-space-3-5: 0.875rem;
+    --rb-space-4: 1rem;
+    --rb-space-4-5: 1.125rem;
+    --rb-space-5: 1.25rem;
+    --rb-space-6: 1.5rem;
+    --rb-space-7: 1.75rem;
+    --rb-space-8: 2rem;
+    --rb-space-10: 2.5rem;
+    --rb-space-12: 3rem;
+    --rb-space-16: 4rem;
+    --rb-space-px-1: 1px;
+    --rb-space-px-2: 2px;
+
+    --rb-radius-hairline: 1px;
+    --rb-radius-print: 2px;
+    --rb-radius-sm: 0.125rem;
+    --rb-radius: 0.25rem;
+    --rb-radius-lg: 0.375rem;
+    --rb-radius-xl: 0.5rem;
+    --rb-radius-circle: 50%;
+    --rb-radius-pill: 999px;
+    --rb-focus-ring-width: 3px;
+}

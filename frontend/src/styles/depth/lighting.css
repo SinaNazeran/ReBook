@@ -18,7 +18,7 @@
 /* هیرو: همان چراغ روی کاغذ گلی؛ وسط بالا روشن، گوشه‌ها کمی در سایه */
 .hero-stage {
     background-image:
-        radial-gradient(ellipse 75% 65% at 50% 0, color-mix(in srgb, #FFFFFF 55%, transparent), transparent 70%),
+        radial-gradient(ellipse 75% 65% at 50% 0, color-mix(in srgb, var(--rb-white) 55%, transparent), transparent 70%),
         radial-gradient(ellipse 110% 90% at 50% 35%, transparent 60%, color-mix(in srgb, var(--rb-ink) var(--g-hero-edge), transparent));
 }
 
@@ -26,8 +26,8 @@
    شدتش ثابت است: پایین تیره‌تر کنتراست دکمه‌های متن‌تیره را پایین می‌آورد */
 .btn-primary {
     background-image:
-        linear-gradient(color-mix(in srgb, #FFFFFF 24%, transparent), color-mix(in srgb, #FFFFFF 24%, transparent)),
-        linear-gradient(transparent, color-mix(in srgb, #000 12%, transparent));
+        linear-gradient(color-mix(in srgb, var(--rb-white) 24%, transparent), color-mix(in srgb, var(--rb-white) 24%, transparent)),
+        linear-gradient(transparent, color-mix(in srgb, var(--rb-black) 12%, transparent));
     background-size: 100% 1px, 100% 100%;
     background-repeat: no-repeat;
 }
@@ -38,14 +38,14 @@
 }
 
 .site-footer {
-    background-image: linear-gradient(transparent, color-mix(in srgb, #000 var(--g-footer), transparent));
+    background-image: linear-gradient(transparent, color-mix(in srgb, var(--rb-black) var(--g-footer), transparent));
 }
 
 /* جلد ساده یک جلد چاپی است: عطف (سمت راست کتاب فارسی) در سایه و پایین جلد کمی دورتر از نور */
 .plain-cover {
     background-image:
-        linear-gradient(to left, color-mix(in srgb, #000 var(--g-cover-spine), transparent), transparent 9%),
-        linear-gradient(transparent 35%, color-mix(in srgb, #000 var(--g-cover-bottom), transparent));
+        linear-gradient(to left, color-mix(in srgb, var(--rb-black) var(--g-cover-spine), transparent), transparent 9%),
+        linear-gradient(transparent 35%, color-mix(in srgb, var(--rb-black) var(--g-cover-bottom), transparent));
 }
 
 /* کنتراست بیشتر: همه‌چیز به رنگ تخت توکن برمی‌گردد. «شفافیت کمتر» شامل نمی‌شود: این گرادیان‌ها نورند، نه سطح نیمه‌شفاف

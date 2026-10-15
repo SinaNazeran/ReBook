@@ -18,7 +18,7 @@
     inset-inline: 0.75rem;
     inset-block-end: 0.15rem;
     height: 2px;
-    border-radius: 1px;
+    border-radius: var(--rb-radius-hairline);
     background-color: var(--rb-accent);
     opacity: 0;
     transform: scaleX(0);

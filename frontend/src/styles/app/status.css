@@ -4,10 +4,10 @@
 .status-mark {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.125rem 0.5rem;
+  gap: var(--rb-space-1-5);
+  padding: var(--rb-space-0-5) var(--rb-space-2);
   border: 1px solid var(--mark-border);
-  border-radius: 2px;
+  border-radius: var(--rb-radius-print);
   background-color: var(--mark-bg);
   color: var(--mark-text);
   font-size: 0.8125rem;

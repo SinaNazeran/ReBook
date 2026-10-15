@@ -12,7 +12,7 @@
     flex: none;
     align-items: flex-end;
     gap: calc(var(--book-w) * 0.22);
-    padding: 0 0.75rem calc(0.5rem + 5px);
+    padding: 0 var(--rb-space-3) calc(var(--rb-space-2) + 5px);
 }
 
 /* تخته: لبه‌ی جلوی مرکبی، رویه‌ی روشن‌تر بالایش، سایه‌ی نرم روی برگه */
@@ -22,7 +22,7 @@
     inset-inline: 0;
     inset-block-end: 0;
     height: 0.5rem;
-    border-radius: 2px;
+    border-radius: var(--rb-radius-print);
     background-color: var(--rb-ink);
     box-shadow:
         0 -5px 0 0 var(--rb-ink-muted),
@@ -59,14 +59,14 @@
 .lost-gap {
     position: relative;
     width: clamp(1.25rem, 4vw, 1.625rem);
-    border-radius: 2px 2px 0 0;
+    border-radius: var(--rb-radius-print) var(--rb-radius-print) 0 0;
 }
 
 .lost-spine {
     background-color: var(--series-ink);
     box-shadow:
-        inset -3px 0 0 color-mix(in srgb, #000 18%, transparent),
-        inset 3px 0 0 color-mix(in srgb, #fff 14%, transparent),
+        inset -3px 0 0 color-mix(in srgb, var(--rb-black) 18%, transparent),
+        inset 3px 0 0 color-mix(in srgb, var(--rb-white) 14%, transparent),
         0 10px 18px -10px color-mix(in srgb, var(--rb-ink) 60%, transparent);
 }
 

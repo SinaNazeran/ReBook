@@ -3,13 +3,13 @@
    ========================================================================== */
 
 .about-page {
-  padding-block: 2rem 3.5rem;
+  padding-block: var(--rb-space-8) 3.5rem;
 }
 
 /* هر بخش در قاب دوخطی شناسنامه‌ی کتاب (همان .colophon صفحه‌ی کتاب)، به مرکب مجموعه‌ی خودش (--series روی بخش) */
 .about-section {
-  margin-block-start: 3rem;
-  padding: 1.75rem 2rem 2rem;
+  margin-block-start: var(--rb-space-12);
+  padding: var(--rb-space-7) var(--rb-space-8) var(--rb-space-8);
   border-radius: var(--bs-border-radius-xl);
   background-color: var(--rb-surface);
   box-shadow:
@@ -19,7 +19,7 @@
 }
 
 .about-heading {
-  margin-block-end: 1rem;
+  margin-block-end: var(--rb-space-4);
   font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
   line-height: 1.35;
   text-align: center;
@@ -31,7 +31,7 @@
   display: block;
   inline-size: min(16rem, 70%);
   block-size: 12px;
-  margin: 0.5rem auto 0;
+  margin: var(--rb-space-2) auto 0;
   background-color: var(--series);
   -webkit-mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
   mask: var(--rb-ornament-mask) repeat-x center / 32px 12px;
@@ -50,20 +50,20 @@
 
 .about-grades {
   display: grid;
-  gap: 1rem;
+  gap: var(--rb-space-4);
   margin: 0;
 }
 
 .about-grade {
   display: grid;
-  gap: 0.25rem 1.5rem;
+  gap: var(--rb-space-1) var(--rb-space-6);
 }
 
 /* نقطه‌چین از درجه تا معنایش، مثل فهرست شناسنامه */
 .about-grade dt {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--rb-space-2);
 }
 
 .about-grade dt::after {
@@ -86,21 +86,21 @@
 
 .about-facts {
   max-inline-size: 70ch;
-  padding-inline-start: 1.25rem;
+  padding-inline-start: var(--rb-space-5);
 }
 
 .about-facts li + li {
-  margin-block-start: 0.5rem;
+  margin-block-start: var(--rb-space-2);
 }
 
 .about-cta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-block-start: 3rem;
+  gap: var(--rb-space-3);
+  margin-block-start: var(--rb-space-12);
 }
 
 .contact-aside {
-  padding-block-start: 0.25rem;
+  padding-block-start: var(--rb-space-1);
 }
 

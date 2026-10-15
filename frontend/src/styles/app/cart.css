@@ -17,7 +17,7 @@
 
 /* خلاصه‌ی سبد کنار فهرست؛ روی دسکتاپ با اسکرول همراه می‌ماند. ۶px بالا جای نوار مجموعه‌هاست (بخش ۱۴) */
 .cart-summary {
-  padding: calc(1.25rem + 6px) 1.25rem 1.25rem;
+  padding: calc(var(--rb-space-5) + 6px) var(--rb-space-5) var(--rb-space-5);
   border: 1px solid var(--rb-rule);
   border-radius: var(--bs-border-radius);
   background-color: var(--rb-surface);
@@ -36,7 +36,7 @@
 }
 
 .cart-unavailable {
-  margin-block-start: 2rem;
+  margin-block-start: var(--rb-space-8);
 }
 
 .cart-receipt {

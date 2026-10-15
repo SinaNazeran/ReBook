@@ -1,3 +1,4 @@
+@import "./theme/primitives.css";
 @import "./theme/tokens.css";
 @import "./theme/typography-controls.css";
 @import "./theme/surfaces-behavior.css";

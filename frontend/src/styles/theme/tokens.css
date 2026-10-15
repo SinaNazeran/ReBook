@@ -9,7 +9,7 @@
 :root {
     /* --- کاغذ و مرکب --- */
     --rb-ground: #F5F5F2;          /* زمینه‌ی صفحه: خنثای روشن، نه کرم */
-    --rb-surface: #FFFFFF;         /* کاغذ کارت و پنل */
+    --rb-surface: var(--rb-white);         /* کاغذ کارت و پنل */
     --rb-surface-sunken: #ECEBE6;  /* جای خالی جلد، اعلان خوانده‌نشده، بخش متمایز */
     --rb-ink: #1A1918;             /* متن و اقدام اصلی؛ سیاه خالص نیست */
     --rb-ink-hover: #3A3835;
@@ -18,7 +18,7 @@
        وگرنه برای کوررنگی قرمز-سبز یک رنگ دیده می‌شدند (ΔE ۳ → ۱۲). متن بدنه مرکب می‌ماند */
     --rb-primary: #326E51;                    /* سبز بطری: اقدام اصلی (دکمه، کنترل تیک‌خورده، زبانه‌ی فعال، پیوند)؛ متن سفید ۶٫۰:۱ */
     --rb-primary-hover: #226043;
-    --rb-on-primary: #FFFFFF;
+    --rb-on-primary: var(--rb-white);
     --rb-brand: #6E172C;                      /* شرابی: تیتر نمایشی، نام برند، خط قفسه، فوتر؛ متن سفید ۱۱٫۵:۱ */
     --rb-link: var(--rb-primary);
     --rb-footer: var(--rb-brand);
@@ -27,7 +27,7 @@
     --rb-header-bar: #480217;
     --rb-header-btn: #448061;                 /* متن سفید ۴٫۶۶:۱ */
     --rb-ink-muted: #5C5B57;       /* متن ثانویه؛ ۶٫۲:۱ روی زمینه */
-    --rb-on-ink: #FFFFFF;
+    --rb-on-ink: var(--rb-white);
     --rb-on-ink-muted: #B9B8B1;    /* متن ثانویه روی سطح مرکبی (فوتر) */
     --rb-rule: #DEDDD6;            /* خط مویی جداکننده */
     --rb-field-border: #8E8D86;    /* مرز فیلد فرم؛ ۳٫۳:۱ برای تشخیص کنترل */
@@ -140,10 +140,10 @@
     --bs-focus-ring-color: color-mix(in srgb, var(--rb-focus) 35%, transparent);
 
     /* گوشه‌های کوچک و تقریباً چهارگوش، مثل کتاب جیبی؛ شعاع داخلی کارت از --bs-card-inner-border-radius هم‌مرکز می‌ماند */
-    --bs-border-radius: 0.25rem;
-    --bs-border-radius-sm: 0.125rem;
-    --bs-border-radius-lg: 0.375rem;
-    --bs-border-radius-xl: 0.5rem;
+    --bs-border-radius: var(--rb-radius);
+    --bs-border-radius-sm: var(--rb-radius-sm);
+    --bs-border-radius-lg: var(--rb-radius-lg);
+    --bs-border-radius-xl: var(--rb-radius-xl);
 
     --bs-box-shadow: var(--rb-shadow-overlay);
     --bs-box-shadow-sm: none;      /* سایه‌ی کارت‌ها از توکن‌های depth.css می‌آید، نه shadow-sm */

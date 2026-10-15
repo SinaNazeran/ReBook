@@ -38,10 +38,10 @@
    (نوار تیره-روشن-تیره با خط طلا) دارند. برق نور جلو ندارند: عنوان طلای روشن مستقیم روی چرم است و برق کنتراستش را زیر ۴٫۵ می‌برد؛
    سایه‌ی استوانه فقط تیره می‌کند و برآمدگی‌ها بیرون از جای عنوان‌اند */
 .spine {
-    --spine-rib: linear-gradient(var(--rb-gilt) 0 1px, color-mix(in srgb, #000 38%, transparent) 1px, color-mix(in srgb, #FFFFFF 18%, transparent) 45%, color-mix(in srgb, #000 32%, transparent) calc(100% - 1px), var(--rb-gilt) calc(100% - 1px));
+    --spine-rib: linear-gradient(var(--rb-gilt) 0 1px, color-mix(in srgb, var(--rb-black) 38%, transparent) 1px, color-mix(in srgb, var(--rb-white) 18%, transparent) 45%, color-mix(in srgb, var(--rb-black) 32%, transparent) calc(100% - 1px), var(--rb-gilt) calc(100% - 1px));
     background-image:
         var(--spine-rib), var(--spine-rib), var(--spine-rib),
-        linear-gradient(to right, color-mix(in srgb, #000 var(--g-spine), transparent), transparent 30% 70%, color-mix(in srgb, #000 var(--g-spine), transparent));
+        linear-gradient(to right, color-mix(in srgb, var(--rb-black) var(--g-spine), transparent), transparent 30% 70%, color-mix(in srgb, var(--rb-black) var(--g-spine), transparent));
     background-size: 100% 9px, 100% 9px, 100% 9px, 100% 100%;
     background-position: 0 12%, 0 81%, 0 89%, 0 0;
     background-repeat: no-repeat;
@@ -100,7 +100,7 @@ main {
     overflow: clip; /* میز برگه (سایه‌ی پهن زیر) از main بیرون نزند؛ clip ظرف اسکرول نمی‌سازد، پس sticky کار می‌کند */
     background-color: var(--rb-ground);
     background-image:
-        radial-gradient(120vw 85vh at 50% 0, color-mix(in srgb, #FFFFFF var(--g-lamp), transparent), transparent 75%),
+        radial-gradient(120vw 85vh at 50% 0, color-mix(in srgb, var(--rb-white) var(--g-lamp), transparent), transparent 75%),
         linear-gradient(color-mix(in srgb, var(--rb-ink) var(--g-desk-top), transparent), color-mix(in srgb, var(--rb-ink) var(--g-desk-bottom), transparent));
 }
 
@@ -109,7 +109,7 @@ main {
 main > .series-paper {
     --sheet-paper: color-mix(in oklab, var(--series, var(--rb-ground)) var(--rb-paper-tint), var(--rb-ground));
     width: calc(100% - 1rem);
-    margin: 0.5rem auto 1.5rem;
+    margin: var(--rb-space-2) auto var(--rb-space-6);
     border-radius: 1rem;
     box-shadow: var(--d-sheet),
         0 0 0 100vmax color-mix(in srgb, var(--series, var(--rb-ink)) 22%, transparent);
@@ -118,7 +118,7 @@ main > .series-paper {
 @media (min-width: 768px) {
     main > .series-paper {
         width: calc(100% - 3rem);
-        margin-block: 1.5rem 2.5rem;
+        margin-block: var(--rb-space-6) var(--rb-space-10);
     }
 }
 
@@ -126,25 +126,25 @@ main > .series-paper {
 .home-hero ~ section {
     --sheet-paper: var(--rb-ground);
     width: calc(100% - 1rem);
-    margin: 0 auto 1rem;
+    margin: 0 auto var(--rb-space-4);
     border-radius: 1rem;
     box-shadow: var(--d-sheet);
 }
 
 .home-hero + section {
-    box-shadow: 0 -18px 40px rgb(26 25 24 / 0.14), var(--d-sheet);
+    box-shadow: 0 -18px 40px rgb(var(--rb-ink-rgb) / 0.14), var(--d-sheet);
 }
 
 @media (min-width: 768px) {
     .home-hero ~ section {
         width: calc(100% - 3rem);
-        margin-bottom: 1.5rem;
+        margin-bottom: var(--rb-space-6);
     }
 }
 
 /* نوار ابزار فهرست: نوار شناور روی برگه */
 .list-toolbar {
-    padding: 1rem 1.25rem;
+    padding: var(--rb-space-4) var(--rb-space-5);
     border-top: 0;
     border-radius: var(--bs-border-radius-xl);
     background-color: var(--rb-surface);
@@ -201,7 +201,7 @@ main > .series-paper {
 /* تیکت‌های پشتیبانی: آکاردئون هم قاب روی برگه است */
 .ticket-list {
     --bs-accordion-border-radius: var(--bs-border-radius-xl);
-    --bs-accordion-inner-border-radius: calc(var(--bs-border-radius-xl) - 1px);
+    --bs-accordion-inner-border-radius: calc(var(--bs-border-radius-xl) - var(--rb-radius-hairline));
     border-radius: var(--bs-border-radius-xl);
     box-shadow: var(--d-panel);
 }

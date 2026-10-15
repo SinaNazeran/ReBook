@@ -2,7 +2,7 @@
    سرعنوان میان دو خط، و نقطه‌چین از برچسب تا مقدار */
 .colophon {
   max-width: 34rem;
-  padding: 1.5rem 1.75rem 1.75rem;
+  padding: var(--rb-space-6) var(--rb-space-7) var(--rb-space-7);
   border: 1px solid var(--rb-rule);
   border-radius: var(--bs-border-radius);
   background-color: var(--rb-surface);
@@ -12,27 +12,27 @@
 }
 
 .colophon-title {
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--rb-space-1);
   font-size: 1.375rem;
   line-height: 1.4;
   text-align: center;
 }
 
 .colophon-ornament {
-  margin-bottom: 1.125rem;
+  margin-bottom: var(--rb-space-4-5);
 }
 
 .colophon-list {
   display: grid;
   grid-template-columns: 8.5rem minmax(0, 1fr);
-  gap: 0.375rem 0.5rem;
+  gap: var(--rb-space-1-5) var(--rb-space-2);
   margin: 0;
 }
 
 .colophon-list dt {
   display: flex;
   align-items: baseline;
-  gap: 0.375rem;
+  gap: var(--rb-space-1-5);
   font-weight: 400;
   color: var(--rb-ink-muted);
 }
@@ -57,8 +57,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  gap: var(--rb-space-4);
+  padding: var(--rb-space-3) var(--rb-space-4) calc(var(--rb-space-3) + env(safe-area-inset-bottom));
   border-top: 1px solid var(--rb-rule);
   background-color: var(--rb-surface);
 }
@@ -70,7 +70,7 @@
 /* نوار چسبان نباید ته فوتر را بپوشاند */
 @media (max-width: 991.98px) {
   body:has(.buy-bar) .site-footer {
-    padding-bottom: calc(1.5rem + 4.5rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(var(--rb-space-6) + 4.5rem + env(safe-area-inset-bottom));
   }
 }
 
@@ -78,8 +78,8 @@
 .purchase-summary {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 0.25rem 1.5rem;
-  margin-bottom: 1.25rem;
+  gap: var(--rb-space-1) var(--rb-space-6);
+  margin-bottom: var(--rb-space-5);
 }
 
 .purchase-summary dt {
@@ -103,16 +103,16 @@
 
 /* برچسب اکس‌لیبریس: قاب دوخطی در مرکب مجموعه‌ی کتاب روی کاغذ رنگی همان مجموعه */
 .bookplate {
-  margin-bottom: 1rem;
-  padding: 1.25rem 1.25rem 1.375rem;
+  margin-bottom: var(--rb-space-4);
+  padding: var(--rb-space-5) var(--rb-space-5) 1.375rem;
   border: 2px solid var(--series);
-  border-radius: 2px;
+  border-radius: var(--rb-radius-print);
   background-color: color-mix(in oklab, var(--series) 8%, var(--rb-surface));
   text-align: center; /* قاب دوخطی درونی و سایه در depth.css */
 }
 
 .bookplate-title {
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--rb-space-1);
   font-size: 1.125rem;
   line-height: 1.4;
   color: var(--series);
@@ -120,7 +120,7 @@
 
 .bookplate .ornament-rule {
   margin-inline: 15%;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--rb-space-3);
 }
 
 .bookplate-book {
@@ -130,7 +130,7 @@
 }
 
 .bookplate-author {
-  margin: 0.125rem 0 0;
+  margin: var(--rb-space-0-5) 0 0;
   color: var(--rb-ink-muted);
 }
 
@@ -142,8 +142,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 1rem;
-  padding: 1rem;
+  gap: var(--rb-space-2) var(--rb-space-4);
+  padding: var(--rb-space-4);
   border: 1px solid var(--rb-rule);
   border-radius: var(--bs-border-radius);
   background-color: var(--rb-surface-sunken);

@@ -11,11 +11,11 @@
 /* سربرگ تیره: میدان شرابی عمیق، متن سفید، نوار هشت‌رنگ مجموعه‌ها لبه‌ی پایین (قرینه‌ی فوتر).
    theme.css رنگ پیوند را روی خودِ .nav-link می‌گذارد، پس متغیر navbar به پیوندها نمی‌رسد و جدا تنظیم می‌شود */
 .site-navbar {
-  --bs-navbar-color: #FFFFFF;
-  --bs-navbar-hover-color: #FFFFFF;
-  --bs-navbar-active-color: #FFFFFF;
-  --bs-navbar-brand-color: #FFFFFF;
-  --bs-navbar-brand-hover-color: #FFFFFF;
+  --bs-navbar-color: var(--rb-white);
+  --bs-navbar-hover-color: var(--rb-white);
+  --bs-navbar-active-color: var(--rb-white);
+  --bs-navbar-brand-color: var(--rb-white);
+  --bs-navbar-brand-hover-color: var(--rb-white);
   --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
   background-color: var(--rb-header-bar);
 }
@@ -30,40 +30,40 @@
 }
 
 .site-navbar .nav-link {
-  --bs-nav-link-color: #FFFFFF;
-  --bs-nav-link-hover-color: #FFFFFF;
+  --bs-nav-link-color: var(--rb-white);
+  --bs-nav-link-hover-color: var(--rb-white);
 }
 
 .site-navbar :focus-visible {
-  outline-color: #FFFFFF;
+  outline-color: var(--rb-white);
 }
 
 /* دکمه‌ی اصلی سربرگ سبز روشن‌تر از دکمه‌های صفحه است تا روی میدان شرابی دیده شود (۳٫۴۸:۱) */
 .site-navbar .btn-primary {
   --bs-btn-bg: var(--rb-header-btn);
   --bs-btn-border-color: var(--rb-header-btn);
-  --bs-btn-hover-bg: color-mix(in oklab, var(--rb-header-btn) 85%, #FFFFFF);
-  --bs-btn-hover-border-color: color-mix(in oklab, var(--rb-header-btn) 85%, #FFFFFF);
+  --bs-btn-hover-bg: color-mix(in oklab, var(--rb-header-btn) 85%, var(--rb-white));
+  --bs-btn-hover-border-color: color-mix(in oklab, var(--rb-header-btn) 85%, var(--rb-white));
   --bs-btn-active-bg: var(--rb-header-btn);
   --bs-btn-active-border-color: var(--rb-header-btn);
-  --key-edge: color-mix(in oklab, var(--rb-header-btn) 55%, #000);
+  --key-edge: color-mix(in oklab, var(--rb-header-btn) 55%, var(--rb-black));
 }
 
 .site-navbar .btn-outline-primary {
-  --bs-btn-color: #FFFFFF;
-  --bs-btn-border-color: color-mix(in srgb, #FFFFFF 70%, transparent);
+  --bs-btn-color: var(--rb-white);
+  --bs-btn-border-color: color-mix(in srgb, var(--rb-white) 70%, transparent);
   --bs-btn-hover-color: var(--rb-ink);
-  --bs-btn-hover-bg: #FFFFFF;
-  --bs-btn-hover-border-color: #FFFFFF;
+  --bs-btn-hover-bg: var(--rb-white);
+  --bs-btn-hover-border-color: var(--rb-white);
   --bs-btn-active-color: var(--rb-ink);
-  --bs-btn-active-bg: #FFFFFF;
-  --bs-btn-active-border-color: #FFFFFF;
-  --key-edge: color-mix(in srgb, #FFFFFF 45%, transparent);
+  --bs-btn-active-bg: var(--rb-white);
+  --bs-btn-active-border-color: var(--rb-white);
+  --key-edge: color-mix(in srgb, var(--rb-white) 45%, transparent);
 }
 
 .navbar-brand {
   font-size: 1.625rem;
-  color: #FFFFFF;
+  color: var(--rb-white);
 }
 
 /* نشان برند (BrandMark.jsx): برچسب شرابی عطف با دو نوار کاغذی، مثل نشان ناشر روی کتاب جیبی */
@@ -122,7 +122,7 @@
   flex: none;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  border-radius: var(--rb-radius-circle);
   object-fit: cover;
   background-color: var(--rb-accent);
   color: var(--rb-ink);
@@ -131,7 +131,7 @@
 }
 
 .site-navbar .nav-link.active {
-  color: #FFFFFF;
+  color: var(--rb-white);
   text-decoration-color: var(--rb-accent);
   text-decoration: underline;
   text-decoration-thickness: 2px;
@@ -142,21 +142,21 @@
    سمت آغاز: برند با فاصله، سپس «کتاب‌ها» و «مجموعه‌ها» هم‌خط */
 @media (min-width: 992px) {
   .site-navbar .nav-actions {
-    gap: 1rem;
+    gap: var(--rb-space-4);
   }
 
   .site-navbar .navbar-brand {
-    margin-inline-end: 1.5rem;
+    margin-inline-end: var(--rb-space-6);
   }
 
   .site-navbar .navbar-nav .nav-link {
-    padding-inline: 0.75rem;
+    padding-inline: var(--rb-space-3);
   }
 }
 
 .nav-icons {
   align-items: center;
-  gap: 0.125rem;
+  gap: var(--rb-space-0-5);
 }
 
 /* آیکن سربرگ (سبد، اعلان‌ها): ۴۴px، سفید روی میدان تیره؛ شمار روی نشان رز با حلقه‌ای به رنگ میدان */
@@ -168,17 +168,17 @@
   inline-size: 2.75rem;
   block-size: 2.75rem;
   border-radius: var(--bs-border-radius);
-  color: #fff;
+  color: var(--rb-white);
   font-size: 1.25rem;
 }
 
 .nav-icon:hover {
-  background-color: rgb(255 255 255 / 0.12);
-  color: #fff;
+  background-color: rgb(var(--rb-white-rgb) / 0.12);
+  color: var(--rb-white);
 }
 
 .site-navbar .nav-icon:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid var(--rb-white);
   outline-offset: 2px;
 }
 
@@ -187,8 +187,8 @@
   inset-block-start: 0.3rem;
   inset-inline-end: 0.15rem;
   min-inline-size: 1.125rem;
-  padding-inline: 0.25rem;
-  border-radius: 999px;
+  padding-inline: var(--rb-space-1);
+  border-radius: var(--rb-radius-pill);
   background-color: var(--rb-accent);
   color: var(--rb-ink);
   box-shadow: 0 0 0 2px var(--rb-header-bar);
@@ -212,25 +212,25 @@
 /* نشان مجموعه روی میدان تیره (سربرگ و فوتر): مرکب‌ها تیره‌اند، پس رقیق‌شده با سفید تا دیده شوند */
 .site-navbar .series-index-mark,
 .site-footer .series-index-mark {
-  background-color: color-mix(in oklab, var(--series-ink) 45%, #FFFFFF);
+  background-color: color-mix(in oklab, var(--series-ink) 45%, var(--rb-white));
 }
 
 /* منوی «مجموعه‌ها» (دسکتاپ): برگه‌ی سفید با هشت مجموعه در دو ستون، هر کدام با زبانه‌ی مرکب خودش */
 .series-menu .dropdown-menu {
   min-inline-size: 26rem;
-  padding: 0.75rem;
+  padding: var(--rb-space-3);
 }
 
 .series-menu-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.125rem 0.5rem;
+  gap: var(--rb-space-0-5) var(--rb-space-2);
 }
 
 .site-navbar .series-menu-item {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: var(--rb-space-2-5);
   min-block-size: 2.75rem;
   border-radius: var(--bs-border-radius);
 }
@@ -254,19 +254,19 @@
 
 /* مجموعه‌ها در منوی تاشونده‌ی موبایل: دو ستون، هر ردیف ۴۴px */
 .nav-series-mobile {
-  margin-block: 0.25rem 0.5rem;
+  margin-block: var(--rb-space-1) var(--rb-space-2);
 }
 
 .nav-series-title {
-  margin: 0.5rem 0 0.25rem;
-  color: rgb(255 255 255 / 0.75);
+  margin: var(--rb-space-2) 0 var(--rb-space-1);
+  color: rgb(var(--rb-white-rgb) / 0.75);
   font-size: 0.875rem;
 }
 
 .nav-series-mobile ul {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 1rem;
+  gap: 0 var(--rb-space-4);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -275,9 +275,9 @@
 .nav-series-mobile a {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--rb-space-2);
   min-block-size: 2.75rem;
-  color: #FFFFFF;
+  color: var(--rb-white);
   text-decoration: none;
 }
 

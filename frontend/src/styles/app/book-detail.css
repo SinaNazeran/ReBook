@@ -3,7 +3,7 @@
    جلد و نوار مجموعه مثل کارت؛ وضعیت و یادداشت فروشنده پیش از قاب خرید.
    ========================================================================== */
 .book-detail {
-  padding-block: 2rem 3.5rem;
+  padding-block: var(--rb-space-8) 3.5rem;
 }
 
 /* جلد با نسبت خودش؛ در موبایل حداکثر نیمی از صفحه تا قیمت و وضعیت زود دیده شوند */
@@ -72,7 +72,7 @@
 .detail-category {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--rb-space-2);
   min-height: var(--rb-touch-target);
   color: var(--rb-ink-muted);
   text-decoration: none;
@@ -85,30 +85,30 @@
 }
 
 .detail-title {
-  margin-bottom: 0.375rem;
+  margin-bottom: var(--rb-space-1-5);
   font-size: clamp(2rem, 1.3rem + 2.4vw, 3rem);
   line-height: 1.3;
 }
 
 .detail-byline {
-  margin-bottom: 1.75rem;
+  margin-bottom: var(--rb-space-7);
   font-size: 1.125rem;
   color: var(--rb-ink-muted);
 }
 
 .detail-block {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--rb-space-6);
 }
 
 .detail-label {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--rb-space-2);
   font-size: 0.875rem;
   font-weight: var(--rb-font-weight-ui);
   color: var(--rb-ink-muted);
 }
 
 .condition-measure.is-large {
-  gap: 0.625rem;
+  gap: var(--rb-space-2-5);
   color: var(--rb-ink);
   font-weight: var(--rb-font-weight-ui);
 }
@@ -119,7 +119,7 @@
 }
 
 .detail-muted {
-  margin: 0.25rem 0 0;
+  margin: var(--rb-space-1) 0 0;
   color: var(--rb-ink-muted);
 }
 
@@ -149,8 +149,8 @@
 
 /* قاب خرید: تنها کارت صفحه، چون تصمیم همین‌جا گرفته می‌شود */
 .buy-panel {
-  margin-block: 2rem;
-  padding: 1.25rem;
+  margin-block: var(--rb-space-8);
+  padding: var(--rb-space-5);
   border: 1px solid var(--rb-rule);
   border-radius: var(--bs-border-radius);
   background-color: var(--rb-surface);
@@ -161,7 +161,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.25rem 1.5rem;
+  gap: var(--rb-space-1) var(--rb-space-6);
 }
 
 .buy-price {
@@ -178,7 +178,7 @@
 
 .buy-panel .price-tag {
   padding-block: 0;
-  padding-inline-end: 0.75rem;
+  padding-inline-end: var(--rb-space-3);
   line-height: 1.5;
 }
 
@@ -188,8 +188,8 @@
 }
 
 .buy-status {
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: var(--rb-space-4);
+  padding-top: var(--rb-space-4);
   border-top: 1px solid var(--rb-rule);
 }
 
@@ -201,8 +201,8 @@
 .buy-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: var(--rb-space-2);
+  margin-top: var(--rb-space-4);
 }
 
 .buy-actions:empty {
@@ -210,7 +210,7 @@
 }
 
 .buy-review {
-  margin: 1rem 0 0;
+  margin: var(--rb-space-4) 0 0;
   font-size: 0.875rem;
   color: var(--rb-ink-muted);
 }

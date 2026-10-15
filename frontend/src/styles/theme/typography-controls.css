@@ -1,3 +1,8 @@
+/* حلقه در محل مصرف تعریف می‌شود تا رنگ فوکوس محلی حفظ شود. */
+:where(.btn, .form-control, .form-select, .form-check-input, .input-group) {
+    --rb-shadow-focus: 0 0 0 var(--rb-focus-ring-width) var(--bs-focus-ring-color);
+}
+
 /* ==========================================================================
    تایپوگرافی
    ========================================================================== */
@@ -39,7 +44,7 @@ input[autocomplete="username"] {
    ========================================================================== */
 .btn {
     --bs-btn-font-weight: var(--rb-font-weight-ui);
-    --bs-btn-focus-box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
+    --bs-btn-focus-box-shadow: var(--rb-shadow-focus);
 }
 
 /* فشردن دکمه کمی کوچکش می‌کند تا کاربر حس کند صدایش شنیده شد؛ بیرون از این شرط بوت‌استرپ خودش transition را برمی‌دارد */
@@ -57,7 +62,7 @@ input[autocomplete="username"] {
 /* اندازه‌ی پیش‌فرض به ۴۴px می‌رسد؛ btn-sm و btn-lg اندازه‌ی خودشان را نگه می‌دارند */
 .btn:not(.btn-sm):not(.btn-lg) {
     --bs-btn-padding-y: 0.5625rem;
-    --bs-btn-padding-x: 1.125rem;
+    --bs-btn-padding-x: var(--rb-space-4-5);
 }
 
 .btn-primary {
@@ -170,14 +175,14 @@ input[autocomplete="username"] {
 .form-control:focus,
 .form-select:focus {
     border-color: var(--rb-primary);
-    box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
+    box-shadow: var(--rb-shadow-focus);
 }
 
 /* textarea متن چندخطی فارسی است (توضیحات کتاب، تیکت)، نه کنترل تک‌خطی با ارتفاع ۱٫۵ */
 /* گروه ورودی (جستجو با آیکون) به‌عنوان یک فیلد فوکوس می‌گیرد، نه فقط بخش input */
 .input-group:focus-within {
     border-radius: var(--bs-border-radius);
-    box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
+    box-shadow: var(--rb-shadow-focus);
 }
 
 .input-group:focus-within > .form-control,
@@ -197,6 +202,6 @@ textarea.form-control {
 
 .form-check-input:focus {
     border-color: var(--rb-primary);
-    box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
+    box-shadow: var(--rb-shadow-focus);
 }
 

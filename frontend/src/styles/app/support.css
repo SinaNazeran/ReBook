@@ -2,12 +2,12 @@
    ۱۱. پشتیبانی (Support)
    ========================================================================== */
 .support-heading {
-  margin-bottom: 1rem;
+  margin-bottom: var(--rb-space-4);
   font-size: 1.125rem;
 }
 
 .support-form {
-  padding: 1.25rem;
+  padding: var(--rb-space-5);
   border: 1px solid var(--rb-rule);
   border-radius: var(--bs-border-radius);
   background-color: var(--rb-surface);
@@ -25,9 +25,9 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem 1rem;
+  gap: var(--rb-space-2) var(--rb-space-4);
   width: 100%;
-  margin-inline-end: 1rem;
+  margin-inline-end: var(--rb-space-4);
 }
 
 .ticket-subject {
@@ -49,7 +49,7 @@
 }
 
 .ticket-reply {
-  padding: 0.875rem 1rem;
+  padding: var(--rb-space-3-5) var(--rb-space-4);
   border-radius: var(--bs-border-radius);
   background-color: var(--rb-surface-sunken);
 }
@@ -59,7 +59,7 @@
 }
 
 .ticket-reply-label {
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--rb-space-1);
   font-size: 0.875rem;
   font-weight: var(--rb-font-weight-ui);
 }

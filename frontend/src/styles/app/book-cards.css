@@ -47,8 +47,8 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 1.25rem;
+  gap: var(--rb-space-2);
+  padding: var(--rb-space-5);
   background-color: var(--cover-ink);
   color: var(--rb-on-ink);
   box-shadow:
@@ -75,7 +75,7 @@
 /* بالای جلد: نام مجموعه روی خط مویی، مثل سرعنوان مجموعه روی جلد کتاب جیبی */
 .plain-cover-series {
   margin-bottom: auto;
-  padding-bottom: 0.5rem;
+  padding-bottom: var(--rb-space-2);
   border-bottom: 1px solid color-mix(in srgb, var(--rb-on-ink) 45%, transparent);
   font-size: clamp(0.6875rem, 4.5cqi, 0.875rem);
   font-weight: var(--rb-font-weight-ui);
@@ -90,8 +90,8 @@
   display: flex;
   align-items: center;
   gap: 0.4em;
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
+  margin-top: var(--rb-space-2);
+  padding-top: var(--rb-space-2);
   border-top: 1px solid color-mix(in srgb, var(--rb-on-ink) 45%, transparent);
   color: var(--rb-on-ink); /* سفید کامل: مرکب‌های مجموعه با سفید ۴٫۶ تا ۴٫۸:۱ دارند، سفید ۸۵٪ به ۴٫۱ می‌رسید */
   font-size: clamp(0.6875rem, 4cqi, 0.8125rem);
@@ -107,7 +107,7 @@
 }
 
 .book-card-band:has(.book-card-series) {
-  padding: 0.3125rem 0.875rem 0.375rem;
+  padding: 0.3125rem var(--rb-space-3-5) var(--rb-space-1-5);
 }
 
 .book-card-series {
@@ -141,12 +141,12 @@
 .book-card-body {
   display: flex;
   flex-direction: column;
-  padding: 0.75rem 0.875rem 0.875rem;
+  padding: var(--rb-space-3) var(--rb-space-3-5) var(--rb-space-3-5);
 }
 
 /* ردیف واقعیت‌ها با margin-top:auto ته کارت هم‌قد می‌نشیند، پس عنوان جای خالی رزرو نمی‌کند */
 .book-card-title {
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--rb-space-1);
   font-size: inherit;
   font-weight: 700;
   line-height: 1.6;
@@ -164,7 +164,7 @@
 .book-card-meta {
   display: flex;
   flex-direction: column;
-  margin: 0 0 0.75rem;
+  margin: 0 0 var(--rb-space-3);
   color: var(--rb-ink-muted);
   line-height: 1.6;
 }
@@ -179,29 +179,29 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.375rem 0.75rem;
+  gap: var(--rb-space-1-5) var(--rb-space-3);
   margin-top: auto;
-  padding-top: 0.625rem;
+  padding-top: var(--rb-space-2-5);
   border-top: 1px solid color-mix(in oklab, var(--card-ink) 18%, var(--rb-surface));
 }
 
 .condition-measure {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: var(--rb-space-1-5);
   color: var(--rb-ink-muted);
   white-space: nowrap;
 }
 
 .condition-steps {
   display: inline-flex;
-  gap: 2px;
+  gap: var(--rb-space-px-2);
 }
 
 .condition-steps > span {
   width: 0.375rem;
   height: 0.75rem;
-  border-radius: 1px;
+  border-radius: var(--rb-radius-hairline);
   background-color: var(--rb-rule);
 }
 
@@ -258,7 +258,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--rb-radius-circle);
   background-color: color-mix(in srgb, var(--rb-surface) 92%, transparent);
   box-shadow: var(--rb-shadow-raised);
 }
