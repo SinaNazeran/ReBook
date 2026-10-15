@@ -131,10 +131,12 @@ function Profile() {
                   accept={ACCEPTED_IMAGES}
                   onChange={handleAvatarChange}
                   className="visually-hidden"
+                  aria-invalid={!!error('avatar') || undefined}
+                  aria-describedby={error('avatar') ? 'avatar-error' : undefined}
                 />
               </div>
               {error('avatar') && (
-                <p className="sell-error text-center" role="alert">
+                <p id="avatar-error" className="sell-error text-center" role="alert">
                   {error('avatar')}
                 </p>
               )}

@@ -46,7 +46,7 @@ export function BookCoverFields({
                         مجموعه نمایش داده می‌شود.
                       </span>
                     </label>}
-                  <input id="cover_image" type="file" accept={ACCEPTED_IMAGES} onChange={handleImageChange} className="visually-hidden" aria-labelledby="cover-label" aria-describedby={error('cover_image') ? 'cover-error' : undefined} />
+                  <input id="cover_image" type="file" accept={ACCEPTED_IMAGES} onChange={handleImageChange} className="visually-hidden" aria-labelledby="cover-label" aria-invalid={!!error('cover_image') || undefined} aria-describedby={error('cover_image') ? 'cover-error' : undefined} />
                   {error('cover_image') && <p id="cover-error" className="sell-error" role="alert">
                       {error('cover_image')}
                     </p>}

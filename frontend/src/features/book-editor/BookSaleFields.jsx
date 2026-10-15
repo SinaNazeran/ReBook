@@ -12,7 +12,7 @@ export function BookSaleFields({
                 <legend>وضعیت این نسخه</legend>
                 <div className="condition-options">
                   {Object.entries(CONDITION_LABELS).map(([value, label]) => <label key={value} className="condition-option" htmlFor={`condition-${value}`}>
-                      <input id={`condition-${value}`} type="radio" name="condition" value={value} checked={formData.condition === value} onChange={handleChange} className="form-check-input" />
+                      <input id={`condition-${value}`} type="radio" name="condition" value={value} checked={formData.condition === value} onChange={handleChange} className="form-check-input" aria-invalid={!!error('condition') || undefined} />
                       <span className="condition-option-body">
                         <ConditionMeasure condition={value} label={label} />
                         <span className="condition-option-note">{CONDITION_NOTES[value]}</span>
