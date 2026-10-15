@@ -34,7 +34,7 @@ function CreateBook() {
     handleImageChange,
     loading
   } = useBookEditor();
-  if (listing.state === 'loading') return <Loading fullPage />;
+  if (listing.state === 'loading') return <Loading fullPage heading={editing ? "ویرایش آگهی" : "فروش کتاب"} />;
   if (listing.state === 'not_found') {
     return <NotFound title="این آگهی پیدا نشد" message="شاید حذف شده یا آگهی تو نیست. آگهی‌هایت را در «کتاب‌های من» ببین." />;
   }

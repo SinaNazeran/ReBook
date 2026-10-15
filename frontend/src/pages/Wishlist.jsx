@@ -41,7 +41,7 @@ function Wishlist() {
     }, bookId);
   };
 
-  if (loading) return <Loading fullPage />;
+  if (loading) return <Loading fullPage heading="علاقه‌مندی‌ها" />;
 
   return (
     <div className="series-paper">

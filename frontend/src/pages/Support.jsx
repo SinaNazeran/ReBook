@@ -68,7 +68,7 @@ function Support() {
     });
   };
 
-  if (loading) return <Loading fullPage />;
+  if (loading) return <Loading fullPage heading="پشتیبانی" />;
 
   return (
     <div className="series-paper">
@@ -152,7 +152,7 @@ function Support() {
                     const status = TICKET_STATUS[ticket.status] ?? { tone: 'closed', label: ticket.status };
                     return (
                       <Accordion.Item key={ticket.id} eventKey={String(ticket.id)}>
-                        <Accordion.Header>
+                        <Accordion.Header as="h3">
                           <span className="ticket-head">
                             <span className="ticket-subject">
                               <bdi>{ticket.subject}</bdi>

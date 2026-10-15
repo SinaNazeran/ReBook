@@ -112,7 +112,7 @@ function Cart() {
       }
     });
   };
-  if (authError) return null;
+  if (authError) return <h1 className="visually-hidden">سبد خرید؛ وضعیت ورود بررسی نشد</h1>;
   if (receipt) {
     return <div className="series-paper">
         <Container className="ledger-page">
@@ -134,7 +134,7 @@ function Cart() {
         </Container>
       </div>;
   }
-  if (status === 'loading') return <Loading fullPage />;
+  if (status === 'loading') return <Loading fullPage heading="سبد خرید" />;
   let body;
   if (status === 'error') {
     body = <div className="list-state" role="alert">

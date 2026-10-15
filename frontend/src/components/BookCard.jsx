@@ -25,7 +25,7 @@ function formatPrice(price) {
  * @param {(bookId: number|string) => void} [onToggleWishlist] - در صورت پاس‌دادن،
  *   دکمه‌ی قلب روی کارت نمایش داده می‌شود.
  */
-function BookCard({ book, isWishlisted = false, onToggleWishlist, wishlistBusy = false }) {
+function BookCard({ book, isWishlisted = false, onToggleWishlist, wishlistBusy = false, headingAs = 'h3' }) {
   const coverRef = useRef(null);
   const navigate = useNavigate();
   const href = `/books/${book.id}`;
@@ -85,7 +85,7 @@ function BookCard({ book, isWishlisted = false, onToggleWishlist, wishlistBusy =
       </div>
 
       <Card.Body className="book-card-body">
-        <Card.Title as="h3" className="book-card-title">
+        <Card.Title as={headingAs} className="book-card-title">
           <Link
             to={href}
             className="stretched-link"

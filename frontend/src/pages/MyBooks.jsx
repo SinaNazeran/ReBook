@@ -43,7 +43,7 @@ function MyBooks() {
     }
   };
 
-  if (loading) return <Loading fullPage />;
+  if (loading) return <Loading fullPage heading="کتاب‌های من" />;
 
   return (
     <div className="series-paper">

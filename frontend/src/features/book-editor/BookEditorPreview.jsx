@@ -6,7 +6,7 @@ export function BookEditorPreview({
               <p className="sell-preview-caption">در فهرست این‌طور دیده می‌شود</p>
               {/* inert: پیش‌نمایش فقط دیدنی است، لینک و فوکوس ندارد */}
               <div inert>
-                <BookCard book={previewBook} />
+                <BookCard book={previewBook} headingAs="h2" />
               </div>
             </aside>;
 }

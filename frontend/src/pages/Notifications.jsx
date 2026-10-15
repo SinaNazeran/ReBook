@@ -79,7 +79,7 @@ function Notifications() {
     });
   };
 
-  if (loading) return <Loading fullPage />;
+  if (loading) return <Loading fullPage heading="اعلان‌ها" />;
 
 
   return (

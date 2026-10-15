@@ -7,10 +7,11 @@ function ProtectedRoute({ children }) {
   const location = useLocation();
 
   if (loading) {
-    return <Loading fullPage />;
+    return <Loading fullPage heading="بررسی وضعیت ورود" />;
   }
 
-  if (authError) return null; // پیام و تلاش دوباره در SessionStatus، داخل پوستهٔ صفحه است.
+  // پیام و تلاش دوباره در SessionStatus، داخل پوستهٔ صفحه است.
+  if (authError) return <h1 className="visually-hidden">وضعیت ورود بررسی نشد</h1>;
 
   if (!isAuthenticated) {
     // مسیر فعلی را همراه ریدایرکت ذخیره می‌کنیم تا Login.jsx بتواند

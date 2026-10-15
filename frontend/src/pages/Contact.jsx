@@ -84,7 +84,7 @@ function Contact() {
     });
   };
 
-  if (loading) return <Loading fullPage />;
+  if (loading) return <Loading fullPage heading="تماس با ما" />;
   // کاربر واردشده تیکت می‌فرستد تا پاسخ را همان‌جا ببیند؛ دو فرم برای یک کار نداریم
   if (isAuthenticated) return <Navigate to="/support" replace />;
 
