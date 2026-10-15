@@ -11,6 +11,7 @@ from books.models import Book
 from books.views import visible_books
 from notifications.models import Notification
 from orders import cart
+from orders.idempotency import idempotent
 from orders.models import Order, Transaction
 from orders.request_serializers import CheckoutRequestSerializer
 
@@ -36,6 +37,7 @@ class CheckoutView(APIView):
             return "یکی از کتاب‌های سبدت دیگر در دسترس نیست؛ دوباره نگاهش کن."
         return "سبدت عوض شده است؛ دوباره نگاهش کن."
 
+    @idempotent
     def post(self, request):
         user = request.user
         serializer = CheckoutRequestSerializer(data=request.data)

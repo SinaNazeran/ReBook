@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 from books.models import Book
 
@@ -127,3 +130,20 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.book.title}"
+
+
+def idempotency_expiry():
+    return timezone.now() + timedelta(hours=24)
+
+
+class IdempotencyRecord(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    operation = models.CharField(max_length=180)
+    key = models.CharField(max_length=128)
+    fingerprint = models.CharField(max_length=64)
+    response_status = models.PositiveSmallIntegerField()
+    response_body = models.JSONField()
+    expires_at = models.DateTimeField(default=idempotency_expiry, db_index=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["user", "operation", "key"], name="unique_mutation_intent")]

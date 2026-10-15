@@ -31,8 +31,8 @@ def get_ids(request):
     # کتاب حذف‌شده از سبد مهمان بیرون می‌رود (برای کاربر، CASCADE همین کار را می‌کند)
     existing = set(Book.objects.filter(pk__in=ids).values_list("pk", flat=True))
     kept = [book_id for book_id in ids if book_id in existing]
-    if kept != ids:
-        _save_session(request, kept)
+    # A GET must not save an old session snapshot over a concurrent mutation.
+    # Deleted IDs are pruned on the next serialized write instead.
     return kept[::-1]
 
 
@@ -40,7 +40,7 @@ def add(request, book):
     if request.user.is_authenticated:
         CartItem.objects.get_or_create(user=request.user, book=book)
         return
-    ids = request.session.get(SESSION_KEY, [])
+    ids = get_ids(request)[::-1]
     if book.pk not in ids:
         _save_session(request, [*ids, book.pk])
 
@@ -49,7 +49,7 @@ def remove(request, book_ids):
     if request.user.is_authenticated:
         CartItem.objects.filter(user=request.user, book_id__in=book_ids).delete()
         return
-    ids = request.session.get(SESSION_KEY, [])
+    ids = get_ids(request)[::-1]
     kept = [book_id for book_id in ids if book_id not in book_ids]
     if kept != ids:
         _save_session(request, kept)

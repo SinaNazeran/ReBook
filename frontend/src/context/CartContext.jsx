@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useCallback, useMemo } from "react";
+import { createContext, useState, useEffect, useLayoutEffect, useCallback, useMemo, useRef } from "react";
 import { cartAPI } from "../services/api";
 import { useAuth } from "./useAuth.js";
 
@@ -11,47 +11,83 @@ export function CartProvider({ children }) {
   const [cart, setCart] = useState(EMPTY_CART);
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [reloadKey, setReloadKey] = useState(0);
+  const queueRef = useRef(null);
   const userId = user?.id;
   // کاربر عوض شد (خروج، پایان session، ورود دیگری): سبد قبلی همین حالا پاک می‌شود، نه وقتی سبد تازه رسید
-  const [cartOwner, setCartOwner] = useState(userId);
-  if (cartOwner !== userId) {
-    setCartOwner(userId);
+  const [owner, setOwner] = useState({ userId, authLoading });
+  if (owner.userId !== userId || owner.authLoading !== authLoading) {
+    setOwner({ userId, authLoading });
     setCart(EMPTY_CART);
     setStatus("loading");
   }
 
+  useLayoutEffect(() => {
+    const queue = { owner, active: !owner.authLoading, tail: Promise.resolve(), pending: 0, version: 0, refreshRequested: false };
+    queueRef.current = queue;
+    return () => { queue.active = false; };
+  }, [owner]);
+
   // پس از روشن شدن وضعیت ورود، و هر بار که کاربر عوض شد: ورود (سرور سبد مهمان را ادغام کرده)، خروج، پایان session
   useEffect(() => {
-    if (authLoading) return undefined;
+    const queue = queueRef.current;
+    if (!queue.active || queue.pending) return undefined;
+    queue.refreshRequested = false;
+    const version = ++queue.version;
     let ignore = false;
     cartAPI
       .getCart()
       .then((response) => {
-        if (!ignore) {
+        if (!ignore && queue.active && version === queue.version && !queue.pending) {
           setCart(response.data);
           setStatus("ready");
         }
       })
       .catch(() => {
-        if (!ignore) setStatus("error");
+        if (!ignore && queue.active && version === queue.version && !queue.pending) setStatus("error");
       });
     return () => {
       ignore = true;
     };
-  }, [authLoading, userId, reloadKey]);
+  }, [owner, reloadKey]);
 
-  const refresh = useCallback(() => setReloadKey((key) => key + 1), []);
+  const refresh = useCallback(() => {
+    const queue = queueRef.current;
+    if (!queue.active || queue.owner !== owner) return;
+    queue.refreshRequested = true;
+    if (!queue.pending) setReloadKey(key => key + 1);
+  }, [owner]);
 
-  // سرور سبد تازه را برمی‌گرداند؛ درباره‌ی خریدنی بودن حدسی زده نمی‌شود
-  const add = useCallback(async (bookId) => {
-    const response = await cartAPI.addToCart(bookId);
-    setCart(response.data);
-  }, []);
+  // تغییرهای همین کاربر به ترتیب اجرا می‌شوند؛ پاسخ سرور وضعیت قطعی سبد است.
+  const mutate = useCallback((send, bookId) => {
+    const queue = queueRef.current;
+    if (!queue.active || queue.owner !== owner) return Promise.resolve();
+    ++queue.pending;
+    ++queue.version;
+    const request = queue.tail.then(async () => {
+      if (!queue.active) return;
+      try {
+        const response = await send(bookId);
+        if (queue.active) {
+          setCart(response.data);
+          setStatus("ready");
+        }
+      } catch (error) {
+        if (queue.active) queue.refreshRequested = true;
+        throw error;
+      } finally {
+        --queue.pending;
+        ++queue.version;
+        if (queue.active && !queue.pending && queue.refreshRequested) {
+          setReloadKey(key => key + 1);
+        }
+      }
+    });
+    queue.tail = request.catch(() => {});
+    return request;
+  }, [owner]);
 
-  const remove = useCallback(async (bookId) => {
-    const response = await cartAPI.removeFromCart(bookId);
-    setCart(response.data);
-  }, []);
+  const add = useCallback(bookId => mutate(cartAPI.addToCart, bookId), [mutate]);
+  const remove = useCallback(bookId => mutate(cartAPI.removeFromCart, bookId), [mutate]);
 
   const value = useMemo(
     () => ({

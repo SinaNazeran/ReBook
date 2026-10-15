@@ -1,4 +1,5 @@
 import axios from "axios";
+import { durableMutation } from "./mutations";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
@@ -157,8 +158,9 @@ export const bookAPI = {
 export const orderAPI = {
   getMyOrders: (params) => api.get("/orders/my-orders/", { params }), // تب «خریدهای من»
   getMySales: (params) => api.get("/orders/my-sales/", { params }), // تب «فروش‌های من»
-  payOrder: (orderId) => api.post(`/orders/${orderId}/pay/`),
-  cancelOrder: (orderId) => api.post(`/orders/${orderId}/cancel/`), // خریدار یا فروشنده، فقط سفارش در انتظار پرداخت
+  createOrder: (data) => mutationPost("/orders/create/", data),
+  payOrder: (orderId) => mutationPost(`/orders/${orderId}/pay/`),
+  cancelOrder: (orderId) => mutationPost(`/orders/${orderId}/cancel/`), // خریدار یا فروشنده، فقط سفارش در انتظار پرداخت
 };
 
 // ============================================
@@ -170,8 +172,14 @@ export const cartAPI = {
   addToCart: (bookId) => api.post("/orders/cart/", { book: bookId }),
   removeFromCart: (bookId) => api.delete(`/orders/cart/${bookId}/`),
   // books = [{ id, price }] همان چیزی است که خریدار دید؛ اگر سرور چیز دیگری ببیند 400 می‌دهد
-  checkout: (data) => api.post("/orders/checkout/", data), // → { reference_code, orders }
+  checkout: (data) => mutationPost("/orders/checkout/", data), // → { reference_code, orders }
 };
+
+function mutationPost(path, data) {
+  return durableMutation(path, data, key => api.post(path, data, {
+    headers: { "Idempotency-Key": key },
+  }));
+}
 
 // ============================================
 // توابع مربوط به اعلان‌ها

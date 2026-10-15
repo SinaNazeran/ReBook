@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
+from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 
 from config.security import security_settings
@@ -35,6 +36,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG") == "1"
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 globals().update(security_settings(os.environ, DEBUG))
+CORS_ALLOW_HEADERS = [*default_headers, "idempotency-key"]
 
 
 # Application definition
@@ -62,8 +64,9 @@ MIDDLEWARE = [
     'config.https_middleware.TrustedProxyHTTPSMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.csp.ContentSecurityPolicyMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'config.mutation_middleware.MutationTransactionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'config.rate_middleware.AdminLoginRateLimitMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -99,6 +102,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {'transaction_mode': 'IMMEDIATE', 'timeout': 5},
     }
 }
 

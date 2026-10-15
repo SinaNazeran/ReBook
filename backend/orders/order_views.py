@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 
 from books.models import Book
 from notifications.models import Notification
+from orders.idempotency import idempotent
 from orders.models import Order, Transaction
 from orders.serializers import OrderSerializer
 
@@ -25,6 +26,10 @@ class OrderCreateView(generics.CreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     throttle_scope = "payment"
+
+    @idempotent
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         # اگر دو خریدار هم‌زمان سفارش دهند، هر دو از validate_book رد می‌شوند
@@ -95,6 +100,7 @@ class FakePaymentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     throttle_scope = "payment"
 
+    @idempotent
     def post(self, request, order_id):
         try:
             order = Order.objects.get(pk=order_id, buyer=request.user)
@@ -128,9 +134,11 @@ class FakePaymentView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            Transaction.objects.filter(order=order).update(
+            if Transaction.objects.filter(order=order, status="pending", amount=order.total_price).update(
                 status="success", reference_code=reference_code
-            )
+            ) != 1:
+                db_transaction.set_rollback(True)
+                return Response({"detail": "تراکنش معتبر این سفارش پیدا نشد."}, status=400)
 
         # اعلان به خریدار
         Notification.objects.create(
@@ -161,6 +169,7 @@ class OrderCancelView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     throttle_scope = "payment"
 
+    @idempotent
     def post(self, request, order_id):
         user = request.user
         try:

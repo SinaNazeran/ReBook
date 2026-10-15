@@ -4,71 +4,119 @@ import {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import { authAPI } from "../services/api";
+import { setMutationActor } from "../services/mutations";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const authGeneration = useRef(0);
+  const ensureGeneration = useCallback((generation) => {
+    if (generation !== authGeneration.current) {
+      const error = new Error('حساب کاربری تغییر کرده است؛ دوباره تلاش کن.');
+      error.code = 'ERR_CANCELED';
+      throw error;
+    }
+  }, []);
+  const beginAuth = useCallback(() => {
+    setMutationActor(undefined);
+    return ++authGeneration.current;
+  }, []);
+  const applyUser = useCallback((nextUser, generation) => {
+    ensureGeneration(generation);
+    setMutationActor(nextUser?.id ?? null);
+    setUser(nextUser);
+  }, [ensureGeneration]);
 
   useEffect(() => {
-    let ignore = false;
+    const generation = beginAuth();
 
     authAPI
       .getCsrfToken()
-      .then(() => authAPI.getProfile())
+      .then(() => {
+        ensureGeneration(generation);
+        return authAPI.getProfile();
+      })
       .then((response) => {
-        if (!ignore) {
-          setUser(response.data);
+        if (generation === authGeneration.current) {
+          applyUser(response.data, generation);
         }
       })
       .catch(() => {
-        if (!ignore) {
-          setUser(null);
+        if (generation === authGeneration.current) {
+          applyUser(null, generation);
         }
       })
       .finally(() => {
-        if (!ignore) {
+        if (generation === authGeneration.current) {
           setLoading(false);
         }
       });
 
     return () => {
-      ignore = true;
+      beginAuth();
     };
-  }, []);
+  }, [applyUser, beginAuth, ensureGeneration]);
 
   useEffect(() => {
-    const handleUnauthorized = () => setUser(null);
+    const handleUnauthorized = () => {
+      const generation = beginAuth();
+      applyUser(null, generation);
+      setLoading(false);
+    };
     window.addEventListener("auth:unauthorized", handleUnauthorized);
     return () =>
       window.removeEventListener("auth:unauthorized", handleUnauthorized);
-  }, []);
+  }, [applyUser, beginAuth]);
+
+  const transition = useCallback(async (send, selectUser) => {
+    // تا روشن شدن حساب تازه، هیچ درخواست تغییردهنده‌ای نباید با session جدید ارسال شود.
+    const generation = beginAuth();
+    try {
+      const response = await send();
+      applyUser(selectUser(response), generation);
+      return response;
+    } catch (error) {
+      if (generation !== authGeneration.current && error.response) throw error;
+      ensureGeneration(generation);
+      // پاسخ گم‌شده ممکن است session را عوض کرده باشد؛ حساب قبلی را حدس نمی‌زنیم.
+      const profile = await authAPI.getProfile().catch(() => null);
+      if (generation !== authGeneration.current && error.response) throw error;
+      applyUser(profile?.data ?? null, generation);
+      throw error;
+    } finally {
+      if (generation === authGeneration.current) setLoading(false);
+    }
+  }, [applyUser, beginAuth, ensureGeneration]);
 
   const loginUser = useCallback(async (credentials) => {
-    const response = await authAPI.login(credentials);
-    setUser(response.data.user);
-    return response;
-  }, []);
+    return transition(() => authAPI.login(credentials), response => response.data.user);
+  }, [transition]);
 
   const logoutUser = useCallback(async () => {
-    await authAPI.logout();
-    setUser(null);
-  }, []);
+    return transition(() => authAPI.logout(), () => null);
+  }, [transition]);
 
   const registerUser = useCallback(async (data) => {
-    const response = await authAPI.register(data);
-    setUser(response.data.user);
-    return response;
-  }, []);
+    return transition(() => authAPI.register(data), response => response.data.user);
+  }, [transition]);
 
   const updateUser = useCallback(async (data) => {
-    const response = await authAPI.updateProfile(data);
-    setUser(response.data);
-    return response;
-  }, []);
+    const generation = authGeneration.current;
+    try {
+      const response = await authAPI.updateProfile(data);
+      applyUser(response.data, generation);
+      return response;
+    } catch (error) {
+      if (generation !== authGeneration.current && error.response) throw error;
+      ensureGeneration(generation);
+      throw error;
+    }
+  }, [applyUser, ensureGeneration]);
 
   const value = useMemo(
     () => ({
