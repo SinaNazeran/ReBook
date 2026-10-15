@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'books',
     'orders',
     'notifications',
+    'uploads',
 ]
 
 MIDDLEWARE = [

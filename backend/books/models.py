@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from config.images import shrink_new_upload
+from uploads.lifecycle import file_save, remember_file
 
 
 class Category(models.Model):
@@ -140,8 +141,21 @@ class Book(models.Model):
 
     def save(self, *args, **kwargs):
         # بزرگ‌ترین جلدی که لازم است: ستون جلد در صفحه‌ی کتاب روی نمایشگر 2x
-        shrink_new_upload(self.cover_image, (1000, 1500))
-        super().save(*args, **kwargs)
+        with file_save(self, "cover", "cover_image", using=kwargs.get("using"), update_fields=kwargs.get("update_fields")):
+            shrink_new_upload(self.cover_image, (1000, 1500))
+            super().save(*args, **kwargs)
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        remember_file(instance, "cover_image")
+        return instance
+
+    def refresh_from_db(self, using=None, fields=None, from_queryset=None):
+        fields = tuple(fields) if fields is not None else None
+        super().refresh_from_db(using=using, fields=fields, from_queryset=from_queryset)
+        if fields is None or "cover_image" in fields:
+            remember_file(self, "cover_image")
 
 
 class Wishlist(models.Model):
