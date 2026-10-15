@@ -1,5 +1,4 @@
-import { gsap } from "gsap";
-const clamp01 = gsap.utils.clamp(0, 1);
+const clamp01 = value => Math.min(1, Math.max(0, value));
 export const DEPTH_PERSPECTIVE = 900;
 const DEPTH_NEAR = -150;
 const DEPTH_FAR = -2600;

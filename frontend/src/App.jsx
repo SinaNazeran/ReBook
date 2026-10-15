@@ -14,15 +14,14 @@ import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound";
 import { watchPushBack } from "./utils/pushBack.js";
+import { loadBookDetail, prefetchBookDetail } from "./utils/bookDetailLoading.js";
 
 // صفحات به‌صورت Lazy — فقط زمانی لود می‌شوند که کاربر واقعاً به آن‌ها نیاز داشته باشد
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const BookList = lazy(() => import("./pages/BookList"));
-// صفحه‌ی کتاب پربازدیدترین مقصد است (کارت‌های خانه، فهرست، علاقه‌مندی‌ها): کدش در زمان بیکاری از پیش گرفته می‌شود.
-// بی این، اولین کلیک منتظر دانلود این تکه می‌ماند و React Router صفحه‌ی قبل را بی هیچ نشانه‌ای نگه می‌داشت
-const loadBookDetail = () => import("./pages/BookDetail");
+// پیش‌دریافت تنها هنگام اشاره، فوکوس یا لمس لینک کتاب انجام می‌شود.
 const BookDetail = lazy(loadBookDetail);
 const CreateBook = lazy(() => import("./pages/CreateBook"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -38,19 +37,11 @@ const Contact = lazy(() => import("./pages/Contact"));
 function App() {
   useEffect(() => watchPushBack(), []);
 
-  useEffect(() => {
-    if (!window.requestIdleCallback) {
-      const timer = setTimeout(loadBookDetail, 2000);
-      return () => clearTimeout(timer);
-    }
-    const idle = window.requestIdleCallback(loadBookDetail, { timeout: 3000 });
-    return () => window.cancelIdleCallback(idle);
-  }, []);
-
   return (
     <AuthProvider>
       <CartProvider>
-      <div className="d-flex flex-column min-vh-100">
+      <div className="d-flex flex-column min-vh-100"
+        onPointerOver={prefetchBookDetail} onFocus={prefetchBookDetail} onPointerDown={prefetchBookDetail}>
         <ScrollToTop />
         <a href="#main" className="skip-link visually-hidden-focusable">
           رفتن به محتوای اصلی

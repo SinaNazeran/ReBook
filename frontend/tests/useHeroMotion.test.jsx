@@ -1,9 +1,15 @@
 import { act, cleanup, renderHook } from '@testing-library/react';
+import { useLayoutEffect } from 'react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { gsap } from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useHeroMotion } from '../src/components/home-hero/useHeroMotion.js';
+import { startHeroText, startHeroDepth } from '../src/components/home-hero/heroMotion.js';
+
+function useHeroMotion(ref, ready) {
+  useLayoutEffect(() => startHeroText(ref), [ref]);
+  useLayoutEffect(() => ready ? startHeroDepth(ref) : undefined, [ref, ready]);
+}
 
 const media = vi.hoisted(() => ({ contexts: [], ticking: new Set() }));
 vi.mock('gsap', () => {
@@ -90,9 +96,14 @@ it('cleans up pointer tweens, listeners, ticker callbacks, and safety timers', a
   const removeWindowListener = vi.spyOn(window, 'removeEventListener');
   const removeHeroListener = vi.spyOn(hero, 'removeEventListener');
   const { unmount } = renderHook(() => useHeroMotion({ current: hero }, true));
+  expect(gsap.set).not.toHaveBeenCalled();
   await finishFonts();
   hero.dispatchEvent(new MouseEvent('pointermove', { clientX: 10, clientY: 20 }));
   const look = gsap.to.mock.calls.at(-1)[0];
+  const world = hero.querySelector('.depth-world');
+  const copy = hero.querySelector('.depth-copy');
+  media.ticking.forEach(render => render(1, 16));
+  expect(world.style.transform).not.toBe('');
   expect(media.ticking.size).toBe(1);
   unmount();
   expect(gsap.killTweensOf).toHaveBeenCalledWith(look);
@@ -100,4 +111,6 @@ it('cleans up pointer tweens, listeners, ticker callbacks, and safety timers', a
   expect(removeHeroListener).toHaveBeenCalledWith('pointermove', expect.any(Function));
   expect(media.ticking.size).toBe(0);
   expect(vi.getTimerCount()).toBe(0);
+  expect(world.getAttribute('style')).toBeNull();
+  expect(copy.getAttribute('style')).toBeNull();
 });
