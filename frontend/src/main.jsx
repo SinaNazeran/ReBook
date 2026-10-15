@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
 
 // 1. فریم‌ورک پایه استایل
 import "bootstrap/dist/css/bootstrap.rtl.min.css";
@@ -23,11 +22,9 @@ import "./styles/depth.css";
 // 5. استایل کتابخانه‌های ثالث
 import "react-toastify/dist/ReactToastify.css";
 
-import App from "./App.jsx";
+import AppRoot from "./AppRoot.jsx";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <AppRoot />
   </React.StrictMode>
 );

@@ -4,6 +4,7 @@ class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
+    this.heading = React.createRef();
   }
 
   static getDerivedStateFromError() {
@@ -11,8 +12,15 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
+    this.heading.current?.focus();
     // در آینده می‌توان اینجا خطا را به یک سرویس لاگ‌گیری ارسال کرد
     console.error('خطای غیرمنتظره:', error, errorInfo);
+  }
+
+  componentDidUpdate(previousProps) {
+    if (this.state.hasError && previousProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false });
+    }
   }
 
   handleReload = () => {
@@ -21,19 +29,24 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
+      const Wrapper = this.props.global ? 'main' : 'div';
       // همان الگوی خطای صفحه‌های فهرست (.list-state)؛ <a> نه Link، تا رفتن به پشتیبانی برنامه را از نو بار کند
       return (
-        <div className="container py-5">
+        <Wrapper className="container py-5" lang="fa" dir="rtl">
           <div className="list-state" role="alert">
-            <h1 className="h4 mb-2">مشکلی پیش آمد</h1>
+            <h1 ref={this.heading} tabIndex={-1} className="h4 mb-2">
+              {this.props.global ? 'ری‌بوک با مشکلی روبه‌رو شد' : 'مشکلی پیش آمد'}
+            </h1>
             <p>
               صفحه را دوباره بارگذاری کن؛ اگر درست نشد، به <a href="/support">پشتیبانی</a> خبر بده.
+              {' '}اگر هنگام ثبت یا پرداخت خطا دیدی، پیش از تلاش دوباره وضعیت درخواستت را بررسی کن.
             </p>
             <button type="button" className="btn btn-outline-secondary" onClick={this.handleReload}>
-              تلاش دوباره
+              بارگذاری دوباره
             </button>
+            {' '}<a href="/" className="btn btn-outline-secondary">صفحه اصلی</a>
           </div>
-        </div>
+        </Wrapper>
       );
     }
 

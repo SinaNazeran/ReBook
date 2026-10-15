@@ -10,7 +10,7 @@ import Footer from "./components/Footer";
 import Loading from "./components/Loading";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SessionStatus from "./components/SessionStatus";
-import ErrorBoundary from "./components/ErrorBoundary";
+import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound";
 import { watchPushBack } from "./utils/pushBack.js";
@@ -59,7 +59,7 @@ function App() {
 
         <main id="main" className="flex-grow-1" tabIndex={-1}>
           <SessionStatus />
-          <ErrorBoundary>
+          <RouteErrorBoundary>
             <Suspense fallback={<Loading fullPage />}>
               <Routes>
                 {/* صفحات عمومی */}
@@ -142,7 +142,7 @@ function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
-          </ErrorBoundary>
+          </RouteErrorBoundary>
         </main>
 
         <Footer />
