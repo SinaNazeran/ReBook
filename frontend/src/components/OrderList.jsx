@@ -1,3 +1,4 @@
+import { formatPersianDate as formatDate } from '../utils/locale';
 import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import StatusMark from './StatusMark';
@@ -11,8 +12,6 @@ const ORDER_STATUS = {
   delivered: { tone: 'done', label: 'تحویل شده' },
   cancelled: { tone: 'closed', label: 'لغو شده' },
 };
-
-const formatDate = (value) => new Date(value).toLocaleDateString('fa-IR');
 
 /**
  * ردیف‌های سفارش برای «خریدهای من» و «فروش‌های من».

@@ -1,12 +1,8 @@
+import { formatPersianDate as formatDate } from '../../utils/locale';
 import { Link } from "react-router-dom";
 import ConditionMeasure from "../../components/ConditionMeasure";
 import { CONDITION_NOTES } from "../../utils/condition";
 const LONG_NOTES = 320;
-const formatDate = value => new Date(value).toLocaleDateString('fa-IR', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
-});
 export function BookDetails({
   book,
   ink,
@@ -91,7 +87,7 @@ export function BookDetails({
                 <dt>وضعیت ظاهری</dt>
                 <dd>{book.condition_display}</dd>
                 <dt>ثبت در ری‌بوک</dt>
-                <dd>{formatDate(book.created_at)}</dd>
+                <dd>{formatDate(book.created_at, 'long')}</dd>
               </dl>
             </section>
 </>;

@@ -11,7 +11,7 @@ export function NavbarSearch({
             <span className="input-group-text bg-white border-end-0">
               <FiSearch className="text-muted" />
             </span>
-            <Form.Control type="search" name="search" placeholder="جستجوی نام کتاب یا نویسنده…" aria-label="جستجوی کتاب" className="border-start-0" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+            <Form.Control type="search" dir="auto" name="search" placeholder="جستجوی نام کتاب یا نویسنده…" aria-label="جستجوی کتاب" className="border-start-0" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
         </Form>;
 }

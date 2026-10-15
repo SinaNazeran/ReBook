@@ -1,3 +1,4 @@
+import { formatPersianDate as formatDate } from '../utils/locale';
 import { usePagedList } from '../hooks/usePagedList';
 import LoadMore from '../components/LoadMore';
 import { useState } from 'react';
@@ -19,8 +20,6 @@ const LISTING_STATUS = {
   rejected: { tone: 'closed', label: 'تأیید نشد', note: 'فقط برای تو دیده می‌شود.' },
   sold: { tone: 'sold', label: 'فروخته شد' },
 };
-
-const formatDate = (value) => new Date(value).toLocaleDateString('fa-IR');
 
 function MyBooks() {
   const list = usePagedList(bookAPI.getMyBooks);

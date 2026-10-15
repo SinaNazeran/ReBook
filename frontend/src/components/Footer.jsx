@@ -1,3 +1,4 @@
+import { formatPersianDate } from '../utils/locale';
 import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FiArrowUp } from 'react-icons/fi';
@@ -8,7 +9,7 @@ import { seriesInk } from '../utils/series';
 
 // سال جاری به تقویم شمسی، بدون نیاز به کتابخانه‌ی جانبی
 function getCurrentPersianYear() {
-  return new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric' }).format(new Date());
+  return formatPersianDate(new Date(), 'year');
 }
 
 // بازگشت به بالا: اسکرول نرم (اگر کاربر حرکت کم نخواسته) و فوکوس روی محتوای اصلی، تا صفحه‌کلید هم از بالا ادامه دهد

@@ -1,3 +1,4 @@
+import { formatPersianDate as formatDate } from '../utils/locale';
 import { useState } from 'react';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import Form from '../components/Form';
@@ -92,7 +93,7 @@ function Profile() {
   };
 
   const joinDate = user?.created_at
-    ? new Date(user.created_at).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long' })
+    ? formatDate(user.created_at, 'month')
     : null;
 
   const error = (name) => fieldErrors[name]?.[0];

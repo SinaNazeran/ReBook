@@ -1,3 +1,4 @@
+import { formatPersianDate as formatDate } from '../utils/locale';
 import { useUnreadCount } from '../components/navigation/useUnreadCount';
 import { usePagedList } from '../hooks/usePagedList';
 import LoadMore from '../components/LoadMore';
@@ -30,9 +31,6 @@ const bookLinks = ({ notification_type: type, book }) => {
     ];
   return [];
 };
-
-const formatDate = (value) =>
-  new Date(value).toLocaleDateString('fa-IR', { month: 'long', day: 'numeric', year: 'numeric' });
 
 function Notifications() {
   const [readVersion, setReadVersion] = useState(0);
@@ -129,7 +127,7 @@ function Notifications() {
                       </span>
                       <span className="notice-message">{notification.message}</span>
                     </span>
-                    <span className="notice-date">{formatDate(notification.created_at)}</span>
+                    <span className="notice-date">{formatDate(notification.created_at, 'long')}</span>
                     {unread && <span className="notice-dot" aria-hidden="true" />}
                   </button>
                   {links.length > 0 && (

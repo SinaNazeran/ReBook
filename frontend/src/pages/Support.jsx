@@ -1,3 +1,4 @@
+import { formatPersianDate as formatDate } from '../utils/locale';
 import { usePagedList } from '../hooks/usePagedList';
 import LoadMore from '../components/LoadMore';
 import { useState } from 'react';
@@ -14,9 +15,6 @@ const TICKET_STATUS = {
   in_progress: { tone: 'waiting', label: 'در حال بررسی' },
   closed: { tone: 'done', label: 'بسته شد' },
 };
-
-const formatDate = (value) =>
-  new Date(value).toLocaleDateString('fa-IR', { month: 'long', day: 'numeric', year: 'numeric' });
 
 function Support() {
   const list = usePagedList(notificationAPI.getMyTickets);
@@ -153,7 +151,7 @@ function Support() {
                           <span className="ticket-head">
                             <span className="ticket-subject">
                               <bdi>{ticket.subject}</bdi>
-                              <span className="ticket-date">{formatDate(ticket.created_at)}</span>
+                              <span className="ticket-date">{formatDate(ticket.created_at, 'long')}</span>
                             </span>
                             <StatusMark tone={status.tone}>{status.label}</StatusMark>
                           </span>

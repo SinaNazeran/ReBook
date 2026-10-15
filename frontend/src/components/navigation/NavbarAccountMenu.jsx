@@ -1,6 +1,7 @@
 import { NavDropdown, Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FiUser, FiBookOpen, FiShoppingBag, FiBell, FiHeart, FiSettings, FiLogOut } from "react-icons/fi";
+import { formatPersianNumber } from '../../utils/locale';
 import { ADMIN_URL } from "../../services/api";
 export function NavbarAccountMenu({
   user,
@@ -25,16 +26,16 @@ export function NavbarAccountMenu({
                 <NavDropdown title={<span className="d-inline-flex align-items-center gap-2">
                       {renderUserAvatar()}
                       <span className="nav-user-name text-truncate d-inline-block align-middle">
-                        {user?.first_name || <bdi translate="no" className="latin-id">{user?.username}</bdi>}
+                        {user?.first_name ? <bdi>{user.first_name}</bdi> : <bdi translate="no" className="latin-id">{user?.username}</bdi>}
                       </span>
                     </span>} align="end" className="w-100 w-lg-auto text-center text-lg-start mt-2 mt-lg-0">
                   {/* نام و ایمیل متن معمولی‌اند، نه سرتیتر (پیش‌فرض react-bootstrap role="heading" است) */}
                   <NavDropdown.Header className="pb-2" role="none">
                     <div className="fw-bold text-truncate text-dark">
-                      {user?.first_name ? `${user.first_name} ${user.last_name || ''}` : <bdi translate="no" className="latin-id">{user?.username}</bdi>}
+                      {user?.first_name ? <bdi>{`${user.first_name} ${user.last_name || ''}`}</bdi> : <bdi translate="no" className="latin-id">{user?.username}</bdi>}
                     </div>
                     {user?.email && <div translate="no" className="small text-muted text-truncate latin-id">
-                        {user.email}
+                        <bdi dir="ltr">{user.email}</bdi>
                       </div>}
                   </NavDropdown.Header>
 
@@ -57,7 +58,7 @@ export function NavbarAccountMenu({
                     <FiBell size={16} className="text-muted" />
                     اعلان‌ها
                     {displayedUnreadCount > 0 && <Badge bg="danger" pill className="ms-auto">
-                        {displayedUnreadCount > 99 ? '۹۹+' : displayedUnreadCount}
+                        {displayedUnreadCount > 99 ? '۹۹+' : formatPersianNumber(displayedUnreadCount)}
                       </Badge>}
                   </NavDropdown.Item>
 
