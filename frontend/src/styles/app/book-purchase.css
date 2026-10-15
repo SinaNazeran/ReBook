@@ -153,6 +153,11 @@
   color: var(--rb-ink-muted);
 }
 
+.receipt-code .btn {
+  min-block-size: var(--rb-touch-target);
+  min-inline-size: var(--rb-touch-target);
+}
+
 .receipt-code-value {
   font-size: 1.25rem;
   font-weight: 700;

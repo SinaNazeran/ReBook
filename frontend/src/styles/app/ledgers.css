@@ -97,6 +97,13 @@
   text-underline-offset: 0.3em;
 }
 
+a.ledger-name {
+  display: block;
+  min-block-size: var(--rb-touch-target);
+  min-inline-size: var(--rb-touch-target);
+  padding-block: var(--rb-space-2);
+}
+
 .ledger-meta,
 .ledger-note {
   font-size: 0.875rem;

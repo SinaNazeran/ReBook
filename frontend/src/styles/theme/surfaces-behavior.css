@@ -23,6 +23,14 @@
     box-shadow: var(--bs-dropdown-box-shadow);
 }
 
+.modal-header .btn-close,
+.offcanvas-header .btn-close {
+    box-sizing: border-box;
+    inline-size: var(--rb-touch-target);
+    block-size: var(--rb-touch-target);
+    flex-shrink: 0;
+}
+
 /* منو بی‌انیمیشن ظاهر می‌شد؛ حالا کوتاه محو می‌آید و ۴px از زیر لبه‌ی دکمه پایین می‌نشیند. بستن آنی می‌ماند.
    translate جدا از transform است تا با جای‌گذاری Popper تداخل نکند. */
 .dropdown-menu.show {

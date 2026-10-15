@@ -137,7 +137,8 @@
 }
 
 .detail-more {
-  min-height: 2.25rem;
+  min-block-size: var(--rb-touch-target);
+  min-inline-size: var(--rb-touch-target);
   padding: 0;
   border: 0;
   background: none;

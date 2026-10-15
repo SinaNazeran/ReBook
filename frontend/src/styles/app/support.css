@@ -13,6 +13,13 @@
   background-color: var(--rb-surface);
 }
 
+.contact-aside a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--rb-touch-target);
+  min-inline-size: var(--rb-touch-target);
+}
+
 .ticket-list {
   --bs-accordion-border-color: var(--rb-rule);
   --bs-accordion-btn-focus-box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-focus) 35%, transparent);

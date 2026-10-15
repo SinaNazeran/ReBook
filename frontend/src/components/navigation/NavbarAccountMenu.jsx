@@ -30,7 +30,7 @@ export function NavbarAccountMenu({
                       <span className="nav-user-name text-truncate d-inline-block align-middle">
                         {user?.first_name ? <bdi>{user.first_name}</bdi> : <bdi translate="no" className="latin-id">{user?.username}</bdi>}
                       </span>
-                    </span>} align="end" className="w-100 w-lg-auto text-center text-lg-start mt-2 mt-lg-0">
+                    </span>} align="end" className="nav-account-menu w-100 w-lg-auto text-center text-lg-start mt-2 mt-lg-0">
                   {/* نام و ایمیل متن معمولی‌اند، نه سرتیتر (پیش‌فرض react-bootstrap role="heading" است) */}
                   <NavDropdown.Header className="pb-2" role="none">
                     <div className="fw-bold text-truncate text-dark">

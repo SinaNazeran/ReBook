@@ -2,6 +2,16 @@
    ۱۴. صفحه‌های حساب، فروش، ورود و ۴۰۴ در همان جهان رنگی
    ========================================================================== */
 
+.nav-account-menu .dropdown-menu {
+  inline-size: min(22rem, calc(100vw - var(--rb-space-6)));
+}
+
+@media (max-width: 991.98px) {
+  .nav-account-menu .dropdown-menu {
+    max-inline-size: 100%;
+  }
+}
+
 /* تیتر صفحه‌ها به لاله‌زار (یک وزن، بی‌ضخیم‌سازی مصنوعی) */
 .ledger-title,
 .sell-title,

@@ -49,6 +49,13 @@
   text-align: center;
 }
 
+.auth-switch a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--rb-touch-target);
+  min-inline-size: var(--rb-touch-target);
+}
+
 .not-found {
   display: flex;
   flex-wrap: wrap;

@@ -88,6 +88,8 @@ body:has(main > .series-paper) .site-footer {
 }
 
 .site-footer-name {
+  min-block-size: var(--rb-touch-target);
+  min-inline-size: var(--rb-touch-target);
   display: inline-flex;
   align-items: center;
   gap: var(--rb-space-2);

@@ -106,7 +106,8 @@
 .notice-links a {
   display: inline-flex;
   align-items: center;
-  min-height: 2rem;
+  min-block-size: var(--rb-touch-target);
+  min-inline-size: var(--rb-touch-target);
   font-weight: 500;
 }
 
