@@ -1,6 +1,6 @@
 from urllib.parse import urlsplit
 
-from django.core.cache import cache
+from django.core.cache import cache, caches
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
@@ -49,6 +49,7 @@ class BoundedListTests(APITestCase):
 
     def setUp(self):
         cache.clear()
+        caches["categories"].clear()
         self.client.force_authenticate(self.user)
 
     endpoints = (

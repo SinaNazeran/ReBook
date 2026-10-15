@@ -1,3 +1,4 @@
+from django.core.cache import caches
 from rest_framework.test import APITestCase
 
 from accounts.models import User
@@ -69,6 +70,9 @@ class BookListCategoryFilterTests(APITestCase):
 
 
 class CategoryListTests(APITestCase):
+    def setUp(self):
+        caches["categories"].clear()
+
     def test_categories_are_paginated_without_hiding_remaining_rows(self):
         # فهرست کشویی دسته‌بندی‌ها باید کامل باشد، نه فقط ۱۲ مورد اول
         Category.objects.bulk_create(Category(name=f"c{i}", slug=f"c{i}") for i in range(15))

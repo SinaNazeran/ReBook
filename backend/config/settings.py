@@ -37,6 +37,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").sp
 
 globals().update(security_settings(os.environ, DEBUG))
 CORS_ALLOW_HEADERS = [*default_headers, "idempotency-key"]
+CORS_EXPOSE_HEADERS = ["Date", "Age"]
 
 
 # Application definition
@@ -61,6 +62,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'config.cache_middleware.APICachePolicyMiddleware',
     'config.https_middleware.TrustedProxyHTTPSMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.csp.ContentSecurityPolicyMiddleware',
@@ -164,6 +166,14 @@ RATE_LIMITS = {
     "api_read": (120, 60), "api_write": (60, 60),
     "auth": (10, 60), "cart": (60, 60), "contact": (10, 3600),
     "uploads": (20, 3600), "support": (10, 3600), "payment": (20, 60),
+}
+CACHES = {
+    "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+    "categories": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "rebook-category-pages-v1", "TIMEOUT": 60,
+        "OPTIONS": {"MAX_ENTRIES": 128, "CULL_FREQUENCY": 3},
+    },
 }
 REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_CLASSES": ["config.throttling.RedisRateThrottle"],

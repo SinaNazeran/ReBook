@@ -32,13 +32,17 @@ headers on every SPA route and asset, including error responses. Vite preview
 also applies the emitted build policy for local verification. HTTP loopback APIs
 remain allowed for the development server, not production builds.
 
-For Nginx, include `security-headers.conf` inside the frontend HTTPS server block;
+For Nginx, include `cache-headers.conf` in the `http` context, and include
+`security-headers.conf` inside the frontend HTTPS server block;
 serve `frontend/dist` with `try_files $uri $uri/ /index.html`. Configure a separate
 port-80 server returning `308 https://<canonical-frontend-host>$request_uri` and
 real TLS certificates. Apply Django's own policy to API/admin responses, rather
 than replacing it with the frontend policy. If a nested location defines
 `add_header`, it must include the security headers again because Nginx header
-inheritance changes. Deny direct access to the generated `.conf` file.
+inheritance changes. Deny direct access to both generated `.conf` files.
+Reload both files from the same build on each deployment. See
+[caching deployment details](../reliability/caching.md) for HTML revalidation,
+immutable asset rules, and host-specific fallback limitations.
 
 The frontend CSP allows scripts/fonts from its own origin, API connections and
 images from the configured API origin, and data/blob image previews. Styles permit

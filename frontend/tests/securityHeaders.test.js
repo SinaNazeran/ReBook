@@ -22,7 +22,7 @@ describe('frontend security headers', () => {
   it('exports both platform and nginx policies without unsafe script allowances', () => {
     const headers = securityHeaders('https://api.rebook.example/api');
     const artifacts = hostHeaderArtifacts(headers);
-    expect(parseHostHeaders(artifacts._headers)).toEqual(headers);
+    expect(parseHostHeaders(artifacts._headers)).toEqual({ ...headers, 'Cache-Control': 'no-cache' });
     expect(artifacts._headers).toContain('/*\n');
     expect(artifacts['security-headers.conf']).toContain('add_header X-Frame-Options "DENY" always;');
     for (const [name, value] of Object.entries(headers)) {

@@ -3,6 +3,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .category_cache import CachedCategoryPagesMixin
 from .models import Book, Category, Wishlist
 from .request_serializers import CatalogPriceSerializer
 from .serializers import (
@@ -25,7 +26,7 @@ def visible_books(user):
     return Book.objects.filter(visible)
 
 
-class CategoryListView(generics.ListAPIView):
+class CategoryListView(CachedCategoryPagesMixin, generics.ListAPIView):
     """لیست دسته‌بندی‌ها"""
 
     queryset = Category.objects.order_by("id")
