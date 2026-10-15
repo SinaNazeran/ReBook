@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import StepRail from '../components/StepRail';
@@ -14,7 +15,7 @@ function About() {
   return (
     <div className="series-paper">
       <Container className="about-page">
-        <title>درباره‌ی ری‌بوک | ری‌بوک</title>
+        <PageMetadata title="درباره‌ی ری‌بوک | ری‌بوک" />
         <header className="sell-header">
           <h1 className="sell-title display-type">درباره‌ی ری‌بوک</h1>
           <p className="sell-lead">

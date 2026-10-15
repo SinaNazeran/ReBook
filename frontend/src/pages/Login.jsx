@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { useState } from 'react';
 import { Container, Button, Alert } from 'react-bootstrap';
@@ -50,7 +51,7 @@ function Login() {
   return (
     <div className="series-paper" style={{ '--series': 'var(--rb-accent)' }}>
       <Container className="auth-page">
-        <title>ورود | ری‌بوک</title>
+        <PageMetadata title="ورود | ری‌بوک" />
         <div className="auth-panel">
           <h1 className="auth-title">ورود</h1>
           {reason && <p className="auth-reason">{reason}</p>}

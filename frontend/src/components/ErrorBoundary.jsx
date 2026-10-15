@@ -1,3 +1,4 @@
+import PageMetadata from './PageMetadata.jsx';
 import React from 'react';
 
 class ErrorBoundary extends React.Component {
@@ -33,6 +34,7 @@ class ErrorBoundary extends React.Component {
       // همان الگوی خطای صفحه‌های فهرست (.list-state)؛ <a> نه Link، تا رفتن به پشتیبانی برنامه را از نو بار کند
       return (
         <Wrapper className="container py-5" lang="fa" dir="rtl">
+          <PageMetadata priority={2} title="مشکلی پیش آمد | ری‌بوک" description="ری‌بوک با مشکلی روبه‌رو شد. صفحه را دوباره بارگذاری کنید یا به پشتیبانی مراجعه کنید." />
           <div className="list-state" role="alert">
             <h1 ref={this.heading} tabIndex={-1} className="h4 mb-2">
               {this.props.global ? 'ری‌بوک با مشکلی روبه‌رو شد' : 'مشکلی پیش آمد'}

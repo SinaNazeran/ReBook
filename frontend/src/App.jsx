@@ -1,3 +1,4 @@
+import RouteMetadata from './components/RouteMetadata.jsx';
 import { Suspense, lazy, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
@@ -42,6 +43,7 @@ function App() {
       <CartProvider>
       <div className="d-flex flex-column min-vh-100"
         onPointerOver={prefetchBookDetail} onFocus={prefetchBookDetail} onPointerDown={prefetchBookDetail}>
+        <RouteMetadata />
         <ScrollToTop />
         <a href="#main" className="skip-link visually-hidden-focusable">
           رفتن به محتوای اصلی

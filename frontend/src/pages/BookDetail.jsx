@@ -1,3 +1,5 @@
+import { bookDescription } from '../utils/metadata.js';
+import PageMetadata from '../components/PageMetadata.jsx';
 import { useState } from "react";
 import { useBookDetail } from "../features/book-detail/useBookDetail.js";
 import { useBookActions } from "../features/book-detail/useBookActions.js";
@@ -40,12 +42,13 @@ function BookDetail() {
     handlePaid,
     handleCancelOrder
   } = useBookActions(detail);
-  if (loading) return <Loading fullPage />;
+  if (loading) return <><PageMetadata title="بارگذاری کتاب | ری‌بوک" description="مشخصات کتاب در ری‌بوک در حال بارگذاری است." /><Loading fullPage /></>;
   if (loadError === 'not_found') {
     return <NotFound title="این کتاب پیدا نشد" message="شاید آگهی‌اش حذف شده یا هنوز منتشر نشده است. نسخه‌های دیگر را در فهرست ببین." />;
   }
   if (loadError) {
     return <Container className="py-5">
+        <PageMetadata title="خطا در بارگذاری کتاب | ری‌بوک" description="مشخصات کتاب بارگذاری نشد. دوباره تلاش کنید یا کتاب‌های دیگر را در فهرست ری‌بوک ببینید." />
         <div className="list-state" role="alert">
           <p>کتاب بارگذاری نشد. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
           <Button variant="outline-secondary" onClick={handleRetry}>
@@ -108,7 +111,7 @@ function BookDetail() {
     '--series': ink
   }}>
       <Container className="book-detail">
-        <title>{`${book.title} | ری‌بوک`}</title>
+        <PageMetadata title={`${book.title} | ری‌بوک`} description={bookDescription(book)} />
         <Row className="g-4 g-lg-5">
           <Col lg={4}>
             <figure className={`detail-cover${book.cover_width ? ' is-sized' : ''}`} style={{

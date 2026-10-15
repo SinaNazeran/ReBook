@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { useState } from 'react';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
@@ -97,7 +98,7 @@ function Register() {
   return (
     <div className="series-paper" style={{ '--series': 'var(--rb-accent)' }}>
       <Container className="auth-page">
-        <title>ساخت حساب | ری‌بوک</title>
+        <PageMetadata title="ساخت حساب | ری‌بوک" />
         <div className="auth-panel is-wide">
           <h1 className="auth-title">ساخت حساب</h1>
           <p className="auth-reason">

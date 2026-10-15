@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { useState, useEffect, useRef } from 'react';
 import { Link, Navigate } from 'react-router-dom';
@@ -107,7 +108,7 @@ function Contact() {
   return (
     <div className="series-paper">
       <Container className="ledger-page">
-        <title>تماس با ما | ری‌بوک</title>
+        <PageMetadata title="تماس با ما | ری‌بوک" />
         <header className="ledger-header">
           <div>
             <h1 className="ledger-title">تماس با ما</h1>

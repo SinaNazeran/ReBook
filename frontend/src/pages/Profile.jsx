@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { formatPersianDate as formatDate } from '../utils/locale';
 import { useState } from 'react';
@@ -105,7 +106,7 @@ function Profile() {
   return (
     <div className="series-paper">
       <Container className="ledger-page">
-        <title>پروفایل | ری‌بوک</title>
+        <PageMetadata title="پروفایل | ری‌بوک" />
         <header className="ledger-header">
           <h1 className="ledger-title">پروفایل</h1>
         </header>

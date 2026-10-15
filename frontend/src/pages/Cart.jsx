@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth.js";
@@ -115,7 +116,7 @@ function Cart() {
   if (receipt) {
     return <div className="series-paper">
         <Container className="ledger-page">
-          <title>رسید خرید | ری‌بوک</title>
+          <PageMetadata title="رسید خرید | ری‌بوک" />
           <section className="purchase-receipt cart-receipt" aria-labelledby="receipt-title">
             <h1 id="receipt-title" className="ledger-title" tabIndex={-1} ref={receiptHeadingRef}>
               پرداخت آزمایشی انجام شد
@@ -237,7 +238,7 @@ function Cart() {
   }
   return <div className="series-paper">
       <Container className="ledger-page">
-        <title>سبد خرید | ری‌بوک</title>
+        <PageMetadata title="سبد خرید | ری‌بوک" />
         <header className="ledger-header">
           <h1 className="ledger-title">{step === 'checkout' ? 'پرداخت' : 'سبد خرید'}</h1>
         </header>

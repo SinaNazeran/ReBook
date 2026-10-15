@@ -1,3 +1,5 @@
+import PageMetadata from '../components/PageMetadata.jsx';
+import { HOME_TITLE, HOME_DESCRIPTION } from '../utils/metadata.js';
 import { useSeries } from '../utils/categories';
 import CategoryState from '../components/CategoryState';
 import { useState, useEffect } from 'react';
@@ -53,6 +55,7 @@ function Home() {
 
   return (
     <>
+      <PageMetadata title={HOME_TITLE} description={HOME_DESCRIPTION} />
       <HomeHero status={status} books={latestBooks} />
 
       {(

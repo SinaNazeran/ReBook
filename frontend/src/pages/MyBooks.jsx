@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { formatPersianDate as formatDate } from '../utils/locale';
 import { usePagedList } from '../hooks/usePagedList';
 import LoadMore from '../components/LoadMore';
@@ -47,7 +48,7 @@ function MyBooks() {
   return (
     <div className="series-paper">
       <Container className="ledger-page">
-        <title>کتاب‌های من | ری‌بوک</title>
+        <PageMetadata title="کتاب‌های من | ری‌بوک" />
         <header className="ledger-header">
           <h1 className="ledger-title">
             کتاب‌های من

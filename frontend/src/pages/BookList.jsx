@@ -1,3 +1,5 @@
+import { catalogDescription } from '../utils/metadata.js';
+import PageMetadata from '../components/PageMetadata.jsx';
 import { ORDERING_OPTIONS } from "../features/catalog/useCatalogFilters.js";
 import { useState } from "react";
 import { useCatalogFilters } from "../features/catalog/useCatalogFilters.js";
@@ -66,7 +68,7 @@ function BookList() {
     '--series': activeRoot ? seriesInk(activeRoot.id) : undefined
   }}>
       <Container className="book-list-page">
-        <title>{`${title} | ری‌بوک`}</title>
+        <PageMetadata title={`${title} | ری‌بوک`} description={catalogDescription(activeCategory, chips)} />
 <CatalogCategories rootCategories={rootCategories} categoryHref={categoryHref} activeSlug={activeSlug} activeRoot={activeRoot} subCategories={subCategories} activeCategory={activeCategory} />
         <CategoryState state={categoryState} />
 

@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { formatPersianDate as formatDate } from '../utils/locale';
 import { usePagedList } from '../hooks/usePagedList';
@@ -72,7 +73,7 @@ function Support() {
   return (
     <div className="series-paper">
       <Container className="ledger-page">
-        <title>پشتیبانی | ری‌بوک</title>
+        <PageMetadata title="پشتیبانی | ری‌بوک" />
         <header className="ledger-header">
           <div>
             <h1 className="ledger-title">پشتیبانی</h1>

@@ -77,3 +77,17 @@ it('does not leave an invalid form locked', async () => {
   await act(async () => { fireEvent.submit(document.querySelector('form')); });
   expect(api.loginUser).toHaveBeenCalledTimes(1);
 });
+
+it('changes cart metadata to a generic receipt without exposing checkout data', async () => {
+  api.checkout.mockResolvedValue({ data: { reference_code: 'PRIVATE-REFERENCE' } });
+  render(<MemoryRouter><Cart /></MemoryRouter>);
+  expect(document.title).toBe('سبد خرید | ری‌بوک');
+  fireEvent.click(screen.getAllByRole('button', { name: 'ادامه‌ی خرید' })[0]);
+  await act(async () => { fireEvent.submit(document.querySelector('form')); });
+  expect(document.title).toBe('رسید خرید | ری‌بوک');
+  const description = document.head.querySelector('meta[name="description"]').content;
+  expect(description).toContain('پرداخت آزمایشی');
+  expect(description).not.toMatch(/PRIVATE-REFERENCE|آدرس معتبر|reader@example.com/);
+  expect(document.head.querySelectorAll('title')).toHaveLength(1);
+  expect(document.head.querySelectorAll('meta[name="description"]')).toHaveLength(1);
+});

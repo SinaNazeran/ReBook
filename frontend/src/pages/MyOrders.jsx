@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { usePagedList } from '../hooks/usePagedList';
 import OrderCollection from '../components/OrderCollection';
 import { useState } from 'react';
@@ -52,7 +53,7 @@ function MyOrders() {
   return (
     <div className="series-paper">
       <Container className="ledger-page">
-        <title>معاملات من | ری‌بوک</title>
+        <PageMetadata title="معاملات من | ری‌بوک" />
         <header className="ledger-header">
           <h1 className="ledger-title">معاملات من</h1>
         </header>

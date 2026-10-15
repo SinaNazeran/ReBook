@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { EDIT_LEADS } from "../features/book-editor/validation.js";
 import { useBookEditor } from "../features/book-editor/useBookEditor.js";
 import Loading from "../components/Loading";
@@ -41,7 +42,7 @@ function CreateBook() {
     // آگهی هست اما الان ویرایش‌شدنی نیست؛ همان حالت پیام صفحه‌های دیگر
     return <div className="series-paper">
         <Container className="sell-page">
-          <title>ویرایش آگهی | ری‌بوک</title>
+          <PageMetadata title="ویرایش آگهی | ری‌بوک" />
           <header className="sell-header">
             <h1 className="sell-title">ویرایش آگهی</h1>
           </header>
@@ -80,7 +81,7 @@ function CreateBook() {
   }}>
       {/* کاغذ صفحه همان مجموعه‌ای است که فروشنده انتخاب می‌کند، هم‌رنگ کارت پیش‌نمایش */}
       <Container className="sell-page">
-        <title>{editing ? 'ویرایش آگهی | ری‌بوک' : 'فروش کتاب | ری‌بوک'}</title>
+        <PageMetadata title={editing ? 'ویرایش آگهی | ری‌بوک' : 'فروش کتاب | ری‌بوک'} />
         <header className="sell-header">
           <h1 className="sell-title">{editing ? 'ویرایش آگهی' : 'فروش کتاب'}</h1>
           <p className="sell-lead">

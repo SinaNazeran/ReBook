@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { Link } from 'react-router-dom';
 import PlainCover from '../components/PlainCover';
 
@@ -26,7 +27,7 @@ function NotFound({
   return (
     <div className="series-paper" style={{ '--series': 'var(--rb-series-6)' }}>
       <div className="container not-found">
-        <title>{`${title} | ری‌بوک`}</title>
+        <PageMetadata title={`${title} | ری‌بوک`} description={message} />
         {/* صحنه: قفسه‌ای با یک جای خالی، و کتاب گم‌شده که از قفسه افتاده و به آن تکیه داده است */}
         <div className="lost-scene" aria-hidden="true">
           <div className="lost-book">

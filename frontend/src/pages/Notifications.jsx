@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { formatPersianDate as formatDate } from '../utils/locale';
 import { useUnreadCount } from '../components/navigation/useUnreadCount';
@@ -84,7 +85,7 @@ function Notifications() {
   return (
     <div className="series-paper">
       <Container className="ledger-page notifications-page">
-        <title>اعلان‌ها | ری‌بوک</title>
+        <PageMetadata title="اعلان‌ها | ری‌بوک" />
         <header className="ledger-header">
           <h1 className="ledger-title">
             اعلان‌ها

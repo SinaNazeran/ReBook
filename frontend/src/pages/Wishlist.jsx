@@ -1,3 +1,4 @@
+import PageMetadata from '../components/PageMetadata.jsx';
 import { useSubmissionGuard } from '../hooks/useSubmissionGuard';
 import { usePagedList } from '../hooks/usePagedList';
 import LoadMore from '../components/LoadMore';
@@ -45,7 +46,7 @@ function Wishlist() {
   return (
     <div className="series-paper">
       <Container className="ledger-page">
-        <title>علاقه‌مندی‌ها | ری‌بوک</title>
+        <PageMetadata title="علاقه‌مندی‌ها | ری‌بوک" />
         <header className="ledger-header">
           <h1 className="ledger-title">
             علاقه‌مندی‌ها
