@@ -177,13 +177,14 @@ export function startHeroDepth(heroRef) {
         running = on;
         if (on) gsap.ticker.add(render);else gsap.ticker.remove(render);
       };
-      run(true);
-      ScrollTrigger.create({
+      const visibility = ScrollTrigger.create({
         trigger: hero,
         start: 'top bottom',
         end: 'bottom top',
-        onToggle: self => run(self.isActive)
+        onToggle: self => run(self.isActive),
+        onRefresh: self => run(self.isActive)
       });
+      run(visibility.isActive);
       cleanups.push(() => run(false));
       cleanups.push(() => window.removeEventListener('resize', measure));
       cleanups.push(withSafety(gsap.timeline().to(state, {

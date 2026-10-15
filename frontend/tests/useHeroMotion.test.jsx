@@ -53,6 +53,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   media.contexts = [];
   media.ticking.clear();
+  ScrollTrigger.create.mockReturnValue({ isActive: true });
   const ready = new Promise(resolve => { resolveFonts = resolve; });
   Object.defineProperty(document, 'fonts', { configurable: true, value: { ready } });
   hero = document.createElement('section');
@@ -113,4 +114,35 @@ it('cleans up pointer tweens, listeners, ticker callbacks, and safety timers', a
   expect(vi.getTimerCount()).toBe(0);
   expect(world.getAttribute('style')).toBeNull();
   expect(copy.getAttribute('style')).toBeNull();
+});
+
+it('keeps offscreen initialization idle until entry and suspends it again on exit', () => {
+  ScrollTrigger.create.mockReturnValueOnce({ isActive: false });
+  const { unmount } = renderHook(() => useHeroMotion({ current: hero }, true));
+  expect(media.ticking.size).toBe(0);
+  const visibility = ScrollTrigger.create.mock.calls[0][0];
+  visibility.onToggle({ isActive: true });
+  expect(media.ticking.size).toBe(1);
+  visibility.onToggle({ isActive: false });
+  expect(media.ticking.size).toBe(0);
+  unmount();
+  expect(vi.getTimerCount()).toBe(0);
+});
+
+it('reconciles visibility after refresh without requiring a toggle event', async () => {
+  const { unmount } = renderHook(() => useHeroMotion({ current: hero }, true));
+  expect(media.ticking.size).toBe(1);
+  const visibility = ScrollTrigger.create.mock.calls[0][0];
+  expect(visibility.onRefresh).toBeTypeOf('function');
+  visibility.onRefresh({ isActive: false });
+  expect(media.ticking.size).toBe(0);
+  visibility.onRefresh({ isActive: true });
+  expect(media.ticking.size).toBe(1);
+  visibility.onRefresh({ isActive: true });
+  expect(media.ticking.size).toBe(1);
+  unmount();
+  await finishFonts();
+  expect(media.ticking.size).toBe(0);
+  expect(ScrollTrigger.refresh).not.toHaveBeenCalled();
+  expect(vi.getTimerCount()).toBe(0);
 });
