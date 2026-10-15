@@ -16,3 +16,34 @@
   padding-bottom: 40vh;
 }
 
+.async-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rb-space-1) var(--rb-space-2);
+  padding-block: var(--rb-space-1);
+}
+
+.async-placeholder {
+  inline-size: 2rem;
+  block-size: 0.75rem;
+  background-color: currentColor;
+  opacity: 0.2;
+  border-radius: var(--rb-radius-sm);
+}
+
+.site-navbar .async-state {
+  color: var(--rb-on-ink);
+}
+
+.async-retry {
+  min-block-size: var(--rb-touch-target);
+  padding: 0 var(--rb-space-1);
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+

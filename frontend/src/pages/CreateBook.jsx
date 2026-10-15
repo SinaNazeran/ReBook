@@ -16,6 +16,7 @@ function CreateBook() {
     generalError,
     handleSubmit,
     categories,
+    categoryState,
     formData,
     handleChange,
     error,
@@ -93,7 +94,7 @@ function CreateBook() {
 
         <Row className="g-4 g-lg-5">
           <Col lg={8}>
-            <BookEditorForm handleSubmit={handleSubmit} formData={formData} handleChange={handleChange} error={error} roots={roots} categories={categories} shownCover={shownCover} imagePreview={imagePreview} coverImage={coverImage} removeImage={removeImage} existingCover={existingCover} dragging={dragging} setDragging={setDragging} handleDrop={handleDrop} handleImageChange={handleImageChange} loading={loading} editing={editing} />
+            <BookEditorForm handleSubmit={handleSubmit} formData={formData} handleChange={handleChange} error={error} roots={roots} categories={categories} categoryState={categoryState} shownCover={shownCover} imagePreview={imagePreview} coverImage={coverImage} removeImage={removeImage} existingCover={existingCover} dragging={dragging} setDragging={setDragging} handleDrop={handleDrop} handleImageChange={handleImageChange} loading={loading} editing={editing} />
           </Col>
 
           <Col lg={4} className="d-none d-lg-block">

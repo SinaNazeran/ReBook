@@ -20,7 +20,11 @@ function Navbar() {
   } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const displayedUnreadCount = useUnreadCount(isAuthenticated);
+  const unreadState = useUnreadCount(isAuthenticated ? user?.id : null);
+  const displayedUnreadCount = unreadState.count;
+  const unreadLabel = unreadState.status === 'ready'
+    ? `اعلان‌ها، ${displayedUnreadCount.toLocaleString('fa-IR')} خوانده‌نشده`
+    : 'اعلان‌ها، شمار به‌روز در دسترس نیست';
   const [searchQuery, setSearchQuery] = useState('');
   // کنترل‌شده تا دکمه‌ی منو aria-expanded درست داشته باشد (Toggle خودِ react-bootstrap آن را نمی‌گذارد)
   const [menuOpen, setMenuOpen] = useState(false);
@@ -70,7 +74,8 @@ function Navbar() {
   const showSearch = location.pathname !== '/books';
 
   // هشت مجموعه (دسته‌های سطح اول)، هر کدام با مرکب خودش؛ اگر دسته‌ها نرسیدند، این پیوندها نمی‌آیند
-  const series = useSeries();
+  const categoryState = useSeries();
+  const series = categoryState.series;
   const activeSlug = location.pathname === '/books' ? new URLSearchParams(location.search).get('category') : null;
   const seriesLinkProps = category => ({
     to: `/books?category=${category.slug}`,
@@ -102,7 +107,7 @@ function Navbar() {
             <Nav.Link as={NavLink} to="/books" className="py-2">
               کتاب‌ها
             </Nav.Link>
-<NavbarCategories series={series} seriesLinkProps={seriesLinkProps} />
+<NavbarCategories series={series} seriesLinkProps={seriesLinkProps} categoryState={categoryState} />
           </Nav>
 
           {/* جستجوی دسکتاپ */}
@@ -112,10 +117,10 @@ function Navbar() {
           <Nav className="nav-actions align-items-lg-center mt-3 mt-lg-0 flex-column flex-lg-row">
             {/* آیکن‌ها یک گروه‌اند: سبد برای همه، اعلان‌ها برای کاربر واردشده (در موبایل اعلان‌ها در منوی حساب است) */}
             <div className="nav-icons d-none d-lg-flex">
-              {isAuthenticated && <Link to="/notifications" className="nav-icon nav-bell" aria-label={displayedUnreadCount ? `اعلان‌ها، ${displayedUnreadCount.toLocaleString('fa-IR')} خوانده‌نشده` : 'اعلان‌ها'}>
+              {isAuthenticated && <Link to="/notifications" className="nav-icon nav-bell" aria-label={unreadLabel}>
                   <FiBell aria-hidden="true" />
-                  {displayedUnreadCount > 0 && <span className="nav-icon-count" aria-hidden="true">
-                      {countLabel(displayedUnreadCount)}
+                  {(displayedUnreadCount > 0 || unreadState.status !== 'ready') && <span className="nav-icon-count" aria-hidden="true">
+                      {displayedUnreadCount !== null && displayedUnreadCount > 0 ? countLabel(displayedUnreadCount) : ''}{unreadState.status !== 'ready' ? '؟' : ''}
                     </span>}
                 </Link>}
               {renderCartLink('')}
@@ -126,7 +131,7 @@ function Navbar() {
               فروش کتاب
             </Link>
 
-<NavbarAccountMenu user={user} isAuthenticated={isAuthenticated} displayedUnreadCount={displayedUnreadCount} isAdmin={isAdmin} handleLogout={handleLogout} location={location} />
+<NavbarAccountMenu user={user} isAuthenticated={isAuthenticated} displayedUnreadCount={displayedUnreadCount} unreadState={unreadState} isAdmin={isAdmin} handleLogout={handleLogout} location={location} />
           </Nav>
         </BSNavbar.Collapse>
       </Container>

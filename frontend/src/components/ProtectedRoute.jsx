@@ -3,12 +3,14 @@ import { useAuth } from '../context/useAuth.js';
 import Loading from './Loading';
 
 function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, authError } = useAuth();
   const location = useLocation();
 
   if (loading) {
     return <Loading fullPage />;
   }
+
+  if (authError) return null; // پیام و تلاش دوباره در SessionStatus، داخل پوستهٔ صفحه است.
 
   if (!isAuthenticated) {
     // مسیر فعلی را همراه ریدایرکت ذخیره می‌کنیم تا Login.jsx بتواند

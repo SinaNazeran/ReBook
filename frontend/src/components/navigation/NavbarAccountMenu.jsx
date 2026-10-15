@@ -2,11 +2,13 @@ import { NavDropdown, Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FiUser, FiBookOpen, FiShoppingBag, FiBell, FiHeart, FiSettings, FiLogOut } from "react-icons/fi";
 import { formatPersianNumber } from '../../utils/locale';
+import UnreadStatus from './UnreadStatus';
 import { ADMIN_URL } from "../../services/api";
 export function NavbarAccountMenu({
   user,
   isAuthenticated,
   displayedUnreadCount,
+  unreadState,
   isAdmin,
   handleLogout,
   location
@@ -61,6 +63,10 @@ export function NavbarAccountMenu({
                         {displayedUnreadCount > 99 ? '۹۹+' : formatPersianNumber(displayedUnreadCount)}
                       </Badge>}
                   </NavDropdown.Item>
+
+                  {unreadState && !['ready', 'idle'].includes(unreadState.status) && <NavDropdown.Header role="none">
+                    <UnreadStatus state={unreadState} />
+                  </NavDropdown.Header>}
 
                   <NavDropdown.Item as={Link} to="/wishlist" className="d-flex align-items-center gap-2 py-2">
                     <FiHeart size={16} className="text-muted" />

@@ -1,11 +1,13 @@
 import Form from "../../components/Form";
 import { Row, Col } from "react-bootstrap";
+import CategoryState from '../../components/CategoryState';
 export function BookMetadataFields({
   formData,
   handleChange,
   error,
   roots,
-  categories
+  categories,
+  categoryState
 }) {
   return <fieldset className="sell-section">
                 <legend>کتاب</legend>
@@ -48,8 +50,9 @@ export function BookMetadataFields({
                       <Form.Label>
                         دسته‌بندی <span className="sell-optional">(اختیاری)</span>
                       </Form.Label>
-                      <Form.Select name="category" value={formData.category} onChange={handleChange} aria-describedby="category-help" isInvalid={!!error('category')}>
+                      <Form.Select name="category" value={formData.category} onChange={handleChange} aria-describedby="category-help" isInvalid={!!error('category')} disabled={categoryState.status !== 'ready'}>
                         <option value="">بدون دسته‌بندی</option>
+                        {formData.category && !categories.some(category => String(category.id) === String(formData.category)) && <option value={formData.category}>دسته‌بندی فعلی</option>}
                         {roots.map(root => <optgroup key={root.id} label={root.name}>
                             <option value={root.id}>{root.name}</option>
                             {categories.filter(cat => cat.parent === root.id).map(cat => <option key={cat.id} value={cat.id}>
@@ -58,6 +61,7 @@ export function BookMetadataFields({
                           </optgroup>)}
                       </Form.Select>
                       <Form.Text id="category-help">خریداران کتاب را از زبانه‌ی همین دسته پیدا می‌کنند.</Form.Text>
+                      <CategoryState state={categoryState} />
                       <Form.Control.Feedback type="invalid">{error('category')}</Form.Control.Feedback>
                     </Form.Group>
                   </Col>

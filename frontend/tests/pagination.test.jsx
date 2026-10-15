@@ -91,9 +91,10 @@ it('loads late category pages before publishing navigation categories', async ()
   await expect(fetchCategories()).rejects.toThrow('offline');
   const { result } = renderHook(() => useSeries());
   await waitFor(() => expect(api.getCategories).toHaveBeenCalledTimes(4));
-  expect(result.current).toEqual([]);
+  expect(result.current.series).toEqual([]);
+  expect(result.current.status).toBe('loading');
   await act(async () => resolveSecond(page([{ id: 121, parent: null }])));
-  expect(result.current.map(category => category.id)).toEqual([1, 121]);
+  expect(result.current.series.map(category => category.id)).toEqual([1, 121]);
   expect(api.getCategories.mock.calls.map(([params]) => params)).toEqual([
     { page: 1, page_size: 120 }, { page: 2, page_size: 120 },
     { page: 1, page_size: 120 }, { page: 2, page_size: 120 },

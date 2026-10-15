@@ -11,7 +11,9 @@ export function useBookDetail() {
   const location = useLocation();
   const {
     user,
-    isAuthenticated
+    isAuthenticated,
+    loading: authLoading,
+    authError
   } = useAuth();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -110,6 +112,7 @@ export function useBookDetail() {
     boughtByMe,
     cancelling,
     cartBusy,
+    cartUnavailable: Boolean(authLoading || authError),
     cartMessage,
     isInCart,
     handleRetry

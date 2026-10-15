@@ -10,6 +10,7 @@ export function BookEditorForm({
   error,
   roots,
   categories,
+  categoryState,
   shownCover,
   imagePreview,
   coverImage,
@@ -23,7 +24,7 @@ export function BookEditorForm({
   editing
 }) {
   return <Form onSubmit={handleSubmit} noValidate>
-              <BookMetadataFields formData={formData} handleChange={handleChange} error={error} roots={roots} categories={categories} />
+              <BookMetadataFields formData={formData} handleChange={handleChange} error={error} roots={roots} categories={categories} categoryState={categoryState} />
 
 <BookSaleFields error={error} formData={formData} handleChange={handleChange} />
 

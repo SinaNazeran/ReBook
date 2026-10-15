@@ -1,4 +1,4 @@
-import { fetchCategories } from '../../utils/categories';
+import { useCategories } from '../../utils/categories';
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.js";
 import { useState, useEffect } from "react";
@@ -25,7 +25,8 @@ export function useBookEditor() {
     state: 'ready'
   });
   const [reloadKey, setReloadKey] = useState(0);
-  const [categories, setCategories] = useState([]);
+  const categoryState = useCategories();
+  const { categories } = categoryState;
   const [fieldErrors, setFieldErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -50,17 +51,6 @@ export function useBookEditor() {
     handleDrop,
     removeImage
   } = useCoverUpload(clearFieldError, setFieldErrors);
-  useEffect(() => {
-    let ignore = false;
-    fetchCategories().then(categories => {
-      if (!ignore) setCategories(categories);
-    }).catch(() => {
-      // بدون دسته‌بندی هم می‌شود ثبت کرد؛ فقط فهرست خالی می‌ماند
-    });
-    return () => {
-      ignore = true;
-    };
-  }, []);
   useEffect(() => {
     if (!editing) return undefined;
     let ignore = false;
@@ -214,6 +204,7 @@ export function useBookEditor() {
     generalError,
     handleSubmit,
     categories,
+    categoryState,
     formData,
     handleChange,
     error,

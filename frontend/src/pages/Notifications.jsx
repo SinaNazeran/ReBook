@@ -1,5 +1,7 @@
 import { formatPersianDate as formatDate } from '../utils/locale';
 import { useUnreadCount } from '../components/navigation/useUnreadCount';
+import UnreadStatus from '../components/navigation/UnreadStatus';
+import { useAuth } from '../context/useAuth';
 import { usePagedList } from '../hooks/usePagedList';
 import LoadMore from '../components/LoadMore';
 import { useState } from 'react';
@@ -34,7 +36,9 @@ const bookLinks = ({ notification_type: type, book }) => {
 
 function Notifications() {
   const [readVersion, setReadVersion] = useState(0);
-  const unreadCount = useUnreadCount(true, readVersion);
+  const { user } = useAuth();
+  const unreadState = useUnreadCount(user?.id, readVersion);
+  const unreadCount = unreadState.count;
   const list = usePagedList(notificationAPI.getNotifications);
   const { items: notifications, setItems: setNotifications, loading, loadError, reload: handleRetry } = list;
 
@@ -85,6 +89,7 @@ function Notifications() {
             </Button>
           )}
         </header>
+        <UnreadStatus state={unreadState} />
 
         {loadError ? (
           <div className="list-state" role="alert">

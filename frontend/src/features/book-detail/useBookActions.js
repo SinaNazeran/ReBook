@@ -8,6 +8,7 @@ export function useBookActions({
   setWishlisted,
   id,
   setCartBusy,
+  cartUnavailable,
   addToCart,
   book,
   focusCartLink,
@@ -42,12 +43,17 @@ export function useBookActions({
     }
   };
   const handleAddToCart = async () => {
+    if (cartUnavailable) return;
     setCartBusy(true);
     try {
       await addToCart(book.id);
       focusCartLink.current = true;
       setCartMessage('به سبد اضافه شد.');
     } catch (error) {
+      if (error.code === 'ERR_SESSION_UNAVAILABLE') {
+        setCartMessage(error.message);
+        return;
+      }
       toast.error(getErrorMessage(error));
       refreshBook();
     } finally {
@@ -55,11 +61,16 @@ export function useBookActions({
     }
   };
   const handleRemoveFromCart = async () => {
+    if (cartUnavailable) return;
     setCartBusy(true);
     try {
       await removeFromCart(book.id);
       setCartMessage('از سبد برداشته شد.');
     } catch (error) {
+      if (error.code === 'ERR_SESSION_UNAVAILABLE') {
+        setCartMessage(error.message);
+        return;
+      }
       toast.error(getErrorMessage(error));
     } finally {
       setCartBusy(false);

@@ -14,6 +14,9 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
+  const [sessionAttempt, setSessionAttempt] = useState(0);
+  const sessionBusy = useRef(true);
   const authGeneration = useRef(0);
   const ensureGeneration = useCallback((generation) => {
     if (generation !== authGeneration.current) {
@@ -30,10 +33,22 @@ export function AuthProvider({ children }) {
     ensureGeneration(generation);
     setMutationActor(nextUser?.id ?? null);
     setUser(nextUser);
+    setAuthError(null);
   }, [ensureGeneration]);
+
+  const retrySession = useCallback(() => {
+    if (sessionBusy.current) return;
+    sessionBusy.current = true;
+    beginAuth();
+    setUser(null);
+    setAuthError(null);
+    setLoading(true);
+    setSessionAttempt(attempt => attempt + 1);
+  }, [beginAuth]);
 
   useEffect(() => {
     const generation = beginAuth();
+    sessionBusy.current = true;
 
     authAPI
       .getCsrfToken()
@@ -46,27 +61,33 @@ export function AuthProvider({ children }) {
           applyUser(response.data, generation);
         }
       })
-      .catch(() => {
+      .catch(error => {
         if (generation === authGeneration.current) {
-          applyUser(null, generation);
+          if (error.response?.status === 401) applyUser(null, generation);
+          else {
+            setUser(null);
+            setAuthError('وضعیت ورود بررسی نشد. اتصال اینترنت را بررسی کن و دوباره تلاش کن.');
+          }
         }
       })
       .finally(() => {
         if (generation === authGeneration.current) {
           setLoading(false);
+          sessionBusy.current = false;
         }
       });
 
     return () => {
       beginAuth();
     };
-  }, [applyUser, beginAuth, ensureGeneration]);
+  }, [applyUser, beginAuth, ensureGeneration, sessionAttempt]);
 
   useEffect(() => {
     const handleUnauthorized = () => {
       const generation = beginAuth();
       applyUser(null, generation);
       setLoading(false);
+      sessionBusy.current = false;
     };
     window.addEventListener("auth:unauthorized", handleUnauthorized);
     return () =>
@@ -89,7 +110,10 @@ export function AuthProvider({ children }) {
       applyUser(profile?.data ?? null, generation);
       throw error;
     } finally {
-      if (generation === authGeneration.current) setLoading(false);
+      if (generation === authGeneration.current) {
+        setLoading(false);
+        sessionBusy.current = false;
+      }
     }
   }, [applyUser, beginAuth, ensureGeneration]);
 
@@ -122,6 +146,8 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       loading,
+      authError,
+      retrySession,
       loginUser,
       logoutUser,
       registerUser,
@@ -129,7 +155,7 @@ export function AuthProvider({ children }) {
       isAuthenticated: !!user,
       isAdmin: !!user?.is_staff,
     }),
-    [user, loading, loginUser, logoutUser, registerUser, updateUser],
+    [user, loading, authError, retrySession, loginUser, logoutUser, registerUser, updateUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

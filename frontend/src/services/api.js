@@ -187,7 +187,7 @@ function mutationPost(path, data) {
 
 export const notificationAPI = {
   getNotifications: (params) => api.get("/notifications/", { params }),
-  getUnreadCount: () => api.get("/notifications/unread-count/"), // { count } برای نشان نوار بالا
+  getUnreadCount: (config = {}) => api.get("/notifications/unread-count/", config), // { count } برای نشان نوار بالا
   markAsRead: (id) => api.post(`/notifications/${id}/read/`),
   markAllAsRead: () => api.post("/notifications/read-all/"),
   createTicket: (data) => api.post("/notifications/support/create/", data),

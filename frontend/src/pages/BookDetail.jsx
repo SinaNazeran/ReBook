@@ -26,6 +26,7 @@ function BookDetail() {
     boughtByMe,
     cancelling,
     cartBusy,
+    cartUnavailable,
     cartMessage,
     isInCart,
     handleRetry,
@@ -96,9 +97,9 @@ function BookDetail() {
   const primaryAction = canBuy ? isInCart ? <Link to="/cart" className="btn btn-primary buy-cart-link d-inline-flex align-items-center gap-2">
         <FiShoppingCart aria-hidden="true" />
         در سبد است · مشاهده‌ی سبد
-      </Link> : <Button variant="primary" onClick={handleAddToCart} disabled={cartBusy} className="d-inline-flex align-items-center gap-2">
+      </Link> : <Button variant="primary" onClick={handleAddToCart} disabled={cartBusy || cartUnavailable} className="d-inline-flex align-items-center gap-2">
         <FiShoppingCart aria-hidden="true" />
-        {cartBusy ? 'در حال افزودن…' : 'افزودن به سبد'}
+        {cartUnavailable ? 'ابتدا وضعیت ورود را بررسی کن' : cartBusy ? 'در حال افزودن…' : 'افزودن به سبد'}
       </Button> : canPay ? <Button variant="primary" onClick={() => setPayingOrderId(openOrder.id)}>
       پرداخت آزمایشی
     </Button> : null;
@@ -127,7 +128,7 @@ function BookDetail() {
 
           <Col lg={8}>
 <BookDetails book={book} ink={ink} notesOpen={notesOpen} setNotesOpen={setNotesOpen}>
-<BookPurchasePanel price={price} book={book} status={status} primaryAction={primaryAction} canEdit={canEdit} canPay={canPay} handleCancelOrder={handleCancelOrder} cancelling={cancelling} isInCart={isInCart} handleRemoveFromCart={handleRemoveFromCart} cartBusy={cartBusy} isOwner={isOwner} handleWishlistToggle={handleWishlistToggle} wishlisted={wishlisted} cartMessage={cartMessage} />
+<BookPurchasePanel price={price} book={book} status={status} primaryAction={primaryAction} canEdit={canEdit} canPay={canPay} handleCancelOrder={handleCancelOrder} cancelling={cancelling} isInCart={isInCart} handleRemoveFromCart={handleRemoveFromCart} cartBusy={cartBusy || cartUnavailable} isOwner={isOwner} handleWishlistToggle={handleWishlistToggle} wishlisted={wishlisted} cartMessage={cartMessage} />
 </BookDetails>
           </Col>
         </Row>

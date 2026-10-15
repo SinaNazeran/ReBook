@@ -15,7 +15,8 @@ function Cart() {
   const location = useLocation();
   const {
     user,
-    isAuthenticated
+    isAuthenticated,
+    authError
   } = useAuth();
   const {
     items,
@@ -106,6 +107,7 @@ function Cart() {
       setBusy(false);
     }
   };
+  if (authError) return null;
   if (receipt) {
     return <div className="series-paper">
         <Container className="ledger-page">

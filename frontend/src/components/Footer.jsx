@@ -6,6 +6,7 @@ import BrandMark from './BrandMark';
 import { useAuth } from '../context/useAuth.js';
 import { useSeries } from '../utils/categories';
 import { seriesInk } from '../utils/series';
+import CategoryState from './CategoryState';
 
 // سال جاری به تقویم شمسی، بدون نیاز به کتابخانه‌ی جانبی
 function getCurrentPersianYear() {
@@ -25,7 +26,8 @@ function scrollToTop() {
  */
 function Footer() {
   const { isAuthenticated } = useAuth();
-  const series = useSeries();
+  const categoryState = useSeries();
+  const series = categoryState.series;
 
   return (
     <footer className="site-footer mt-5">
@@ -44,11 +46,11 @@ function Footer() {
           <p className="mb-0">جایی برای دادن زندگی دوباره به کتاب‌هایتان.</p>
         </div>
 
-        {series.length > 0 && (
           <nav className="site-footer-col site-footer-series-col" aria-labelledby="footer-series">
             <h2 id="footer-series" className="site-footer-heading">
               مجموعه‌ها
             </h2>
+            <CategoryState state={categoryState} label="مجموعه‌ها" empty={!series.length} />
             <ul className="site-footer-series">
               {series.map((category) => (
                 <li key={category.id}>
@@ -60,7 +62,6 @@ function Footer() {
               ))}
             </ul>
           </nav>
-        )}
 
         <nav className="site-footer-col" aria-labelledby="footer-trade">
           <h2 id="footer-trade" className="site-footer-heading">

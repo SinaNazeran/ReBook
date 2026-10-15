@@ -7,7 +7,8 @@ const CartContext = createContext(null);
 const EMPTY_CART = { items: [], count: 0, total: 0 };
 
 export function CartProvider({ children }) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading, authError } = useAuth();
+  const authLoading = loading || Boolean(authError);
   const [cart, setCart] = useState(EMPTY_CART);
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [reloadKey, setReloadKey] = useState(0);
@@ -60,7 +61,11 @@ export function CartProvider({ children }) {
   // تغییرهای همین کاربر به ترتیب اجرا می‌شوند؛ پاسخ سرور وضعیت قطعی سبد است.
   const mutate = useCallback((send, bookId) => {
     const queue = queueRef.current;
-    if (!queue.active || queue.owner !== owner) return Promise.resolve();
+    if (!queue.active || queue.owner !== owner) {
+      const error = new Error('وضعیت ورود هنوز مشخص نیست؛ بررسی ورود را دوباره انجام بده.');
+      error.code = 'ERR_SESSION_UNAVAILABLE';
+      return Promise.reject(error);
+    }
     ++queue.pending;
     ++queue.version;
     const request = queue.tail.then(async () => {

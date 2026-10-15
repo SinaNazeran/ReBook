@@ -10,10 +10,12 @@ import { CatalogFilters } from "../features/catalog/CatalogFilters.jsx";
 import { Link } from "react-router-dom";
 import { FiX } from "react-icons/fi";
 import { CatalogResults } from "../features/catalog/CatalogResults.jsx";
+import CategoryState from '../components/CategoryState';
 function BookList() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const {
+    categoryState,
     setSearchParams,
     search,
     setSearch,
@@ -65,6 +67,7 @@ function BookList() {
       <Container className="book-list-page">
         <title>{`${title} | ری‌بوک`}</title>
 <CatalogCategories rootCategories={rootCategories} categoryHref={categoryHref} activeSlug={activeSlug} activeRoot={activeRoot} subCategories={subCategories} activeCategory={activeCategory} />
+        <CategoryState state={categoryState} />
 
         {/* سرصفحه‌ی مجموعه: مرکب دسته‌ی فعال نوار پهن بالای سرصفحه می‌شود */}
         <header className="list-header" style={{

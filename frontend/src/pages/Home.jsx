@@ -1,4 +1,5 @@
-import { fetchCategories } from '../utils/categories';
+import { useSeries } from '../utils/categories';
+import CategoryState from '../components/CategoryState';
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -19,7 +20,8 @@ function Home() {
   const [latestBooks, setLatestBooks] = useState([]);
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [reloadKey, setReloadKey] = useState(0);
-  const [shelves, setShelves] = useState([]);
+  const categoryState = useSeries();
+  const shelves = categoryState.series;
 
   const gridBooks = latestBooks.slice(0, GRID_COUNT);
 
@@ -48,29 +50,18 @@ function Home() {
     };
   }, [reloadKey]);
 
-  // فهرست دسته‌ها فقط راه میان‌بر است؛ اگر نیامد، هیرو بدون آن کامل است
-  useEffect(() => {
-    let ignore = false;
-    fetchCategories()
-      .then((categories) => {
-        if (!ignore) setShelves(categories.filter((cat) => cat.parent === null));
-      })
-      .catch(() => {});
-    return () => {
-      ignore = true;
-    };
-  }, []);
 
   return (
     <>
       <HomeHero status={status} books={latestBooks} />
 
-      {shelves.length > 0 && (
+      {(
         <section className="series-key" aria-labelledby="series-key-title">
           <Container>
             <h2 id="series-key-title" className="home-section-title display-type">
               مجموعه‌ها
             </h2>
+            <CategoryState state={categoryState} label="مجموعه‌ها" empty={!shelves.length} />
             {/* مجموعه‌ها مثل کتاب‌های کلاسیک روی قفسه: هر دسته یک عطف چرمی به رنگ مجموعه با برچسب طلاکوب */}
             <ul className="series-spines">
               {shelves.map((cat) => (

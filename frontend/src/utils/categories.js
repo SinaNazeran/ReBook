@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { bookAPI } from '../services/api';
 
 // Share only a complete category tree; a failed page never becomes a cached partial tree.
@@ -45,19 +45,35 @@ export function fetchCategories() {
   return request;
 }
 
-/** دسته‌های سطح اول (مجموعه‌ها)؛ اگر نرسید، فهرست خالی می‌ماند و پیوندهای مجموعه دیده نمی‌شوند */
-export function useSeries() {
-  const [series, setSeries] = useState([]);
+export function useCategories() {
+  const [state, setState] = useState({ categories: [], status: 'loading' });
+  const [attempt, setAttempt] = useState(0);
+  const busy = useRef(true);
+  const retry = useCallback(() => {
+    if (busy.current) return;
+    busy.current = true;
+    setState(current => ({ ...current, status: 'loading' }));
+    setAttempt(current => current + 1);
+  }, []);
   useEffect(() => {
     let ignore = false;
+    busy.current = true;
     fetchCategories()
-      .then((list) => {
-        if (!ignore) setSeries(list.filter((category) => category.parent === null));
+      .then(categories => {
+        if (!ignore) setState({ categories, status: 'ready' });
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!ignore) setState(current => ({ ...current, status: 'error' }));
+      })
+      .finally(() => { if (!ignore) busy.current = false; });
     return () => {
       ignore = true;
     };
-  }, []);
-  return series;
+  }, [attempt]);
+  return { ...state, retry };
+}
+
+export function useSeries() {
+  const state = useCategories();
+  return { ...state, series: state.categories.filter(category => category.parent === null) };
 }

@@ -1,6 +1,6 @@
-import { fetchCategories } from '../../utils/categories';
+import { useCategories } from '../../utils/categories';
 import { useSearchParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { seriesInk } from "../../utils/series";
 const DEFAULT_ORDERING = '-created_at';
 export const CONDITION_OPTIONS = [{
@@ -35,7 +35,8 @@ export const ORDERING_OPTIONS = [{
 }];
 export function useCatalogFilters(setLoading, setLoadError) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [categories, setCategories] = useState([]);
+  const categoryState = useCategories();
+  const { categories } = categoryState;
   const [showFilters, setShowFilters] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedCondition, setSelectedCondition] = useState('');
@@ -59,15 +60,6 @@ export function useCatalogFilters(setLoading, setLoadError) {
   }
   const activeSlug = searchParams.get('category') || '';
   const ordering = searchParams.get('ordering') || DEFAULT_ORDERING;
-  useEffect(() => {
-    let ignore = false;
-    fetchCategories().then(categories => {
-      if (!ignore) setCategories(categories);
-    }).catch(() => {});
-    return () => {
-      ignore = true;
-    };
-  }, []);
   const withParams = changes => {
     const next = new URLSearchParams(searchParams);
     Object.entries(changes).forEach(([key, value]) => {
@@ -130,6 +122,7 @@ export function useCatalogFilters(setLoading, setLoadError) {
   const title = activeCategory?.name ?? (activeSlug ? 'کتاب‌ها' : 'همه‌ی کتاب‌ها');
   const titleInk = activeRoot ? seriesInk(activeRoot.id) : 'var(--rb-brand)';
   return {
+    categoryState,
     searchParams,
     setSearchParams,
     search,

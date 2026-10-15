@@ -131,9 +131,9 @@ it('cancels queued work and stale callbacks when account changes', async () => {
   state.auth = { user: { id: 2 }, loading: false };
   await act(async () => { view.rerender(<CartProvider><Probe /></CartProvider>); });
   let stale;
-  act(() => { stale = staleAdd(9); });
+  act(() => { stale = staleAdd(9).catch(error => error); });
   expect(state.api.addToCart.mock.calls.map(call => call[0])).toEqual([7]);
-  await act(async () => { await stale; });
+  await act(async () => { expect(await stale).toMatchObject({ code: 'ERR_SESSION_UNAVAILABLE' }); });
   await act(async () => { addition.resolve(response(1)); await one; await two; });
   expect(state.api.removeFromCart).not.toHaveBeenCalled();
   expect(state.api.addToCart.mock.calls.map(call => call[0])).toEqual([7]);

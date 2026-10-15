@@ -1,10 +1,13 @@
 import { NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import CategoryState from '../CategoryState';
 export function NavbarCategories({
   series,
-  seriesLinkProps
+  seriesLinkProps,
+  categoryState
 }) {
   return <>
+            <CategoryState state={categoryState} label="مجموعه‌ها" empty={!series.length} />
             {series.length > 0 && <NavDropdown title="مجموعه‌ها" id="series-menu" className="series-menu d-none d-lg-block">
                 <div className="series-menu-grid">
                   {series.map(category => <NavDropdown.Item key={category.id} as={Link} className="series-menu-item" {...seriesLinkProps(category)}>

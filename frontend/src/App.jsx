@@ -9,6 +9,7 @@ import Toaster from "./components/Toaster";
 import Footer from "./components/Footer";
 import Loading from "./components/Loading";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SessionStatus from "./components/SessionStatus";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound";
@@ -57,6 +58,7 @@ function App() {
         <Navbar />
 
         <main id="main" className="flex-grow-1" tabIndex={-1}>
+          <SessionStatus />
           <ErrorBoundary>
             <Suspense fallback={<Loading fullPage />}>
               <Routes>
