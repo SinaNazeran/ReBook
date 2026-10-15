@@ -1,3 +1,4 @@
+import { bookCanonical } from '../utils/canonicals.js';
 import { bookDescription } from '../utils/metadata.js';
 import PageMetadata from '../components/PageMetadata.jsx';
 import { useState } from "react";
@@ -42,13 +43,13 @@ function BookDetail() {
     handlePaid,
     handleCancelOrder
   } = useBookActions(detail);
-  if (loading) return <><PageMetadata title="بارگذاری کتاب | ری‌بوک" description="مشخصات کتاب در ری‌بوک در حال بارگذاری است." /><Loading fullPage heading="بارگذاری کتاب" /></>;
+  if (loading) return <><PageMetadata canonical={null} title="بارگذاری کتاب | ری‌بوک" description="مشخصات کتاب در ری‌بوک در حال بارگذاری است." /><Loading fullPage heading="بارگذاری کتاب" /></>;
   if (loadError === 'not_found') {
     return <NotFound title="این کتاب پیدا نشد" message="شاید آگهی‌اش حذف شده یا هنوز منتشر نشده است. نسخه‌های دیگر را در فهرست ببین." />;
   }
   if (loadError) {
     return <Container className="py-5">
-        <PageMetadata title="خطا در بارگذاری کتاب | ری‌بوک" description="مشخصات کتاب بارگذاری نشد. دوباره تلاش کنید یا کتاب‌های دیگر را در فهرست ری‌بوک ببینید." />
+        <PageMetadata canonical={null} title="خطا در بارگذاری کتاب | ری‌بوک" description="مشخصات کتاب بارگذاری نشد. دوباره تلاش کنید یا کتاب‌های دیگر را در فهرست ری‌بوک ببینید." />
         <div className="list-state" role="alert">
           <h1 className="visually-hidden">کتاب بارگذاری نشد</h1>
           <p>کتاب بارگذاری نشد. اتصال اینترنت را بررسی کن و دوباره امتحان کن.</p>
@@ -112,7 +113,7 @@ function BookDetail() {
     '--series': ink
   }}>
       <Container className="book-detail">
-        <PageMetadata title={`${book.title} | ری‌بوک`} description={bookDescription(book)} />
+        <PageMetadata title={`${book.title} | ری‌بوک`} description={bookDescription(book)} canonical={bookCanonical(book)} />
         <Row className="g-4 g-lg-5">
           <Col lg={4}>
             <figure className={`detail-cover${book.cover_width ? ' is-sized' : ''}`} style={{

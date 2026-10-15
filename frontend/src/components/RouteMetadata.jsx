@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import PageMetadata from './PageMetadata.jsx';
 import { HOME_TITLE, HOME_DESCRIPTION } from '../utils/metadata.js';
+import { routeCanonical } from '../utils/canonicals.js';
 
 const titles = {
   '/': HOME_TITLE, '/books': 'همه‌ی کتاب‌ها | ری‌بوک',
@@ -13,7 +14,7 @@ const titles = {
 };
 
 export default function RouteMetadata() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const path = pathname.replace(/\/+$/, '').toLowerCase() || '/';
   const title = titles[path] || ( /^\/books\/[^/]+\/edit$/.test(path)
     ? 'ویرایش آگهی | ری‌بوک' : /^\/books\/[^/]+$/.test(path)
@@ -22,5 +23,5 @@ export default function RouteMetadata() {
     ? 'کتاب‌های دست دوم را در فهرست ری‌بوک مرور و جست‌وجو کنید.'
     : title.startsWith('بارگذاری') ? 'مشخصات کتاب در ری‌بوک در حال بارگذاری است.'
       : title.startsWith('این صفحه') ? 'این نشانی در ری‌بوک پیدا نشد. کتاب‌ها را در فهرست مرور کنید.' : undefined;
-  return <PageMetadata priority={0} title={title} description={description} />;
+  return <PageMetadata priority={0} title={title} description={description} canonical={routeCanonical(pathname, search)} />;
 }

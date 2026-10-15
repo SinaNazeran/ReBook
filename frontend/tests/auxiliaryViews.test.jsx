@@ -5,6 +5,7 @@ import BookList from '../src/pages/BookList';
 import Home from '../src/pages/Home';
 import CreateBook from '../src/pages/CreateBook';
 import Notifications from '../src/pages/Notifications';
+import RouteMetadata from '../src/components/RouteMetadata.jsx';
 
 const api = vi.hoisted(() => ({ getCategories: vi.fn(), getBooks: vi.fn(), getBook: vi.fn(),
   getNotifications: vi.fn(), getUnreadCount: vi.fn(), updateBook: vi.fn() }));
@@ -24,7 +25,21 @@ beforeEach(() => {
   api.getCategories.mockRejectedValue(new Error('offline'));
   api.getBooks.mockResolvedValue(page([{ id: 1, title: 'کتاب موجود' }]));
 });
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
+
+it('clears the catalog canonical after a request failure and restores it after retry', async () => {
+  vi.stubEnv('VITE_SITE_URL', 'https://frontend.verification-only.example');
+  api.getBooks.mockRejectedValueOnce(new Error('offline'));
+  render(<MemoryRouter initialEntries={['/books?page=2&category=fiction&utm_source=mail']}>
+    <RouteMetadata /><BookList />
+  </MemoryRouter>);
+  await screen.findByText('کتاب‌ها بارگذاری نشدند. اتصال اینترنت را بررسی کن و دوباره امتحان کن.');
+  expect(document.head.querySelector('link[rel="canonical"]')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'تلاش دوباره' }));
+  await screen.findByText('کتاب موجود');
+  expect(document.head.querySelector('link[rel="canonical"]').href)
+    .toBe('https://frontend.verification-only.example/books?category=fiction&page=2');
+});
 
 it('keeps catalog results usable when categories fail and distinguishes empty retry success', async () => {
   render(<MemoryRouter><BookList /></MemoryRouter>);

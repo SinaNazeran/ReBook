@@ -68,7 +68,7 @@ function BookList() {
     '--series': activeRoot ? seriesInk(activeRoot.id) : undefined
   }}>
       <Container className="book-list-page">
-        <PageMetadata title={`${title} | ری‌بوک`} description={catalogDescription(activeCategory, chips)} />
+        <PageMetadata title={`${title} | ری‌بوک`} description={catalogDescription(activeCategory, chips)} canonical={loadError ? null : undefined} />
 <CatalogCategories rootCategories={rootCategories} categoryHref={categoryHref} activeSlug={activeSlug} activeRoot={activeRoot} subCategories={subCategories} activeCategory={activeCategory} />
         <CategoryState state={categoryState} />
 

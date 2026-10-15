@@ -4,12 +4,14 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { hostHeaderArtifacts, parseHostHeaders, securityHeaders } from './security-headers'
+import { siteOrigin } from './src/utils/canonicals.js'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode, command, isPreview }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
   const apiUrl = process.env.VITE_API_URL || env.VITE_API_URL;
   if (command === 'build' && !apiUrl) throw new Error('VITE_API_URL is required for production builds.');
+  siteOrigin(process.env.VITE_SITE_URL || env.VITE_SITE_URL, { required: command === 'build' });
   const hostPolicy = isPreview ? readFileSync(resolve(process.cwd(), 'dist/_headers'), 'utf8') : '';
   const headers = isPreview
     ? parseHostHeaders(hostPolicy)

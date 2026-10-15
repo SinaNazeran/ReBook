@@ -257,7 +257,8 @@ npm run dev -- --port 5173 --strictPort
 | `backend/.env` | `DJANGO_DEBUG` | برای اجرای محلی `1`؛ بدون آن تصاویر با سرور توسعه سرو نمی‌شوند |
 | `backend/.env` | `DJANGO_ALLOWED_HOSTS` | اختیاری؛ میزبان‌ها با ویرگول جدا می‌شوند؛ پیش‌فرض `localhost,127.0.0.1` |
 | `backend/.env` | `DJANGO_SECURE_COOKIES` | برای HTTPS مقدار `1`؛ در اجرای HTTP محلی فعال نشود |
-| `frontend/.env` | `VITE_API_URL` | اختیاری؛ پیش‌فرض `http://localhost:8000/api` |
+| `frontend/.env` | `VITE_API_URL` | در توسعه اختیاری؛ برای ساخت نسخهٔ انتشار، نشانی HTTPS لازم است |
+| `frontend/.env` | `VITE_SITE_URL` | برای ساخت نسخهٔ انتشار ضروری؛ مبدأ HTTPS فرانت‌اند، بدون مسیر، برای نشانی‌های canonical |
 
 برای تغییر نشانی API، فایل `frontend/.env` را با مقدار زیر بسازید و Vite را دوباره اجرا کنید:
 
@@ -268,6 +269,8 @@ VITE_API_URL=http://localhost:8000/api
 ```
 
 </div>
+
+برای ساخت نسخهٔ انتشار، هر دو متغیر را با نشانی واقعی سرویس‌ها تنظیم کنید. نمونه‌های `frontend/.env.example` فقط برای بررسی محلی‌اند و دامنهٔ انتشار نیستند. جزئیات و محدودیت‌های canonical در [راهنمای canonical](docs/reliability/canonical-urls.md) آمده است.
 
 فرانت‌اند و بک‌اند را با نام میزبان یکسان باز کنید: هر دو `localhost` یا هر دو `127.0.0.1`. برای تغییر پورت یا مبدأ فرانت‌اند، هر دو فهرست `CORS_ALLOWED_ORIGINS` و `CSRF_TRUSTED_ORIGINS` در [تنظیمات بک‌اند](backend/config/settings.py) باید به‌روز شوند.
 

@@ -7,6 +7,7 @@ afterEach(() => vi.unstubAllEnvs());
 
 it('emits reusable WOFF2 font preloads that match the production CSS and asset bytes', async () => {
   vi.stubEnv('VITE_API_URL', 'https://api.verification-only.example/api');
+  vi.stubEnv('VITE_SITE_URL', 'https://frontend.verification-only.example');
   const result = await build({ logLevel: 'silent', build: { write: false } });
   const assets = (Array.isArray(result) ? result : [result]).flatMap(bundle => bundle.output);
   const html = String(assets.find(asset => asset.fileName === 'index.html').source);

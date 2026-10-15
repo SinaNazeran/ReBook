@@ -27,7 +27,7 @@ function NotFound({
   return (
     <div className="series-paper" style={{ '--series': 'var(--rb-series-6)' }}>
       <div className="container not-found">
-        <PageMetadata title={`${title} | ری‌بوک`} description={message} />
+        <PageMetadata title={`${title} | ری‌بوک`} description={message} canonical={null} />
         {/* صحنه: قفسه‌ای با یک جای خالی، و کتاب گم‌شده که از قفسه افتاده و به آن تکیه داده است */}
         <div className="lost-scene" aria-hidden="true">
           <div className="lost-book">
