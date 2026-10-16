@@ -39,3 +39,39 @@ frontend/playwright-report/
 docs/superpowers/
 .codex/
 AGENTS.md
+
+# Additional Python environments and caches
+.venv/
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.tox/
+.nox/
+
+# Coverage outputs
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+coverage/
+
+# Django generated files and SQLite sidecars
+/backend/staticfiles/
+/backend/db.sqlite3-journal
+/backend/db.sqlite3-wal
+/backend/db.sqlite3-shm
+
+# Logs and temporary editor files
+logs/
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Local Codex repair backups
+/.codex.sandbox-repair-backup-*/
+
+# Historical audit retained locally
+/docs/reliability/boilerplate-audit.md
