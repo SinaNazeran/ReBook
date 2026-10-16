@@ -18,6 +18,7 @@ export function CatalogResults({
   handleToggleWishlist,
   hasMore,
   handleLoadMore,
+  nextPageHref,
   loadingMore
 }) {
   return <>
@@ -55,11 +56,16 @@ export function CatalogResults({
                       <BookCard book={book} isWishlisted={displayedWishlistIds.has(book.id)} wishlistBusy={pendingWishlistIds.has(book.id)} onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined} />
                     </Col>)}
             </Row>
-            {!loading && hasMore && <div className="text-center mt-4">
-                {/* aria-disabled به‌جای disabled: دکمه‌ی غیرفعال فوکوس را به body می‌اندازد */}
-                <Button variant="outline-primary" onClick={handleLoadMore} className={loadingMore ? 'disabled' : undefined} aria-disabled={loadingMore || undefined}>
+            {!loading && hasMore && <div className="catalog-continuation">
+                {/* لینک واقعی برای مرورگر و خزنده؛ کلیک ساده رفتار افزودن و فوکوس قبلی را نگه می‌دارد. */}
+                <Link to={nextPageHref} className={`btn btn-outline-primary${loadingMore ? ' disabled' : ''}`} aria-disabled={loadingMore || undefined} onClick={event => {
+                  if (loadingMore) { event.preventDefault(); return; }
+                  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                  event.preventDefault();
+                  handleLoadMore();
+                }}>
                   {loadingMore ? 'در حال بارگذاری…' : 'نمایش بیشتر'}
-                </Button>
+                </Link>
               </div>}
           </>}
 </>;

@@ -1,4 +1,5 @@
 import PageMetadata from '../components/PageMetadata.jsx';
+import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import { EDIT_LEADS } from "../features/book-editor/validation.js";
 import { useBookEditor } from "../features/book-editor/useBookEditor.js";
 import Loading from "../components/Loading";
@@ -34,6 +35,9 @@ function CreateBook() {
     handleImageChange,
     loading
   } = useBookEditor();
+  const breadcrumbs = editing && <Breadcrumbs items={[
+    { label: 'خانه', to: '/' }, { label: 'کتاب‌های من', to: '/my-books' }, { label: 'ویرایش آگهی' },
+  ]} />;
   if (listing.state === 'loading') return <Loading fullPage heading={editing ? "ویرایش آگهی" : "فروش کتاب"} />;
   if (listing.state === 'not_found') {
     return <NotFound title="این آگهی پیدا نشد" message="شاید حذف شده یا آگهی تو نیست. آگهی‌هایت را در «کتاب‌های من» ببین." />;
@@ -43,6 +47,7 @@ function CreateBook() {
     return <div className="series-paper">
         <Container className="sell-page">
           <PageMetadata title="ویرایش آگهی | ری‌بوک" />
+          {breadcrumbs}
           <header className="sell-header">
             <h1 className="sell-title">ویرایش آگهی</h1>
           </header>
@@ -82,6 +87,7 @@ function CreateBook() {
       {/* کاغذ صفحه همان مجموعه‌ای است که فروشنده انتخاب می‌کند، هم‌رنگ کارت پیش‌نمایش */}
       <Container className="sell-page">
         <PageMetadata title={editing ? 'ویرایش آگهی | ری‌بوک' : 'فروش کتاب | ری‌بوک'} />
+        {breadcrumbs}
         <header className="sell-header">
           <h1 className="sell-title">{editing ? 'ویرایش آگهی' : 'فروش کتاب'}</h1>
           <p className="sell-lead">

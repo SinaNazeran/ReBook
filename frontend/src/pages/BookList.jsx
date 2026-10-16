@@ -1,5 +1,7 @@
 import { catalogDescription } from '../utils/metadata.js';
 import PageMetadata from '../components/PageMetadata.jsx';
+import Breadcrumbs from '../components/Breadcrumbs.jsx';
+import { catalogCrumbs } from '../utils/breadcrumbs.js';
 import { ORDERING_OPTIONS } from "../features/catalog/useCatalogFilters.js";
 import { useState } from "react";
 import { useCatalogFilters } from "../features/catalog/useCatalogFilters.js";
@@ -54,6 +56,7 @@ function BookList() {
     count,
     hasMore,
     loadingMore,
+    nextPage,
     gridRef,
     handleRetry,
     handleLoadMore
@@ -64,6 +67,9 @@ function BookList() {
     pendingWishlistIds,
     handleToggleWishlist
   } = useCatalogWishlist(books);
+  const continuationParams = new URLSearchParams(paramsKey);
+  continuationParams.set('page', String(nextPage));
+  const nextPageHref = `/books?${continuationParams}`;
   return <div className="series-paper" style={{
     '--series': activeRoot ? seriesInk(activeRoot.id) : undefined
   }}>
@@ -76,7 +82,8 @@ function BookList() {
         <header className="list-header" style={{
         '--series-ink': titleInk
       }}>
-          <div>
+          <div className="list-heading">
+            <Breadcrumbs className="page-breadcrumbs-masthead" items={catalogCrumbs(activeCategory, categoryState.categories)} />
             <h1 className="list-title display-type">
               {title}
               {!loading && !loadError && <span className="list-count">
@@ -117,7 +124,7 @@ function BookList() {
               </button>}
           </div>}
 
-<CatalogResults loadError={loadError} handleRetry={handleRetry} loading={loading} books={books} chips={chips} clearChips={clearChips} activeCategory={activeCategory} gridRef={gridRef} displayedWishlistIds={displayedWishlistIds} pendingWishlistIds={pendingWishlistIds} isAuthenticated={isAuthenticated} handleToggleWishlist={handleToggleWishlist} hasMore={hasMore} handleLoadMore={handleLoadMore} loadingMore={loadingMore} />
+<CatalogResults loadError={loadError} handleRetry={handleRetry} loading={loading} books={books} chips={chips} clearChips={clearChips} activeCategory={activeCategory} gridRef={gridRef} displayedWishlistIds={displayedWishlistIds} pendingWishlistIds={pendingWishlistIds} isAuthenticated={isAuthenticated} handleToggleWishlist={handleToggleWishlist} hasMore={hasMore} handleLoadMore={handleLoadMore} loadingMore={loadingMore} nextPageHref={nextPageHref} />
       </Container>
     </div>;
 }

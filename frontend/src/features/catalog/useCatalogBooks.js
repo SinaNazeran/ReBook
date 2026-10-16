@@ -11,6 +11,7 @@ export function useCatalogBooks(paramsKey, page, setSearchParams, setLoading, se
   const [count, setCount] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [nextPage, setNextPage] = useState(2);
   const [reloadKey, setReloadKey] = useState(0);
   const loadedRef = useRef({
     key: null,
@@ -44,6 +45,7 @@ export function useCatalogBooks(paramsKey, page, setSearchParams, setLoading, se
       }
       setCount(response.data.count ?? fetched.length);
       setHasMore(Boolean(response.data.next));
+      setNextPage(pages + 1);
       loadedRef.current = {
         key: paramsKey,
         userId,
@@ -85,6 +87,8 @@ export function useCatalogBooks(paramsKey, page, setSearchParams, setLoading, se
     if (loadingMore) return;
     focusFromRef.current = books.length;
     setLoadingMore(true);
+    // پس از خطای افزودن، URL همان صفحه است؛ تلاش دوباره باید اثر واکشی را هم فعال کند.
+    if (page === loadedRef.current.pages + 1) setReloadKey(key => key + 1);
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
       next.set('page', loadedRef.current.pages + 1);
@@ -98,6 +102,7 @@ export function useCatalogBooks(paramsKey, page, setSearchParams, setLoading, se
     count,
     hasMore,
     loadingMore,
+    nextPage,
     gridRef,
     handleRetry,
     handleLoadMore

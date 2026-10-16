@@ -1,6 +1,7 @@
 import { bookCanonical } from '../utils/canonicals.js';
 import { bookDescription } from '../utils/metadata.js';
 import PageMetadata from '../components/PageMetadata.jsx';
+import BookBreadcrumbs from '../components/BookBreadcrumbs.jsx';
 import { useState } from "react";
 import { useBookDetail } from "../features/book-detail/useBookDetail.js";
 import { useBookActions } from "../features/book-detail/useBookActions.js";
@@ -114,6 +115,7 @@ function BookDetail() {
   }}>
       <Container className="book-detail">
         <PageMetadata title={`${book.title} | ری‌بوک`} description={bookDescription(book)} canonical={bookCanonical(book)} />
+        <BookBreadcrumbs book={book} />
         <Row className="g-4 g-lg-5">
           <Col lg={4}>
             <figure className={`detail-cover${book.cover_width ? ' is-sized' : ''}`} style={{

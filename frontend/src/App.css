@@ -6,6 +6,7 @@
 @import "./styles/app/home-hero.css";
 @import "./styles/app/home-sections.css";
 @import "./styles/app/catalog.css";
+@import "./styles/app/breadcrumbs.css";
 @import "./styles/app/book-detail.css";
 @import "./styles/app/book-purchase.css";
 @import "./styles/app/book-editor.css";
