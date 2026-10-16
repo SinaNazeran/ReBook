@@ -16,6 +16,7 @@ from pathlib import Path
 from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 
+from config.observability import LOGGING  # noqa: F401
 from config.security import security_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,7 +38,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").sp
 
 globals().update(security_settings(os.environ, DEBUG))
 CORS_ALLOW_HEADERS = [*default_headers, "idempotency-key"]
-CORS_EXPOSE_HEADERS = ["Date", "Age"]
+CORS_EXPOSE_HEADERS = ["Date", "Age", "X-Request-ID"]
 
 
 # Application definition
@@ -63,6 +64,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'config.observability.RequestIDMiddleware',
     'config.cache_middleware.APICachePolicyMiddleware',
     'config.https_middleware.TrustedProxyHTTPSMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -167,6 +169,7 @@ RATE_LIMITS = {
     "api_read": (120, 60), "api_write": (60, 60),
     "auth": (10, 60), "cart": (60, 60), "contact": (10, 3600),
     "uploads": (20, 3600), "support": (10, 3600), "payment": (20, 60),
+    "client_errors": (10, 60),
 }
 CACHES = {
     "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},

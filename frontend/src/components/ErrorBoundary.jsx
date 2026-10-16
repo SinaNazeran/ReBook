@@ -1,5 +1,6 @@
 import PageMetadata from './PageMetadata.jsx';
 import React from 'react';
+import { reportError } from '../services/errorReporting.js';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -12,10 +13,9 @@ class ErrorBoundary extends React.Component {
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch() {
     this.heading.current?.focus();
-    // در آینده می‌توان اینجا خطا را به یک سرویس لاگ‌گیری ارسال کرد
-    console.error('خطای غیرمنتظره:', error, errorInfo);
+    void reportError('render_error');
   }
 
   componentDidUpdate(previousProps) {

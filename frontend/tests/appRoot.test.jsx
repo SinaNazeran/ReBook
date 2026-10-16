@@ -2,6 +2,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import AppRoot from '../src/AppRoot';
+vi.mock('../src/services/errorReporting.js', () => ({ reportError: vi.fn().mockResolvedValue(false) }));
 
 const state = vi.hoisted(() => ({ crash: false }));
 vi.mock('../src/App', () => ({ default: function App() {

@@ -1,7 +1,9 @@
 import axios from "axios";
 import { durableMutation } from "./mutations";
+import { API_BASE, csrfToken } from './apiBase.js';
+import { reportError } from './errorReporting.js';
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const BASE_URL = API_BASE;
 
 // پنل مدیریت جنگو روی دامنه بک‌اند است، نه روی سرور Vite
 export const ADMIN_URL = new URL("/admin/", BASE_URL).href;
@@ -20,26 +22,11 @@ const api = axios.create({
 // مدیریت CSRF Token
 // ============================================
 
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== "") {
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === name + "=") {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
-
 // افزودن CSRF token به تمام درخواست‌ها
 api.interceptors.request.use((config) => {
-  const csrfToken = getCookie("csrftoken");
-  if (csrfToken) {
-    config.headers["X-CSRFToken"] = csrfToken;
+  const token = csrfToken();
+  if (token) {
+    config.headers["X-CSRFToken"] = token;
   }
   return config;
 });
@@ -58,6 +45,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status >= 500) {
+      void reportError('api_server_error', {
+        status: error.response.status, request_id: error.response.headers?.['x-request-id'],
+      });
+    }
     if (error.response?.status === 401) {
       window.dispatchEvent(new CustomEvent("auth:unauthorized"));
     }

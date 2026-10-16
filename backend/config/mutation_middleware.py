@@ -20,7 +20,9 @@ class MutationTransactionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.method in ("GET", "HEAD", "OPTIONS") or not request.path_info.startswith("/api/"):
+        # گزارش فقط لاگ می‌نویسد؛ نباید با خرید برای قفل نویسندهٔ SQLite رقابت کند.
+        if (request.method in ("GET", "HEAD", "OPTIONS") or not request.path_info.startswith("/api/")
+                or request.path_info == "/api/client-errors/"):
             return self.get_response(request)
         try:
             with transaction.atomic():

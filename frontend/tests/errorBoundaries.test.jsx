@@ -4,6 +4,9 @@ import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import ErrorBoundary from '../src/components/ErrorBoundary';
 import RouteErrorBoundary from '../src/components/RouteErrorBoundary';
+import { reportError } from '../src/services/errorReporting.js';
+
+vi.mock('../src/services/errorReporting.js', () => ({ reportError: vi.fn().mockResolvedValue(false) }));
 
 function Crash({ effect = false }) {
   useEffect(() => { if (effect) throw new Error('private effect detail'); }, [effect]);
@@ -22,6 +25,7 @@ it.each([false, true])('provides a standalone global fallback for render/effect 
   expect(screen.getByRole('link', { name: 'صفحه اصلی' }).getAttribute('href')).toBe('/');
   expect(screen.getByRole('button', { name: 'بارگذاری دوباره' })).toBeTruthy();
   expect(document.body.textContent).not.toContain('private');
+  expect(reportError).toHaveBeenCalledWith('render_error');
 });
 
 it('keeps the shell usable and recovers on navigation, including a different query on the same route', () => {

@@ -23,6 +23,9 @@ import "./styles/depth.css";
 import "react-toastify/dist/ReactToastify.css";
 
 import AppRoot from "./AppRoot.jsx";
+import { installErrorReporting } from './services/errorReporting.js';
+const stopErrorReporting = installErrorReporting();
+if (import.meta.hot) import.meta.hot.dispose(stopErrorReporting);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AppRoot />

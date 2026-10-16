@@ -3,7 +3,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from config.monitoring import ClientErrorsView, health
+
 urlpatterns = [
+    path("api/health", health, name="health"),
+    path("api/client-errors/", ClientErrorsView.as_view(), name="client-errors"),
     path("admin/", admin.site.urls),
     path("api/accounts/", include("accounts.urls")),
     path("api/books/", include("books.urls")),
