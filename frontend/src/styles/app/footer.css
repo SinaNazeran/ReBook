@@ -47,7 +47,7 @@ body:has(main > .series-paper) .site-footer {
 
 @media (min-width: 992px) {
   .site-footer-inner {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(260px, 1.3fr) minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 

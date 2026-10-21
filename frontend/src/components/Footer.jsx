@@ -2,7 +2,7 @@ import { formatPersianDate } from '../utils/locale';
 import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FiArrowUp } from 'react-icons/fi';
-import BrandMark from './BrandMark';
+import BrandLogo from './BrandLogo';
 import { useAuth } from '../context/useAuth.js';
 import { useSeries } from '../utils/categories';
 import { seriesInk } from '../utils/series';
@@ -39,9 +39,8 @@ function Footer() {
       </div>
       <Container className="site-footer-inner">
         <div className="site-footer-brand">
-          <Link to="/" className="site-footer-name" translate="no">
-            <BrandMark />
-            ری‌بوک
+          <Link to="/" className="site-footer-name brand-link" aria-label="ری‌بوک — صفحهٔ اصلی" translate="no">
+            <BrandLogo variant="primary" />
           </Link>
           <p className="mb-0">جایی برای دادن زندگی دوباره به کتاب‌هایتان.</p>
         </div>

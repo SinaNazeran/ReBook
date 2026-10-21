@@ -7,7 +7,7 @@ import { FiShoppingCart, FiBell, FiPlusCircle } from "react-icons/fi";
 import { useSeries } from "../utils/categories";
 import { seriesInk } from "../utils/series";
 import { Navbar as BSNavbar, Container, Nav } from "react-bootstrap";
-import BrandMark from "./BrandMark";
+import BrandLogo from "./BrandLogo";
 import { NavbarSearch } from "./navigation/NavbarSearch.jsx";
 import { NavbarCategories } from "./navigation/NavbarCategories.jsx";
 import { NavbarAccountMenu } from "./navigation/NavbarAccountMenu.jsx";
@@ -86,14 +86,13 @@ function Navbar() {
   });
   return <BSNavbar expand="lg" expanded={menuOpen} onToggle={setMenuOpen} className="site-navbar sticky-top py-2" aria-label="منوی اصلی">
       <Container>
-        <BSNavbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2" translate="no">
-          <BrandMark />
-          ری‌بوک
+        <BSNavbar.Brand as={Link} to="/" className="brand-link d-flex align-items-center" aria-label="ری‌بوک — صفحهٔ اصلی" translate="no">
+          <BrandLogo />
         </BSNavbar.Brand>
 
-        {renderCartLink('d-lg-none ms-auto me-1')}
+        {renderCartLink('d-lg-none ms-auto')}
         {/* در موبایل فروش هم‌ارز خرید است، پس پشت منو پنهان نمی‌شود */}
-        <Link to="/create-book" className="btn btn-primary text-nowrap d-lg-none me-2 nav-sell-mobile">
+        <Link to="/create-book" className="btn btn-primary text-nowrap d-lg-none nav-sell-mobile">
           فروش کتاب
         </Link>
 

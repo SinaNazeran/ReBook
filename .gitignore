@@ -75,3 +75,6 @@ logs/
 
 # Historical audit retained locally
 /docs/reliability/boilerplate-audit.md
+
+# Local logo handover and device/release checklist
+/docs/logo-release-checklist.md

@@ -5,6 +5,37 @@
    «جلو» در RTL به سمت چپ است، پس translateX منفی؛ transform معادل منطقی ندارد و سایت همیشه RTL است.
    ========================================================================== */
 
+/* حرکت کل لوگو، بدون تغییر هندسهٔ نشان یا اندازهٔ ناحیهٔ پیوند. */
+@media (prefers-reduced-motion: no-preference) {
+  .brand-link .brand-logo {
+    transition: transform 160ms var(--rb-ease-out);
+  }
+
+  .brand-link:active .brand-logo {
+    transform: scale(0.99);
+    transition-duration: 100ms;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .brand-link:hover:not(:active) .brand-logo {
+    transform: translateY(-1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-link .brand-logo {
+    transform: none;
+    transition: none;
+  }
+
+  .site-navbar .brand-link:active,
+  .site-footer .brand-link:active {
+    outline: 2px solid var(--rb-white);
+    outline-offset: 4px;
+  }
+}
+
 /* خط زیر پیوندهای سربرگ (دسکتاپ): از وسط باز می‌شود؛ پیوند فعال و منوی باز همان خط را کامل دارند.
    ::before، چون ::after فلش dropdown بوت‌استرپ است. حساب کاربری خط نمی‌گیرد (آواتارش واکنش می‌دهد) */
 @media (min-width: 992px) {
@@ -102,7 +133,6 @@
 }
 
 /* اجزایی که جابه‌جا می‌شوند؛ بی hover هم انتقالشان آماده است تا برگشت نرم باشد */
-.brand-mark,
 .nav-icon svg,
 .site-navbar .btn-primary svg,
 .nav-avatar,
@@ -121,12 +151,6 @@
 }
 
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  /* نشان برند مثل کتابی که از قفسه بیرون کشیده می‌شود (همان حرکت عطف‌های صفحه‌ی اصلی) */
-  .navbar-brand:hover .brand-mark,
-  .site-footer-name:hover .brand-mark {
-    transform: translateY(-3px) rotate(-4deg);
-  }
-
   /* سبد کمی بالا می‌آید؛ زنگ اعلان‌ها از بالا تاب می‌خورد */
   .nav-icon:hover svg {
     transform: translateY(-2px);

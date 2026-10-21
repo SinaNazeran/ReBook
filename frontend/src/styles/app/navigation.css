@@ -66,41 +66,86 @@
   color: var(--rb-white);
 }
 
-/* نشان برند (BrandMark.jsx): برچسب شرابی عطف با دو نوار کاغذی، مثل نشان ناشر روی کتاب جیبی */
-.brand-mark {
+/* لوگوی کامل در فوتر و نسخهٔ بدون لاتین در هدر، با نسبت اصلی فایل SVG. */
+.brand-logo {
+  display: block;
   flex: none;
-  width: 0.55em;
-  height: 0.88em;
+  max-inline-size: 100%;
+  block-size: auto;
 }
 
-.brand-mark-spine {
-  fill: var(--rb-brand-red);
+.brand-logo--header {
+  inline-size: 160px;
 }
 
-.brand-mark-band {
-  fill: var(--rb-surface);
+.brand-logo--primary {
+  inline-size: 260px;
 }
 
-/* روی میدان‌های شرابی (سربرگ، فوتر) عطف شرابی گم می‌شد: عطف گلی، نوارها هم‌رنگ میدان */
-.site-navbar .brand-mark-spine,
-.site-footer .brand-mark-spine {
-  fill: var(--rb-accent);
+/* حلقه روی پیوند ثابت می‌ماند؛ فقط تصویر داخل آن حرکت می‌کند. */
+.site-navbar .brand-link:focus-visible,
+.site-footer .brand-link:focus-visible {
+  outline: 2px solid var(--rb-white);
+  outline-offset: 4px;
 }
 
-.site-navbar .brand-mark-band {
-  fill: var(--rb-header-bar);
+/* نشان مستقل روی جلدهای بی‌عکس؛ فضای خالی واقعی SVG در ماسک حفظ می‌شود. */
+.brand-mark {
+  display: inline-block;
+  flex: none;
+  inline-size: 2em;
+  block-size: 2em;
+  background-color: var(--rb-brand);
+  mask: url('/brand/rebook-symbol-burgundy.svg') center / contain no-repeat;
 }
 
-.site-footer .brand-mark-band {
-  fill: var(--rb-footer);
+.brand-mark.is-mono {
+  background-color: currentColor;
 }
 
-.brand-mark.is-mono .brand-mark-spine {
-  fill: currentColor;
+@media (max-width: 991.98px) {
+  /* منوی بلند در صفحهٔ کوتاه یا Zoom بالا، داخل خود سربرگ قابل پیمایش می‌ماند. */
+  .site-navbar:has(.navbar-collapse.show) {
+    max-block-size: 100dvh;
+    overflow-y: auto;
+    scroll-padding-block: var(--rb-space-2);
+    border-block-end: 4px solid transparent;
+    border-image: var(--rb-series-rule) 1;
+  }
+
+  /* نوار رنگی روی لبه می‌ماند و با محتوای منوی بلند روی نوشته‌ها نمی‌آید. */
+  .site-navbar:has(.navbar-collapse.show)::after {
+    content: none;
+  }
+
+  .site-navbar > .container {
+    column-gap: 4px;
+  }
+
+  .site-navbar .navbar-brand {
+    margin-inline-end: 0;
+    min-block-size: var(--rb-touch-target);
+  }
+
+  .brand-logo--header {
+    inline-size: 140px;
+  }
+
+  .site-navbar .navbar-toggler {
+    padding-inline: 6px;
+    min-inline-size: var(--rb-touch-target);
+  }
+
+  .site-navbar .nav-sell-mobile {
+    font-size: 0.8125rem;
+    padding-inline: 6px;
+  }
 }
 
-.brand-mark.is-mono .brand-mark-band {
-  fill: var(--cover-ink, var(--rb-ink));
+@media (max-width: 359.98px) {
+  .brand-logo--header {
+    inline-size: 120px;
+  }
 }
 
 /* دکمه‌ی منوی موبایل: پیش‌فرض بوت‌استرپ ۳۸px ارتفاع دارد */
