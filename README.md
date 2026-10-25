@@ -6,13 +6,22 @@
 
 # ری‌بوک · ReBook
 
-بازارچهٔ فارسی خرید و فروش کتاب‌های دست دوم؛ پیدا کردن نسخهٔ مناسب، ثبت آگهی و مدیریت خرید و فروش در یک رابط راست‌به‌چپ.
+<p align="center"><strong>بازارچهٔ فارسی کتاب‌های دست‌دوم</strong><br />
+کتاب بعدی‌ات را پیدا کن، کتاب‌هایی را که خوانده‌ای بفروش.</p>
 
-<p align="center" dir="ltr"><strong>React 19 · Vite 8 · Bootstrap RTL · Django 6 · DRF · SQLite</strong></p>
+<p align="center" dir="ltr">
+  <img src="docs/readme/tech-react.svg" width="88" height="28" alt="React 19" />
+  <img src="docs/readme/tech-vite.svg" width="78" height="28" alt="Vite 8" />
+  <img src="docs/readme/tech-bootstrap.svg" width="124" height="28" alt="Bootstrap RTL" /><br />
+  <img src="docs/readme/tech-django.svg" width="94" height="28" alt="Django 6" />
+  <img src="docs/readme/tech-drf.svg" width="70" height="28" alt="DRF" />
+  <img src="docs/readme/tech-sqlite.svg" width="88" height="28" alt="SQLite" />
+</p>
 
-<p align="center"><a href="#preview">پیش‌نمایش</a> · <a href="#features">امکانات</a> · <a href="#setup">راه‌اندازی</a></p>
+<p align="center"><strong><a href="#preview">پیش‌نمایش</a> · <a href="#features">امکانات</a> · <a href="#setup">راه‌اندازی</a></strong></p>
 
-> پرداخت آزمایشی است؛ هیچ پولی جابه‌جا نمی‌شود.
+> [!NOTE]
+> **پرداخت آزمایشی** — پرداخت‌ها شبیه‌سازی می‌شوند؛ هیچ مبلغی دریافت نمی‌شود.
 
 <a name="preview"></a>
 
