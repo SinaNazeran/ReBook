@@ -29,7 +29,7 @@ skills-lock.json
 .impeccable/
 /PRODUCTION_CHECKLIST.md
 
-# Local browser snapshots
+# Local browser snapshots and README preview environment
 .playwright-mcp/
 frontend/test-results/
 frontend/playwright-report/
